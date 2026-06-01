@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard TI — GLPI</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #f0f4f9; --card: #ffffff;
+      --header: #0d2b5e; --header2: #1a4894;
+      --accent: #1a6fd4; --accent2: #2196f3;
+      --green: #27ae60; --red: #e74c3c; --orange: #f39c12;
+      --text: #1a2340; --muted: #6b7a9d; --border: #dde3f0;
+      --radius: 10px; --gap: 16px;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
+    .wrap { max-width:1440px; margin:0 auto; padding:var(--gap); }
+
+    header {
+      background: linear-gradient(135deg, var(--header) 0%, var(--header2) 100%);
+      color:#fff; border-radius:var(--radius); padding:18px 24px;
+      margin-bottom:var(--gap); display:flex; justify-content:space-between;
+      align-items:center; flex-wrap:wrap; gap:12px;
+      box-shadow:0 4px 16px rgba(13,43,94,0.18);
+    }
+    header h1 { font-size:20px; font-weight:700; display:flex; align-items:center; gap:10px; }
+    .subtitle { font-size:12px; opacity:0.7; margin-top:2px; }
+
+    .header-right { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+    .filters { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .filter-group { display:flex; align-items:center; gap:6px; }
+    .filter-group label { font-size:11px; opacity:0.8; white-space:nowrap; }
+    .filter-group select {
+      padding:6px 10px; border:1px solid rgba(255,255,255,0.25);
+      border-radius:6px; background:rgba(255,255,255,0.12);
+      color:#fff; font-size:12px; cursor:pointer; outline:none;
+    }
+    .filter-group select option { background:var(--header); color:#fff; }
+
+    .btn-refresh {
+      display:flex; align-items:center; gap:6px;
+      background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3);
+      color:#fff; padding:6px 14px; border-radius:6px; font-size:12px;
+      cursor:pointer; transition:background .2s;
+    }
+    .btn-refresh:hover { background:rgba(255,255,255,0.25); }
+    .btn-refresh.loading .icon { display:inline-block; animation:spin .8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    /* STATUS BAR */
+    .status-bar { font-size:11px; display:flex; align-items:center; gap:6px; }
+    .status-dot { width:7px; height:7px; border-radius:50%; background:#aaa; }
+    .status-dot.ok { background:var(--green); }
+    .status-dot.err { background:var(--red); }
+    .status-dot.loading { background:var(--orange); animation:pulse 1s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* LOADING OVERLAY */
+    #overlay {
+      position:fixed; inset:0; background:rgba(13,43,94,0.55);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      z-index:999; color:#fff; gap:16px;
+    }
+    #overlay.hidden { display:none; }
+    .spinner { width:40px; height:40px; border:4px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin .8s linear infinite; }
+    #overlay p { font-size:14px; opacity:0.9; }
+
+    /* ERROR BANNER */
+    #error-banner {
+      background:#fdecea; border:1px solid #f5c6c6; border-radius:var(--radius);
+      padding:12px 18px; margin-bottom:var(--gap); display:none;
+      color:#c0392b; font-size:13px; align-items:center; gap:10px;
+    }
+    #error-banner.visible { display:flex; }
+
+    /* KPIs */
+    .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:var(--gap); margin-bottom:var(--gap); }
+    .kpi { background:var(--card); border-radius:var(--radius); padding:18px 20px; box-shadow:0 1px 4px rgba(0,0,0,0.07); border-top:3px solid var(--accent); }
+    .kpi.green { border-top-color:var(--green); } .kpi.red { border-top-color:var(--red); } .kpi.orange { border-top-color:var(--orange); }
+    .kpi-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:6px; }
+    .kpi-value { font-size:30px; font-weight:800; line-height:1; }
+    .kpi-sub { font-size:12px; margin-top:4px; color:var(--muted); }
+
+    /* CHARTS */
+    .chart-row { display:grid; gap:var(--gap); margin-bottom:var(--gap); }
+    .chart-row.c2 { grid-template-columns:2fr 1fr; }
+    .chart-row.c3 { grid-template-columns:1fr 1fr 1fr; }
+    .chart-row.c2e { grid-template-columns:1fr 1fr; }
+    .card { background:var(--card); border-radius:var(--radius); padding:18px 20px; box-shadow:0 1px 4px rgba(0,0,0,0.07); }
+    .card h3 { font-size:13px; font-weight:600; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+    .dot { width:8px; height:8px; border-radius:50%; background:var(--accent); display:inline-block; }
+    .card canvas { max-height:240px; }
+
+    /* TABLE */
+    .table-card { background:var(--card); border-radius:var(--radius); padding:18px 20px; box-shadow:0 1px 4px rgba(0,0,0,0.07); margin-bottom:var(--gap); overflow-x:auto; }
+    .table-card h3 { font-size:13px; font-weight:600; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    thead th { text-align:left; padding:8px 12px; border-bottom:2px solid var(--border); color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; cursor:pointer; white-space:nowrap; }
+    thead th:hover { color:var(--text); background:#f5f7fc; }
+    tbody td { padding:9px 12px; border-bottom:1px solid var(--border); }
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr:hover { background:#f5f7fc; }
+    .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+    .badge.verde { background:#e8f8f0; color:#1a8a4a; } .badge.amarelo { background:#fef9e7; color:#b7770d; } .badge.vermelho { background:#fdecea; color:#c0392b; }
+    .progress-bar { width:100%; height:6px; background:#eee; border-radius:3px; overflow:hidden; }
+    .progress-fill { height:100%; border-radius:3px; }
+
+    footer { text-align:center; font-size:11px; color:var(--muted); padding:12px; }
+
+    @media(max-width:900px) {
+      .chart-row.c2,.chart-row.c3,.chart-row.c2e { grid-template-columns:1fr; }
+      .kpi-row { grid-template-columns:repeat(2,1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="overlay">
+  <div class="spinner"></div>
+  <p>Carregando dados do GLPI...</p>
+</div>
+
+<div class="wrap">
+
+  <!-- ERROR BANNER -->
+  <div id="error-banner">
+    <span>⚠️</span>
+    <span id="error-msg">Não foi possível conectar à API.</span>
+  </div>
+
+  <!-- HEADER -->
+  <header>
+    <div>
+      <h1>🖥️ Dashboard TI — GLPI</h1>
+      <div class="subtitle">Gestão de chamados e desempenho da equipe · Dados em tempo real</div>
+    </div>
+    <div class="header-right">
+      <div class="filters">
+        <div class="filter-group">
+          <label>Período</label>
+          <select id="f-periodo" onchange="loadData()">
+            <option value="12">12 meses</option>
+            <option value="6">6 meses</option>
+            <option value="3">3 meses</option>
+            <option value="1">1 mês</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-refresh" onclick="loadData()">
+        <span class="icon">↻</span> Atualizar
+      </button>
+      <div class="status-bar">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-txt">—</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi">         <div class="kpi-label">Total Chamados</div><div class="kpi-value" id="k-total">—</div><div class="kpi-sub" id="k-periodo"></div></div>
+    <div class="kpi red">     <div class="kpi-label">Em Aberto</div>    <div class="kpi-value" id="k-abertos">—</div><div class="kpi-sub">abertos agora</div></div>
+    <div class="kpi green">   <div class="kpi-label">Resolvidos</div>   <div class="kpi-value" id="k-fechados">—</div><div class="kpi-sub">no período</div></div>
+    <div class="kpi orange">  <div class="kpi-label">SLA Violado</div>  <div class="kpi-value" id="k-sla-v">—</div><div class="kpi-sub" id="k-sla-sub"></div></div>
+    <div class="kpi">         <div class="kpi-label">TMR Médio</div>    <div class="kpi-value" id="k-tmr">—</div><div class="kpi-sub">horas</div></div>
+    <div class="kpi green">   <div class="kpi-label">Abertos Hoje</div> <div class="kpi-value" id="k-hoje">—</div><div class="kpi-sub">novos chamados</div></div>
+  </div>
+
+  <!-- Linha 1 -->
+  <div class="chart-row c2">
+    <div class="card"><h3><span class="dot"></span> Volume de Chamados por Mês</h3><canvas id="chart-volume"></canvas></div>
+    <div class="card"><h3><span class="dot" style="background:var(--green)"></span> % SLA Cumprido</h3><canvas id="chart-sla"></canvas></div>
+  </div>
+
+  <!-- Linha 2 -->
+  <div class="chart-row c3">
+    <div class="card"><h3><span class="dot" style="background:#9b59b6"></span> Por Status</h3><canvas id="chart-status"></canvas></div>
+    <div class="card"><h3><span class="dot" style="background:var(--orange)"></span> Por Prioridade</h3><canvas id="chart-prio"></canvas></div>
+    <div class="card"><h3><span class="dot" style="background:var(--accent2)"></span> Incidente vs Requisição</h3><canvas id="chart-tipo"></canvas></div>
+  </div>
+
+  <!-- Linha 3 -->
+  <div class="chart-row c2e">
+    <div class="card"><h3><span class="dot" style="background:#e67e22"></span> Top Categorias</h3><canvas id="chart-cat"></canvas></div>
+    <div class="card"><h3><span class="dot" style="background:#16a085"></span> TMR por Prioridade (horas)</h3><canvas id="chart-tmr"></canvas></div>
+  </div>
+
+  <!-- Tabela técnicos -->
+  <div class="table-card">
+    <h3><span class="dot" style="background:#2980b9"></span> Desempenho por Técnico</h3>
+    <table><thead><tr>
+      <th>#</th><th onclick="sortBy('nome')">Técnico ⇅</th>
+      <th onclick="sortBy('total')">Total ⇅</th>
+      <th onclick="sortBy('resolvidos')">Resolvidos ⇅</th>
+      <th onclick="sortBy('abertos')">Abertos ⇅</th>
+      <th onclick="sortBy('sla')">SLA % ⇅</th>
+      <th onclick="sortBy('tmr')">TMR (h) ⇅</th>
+      <th>Carga</th>
+    </tr></thead>
+    <tbody id="tbl-body"></tbody></table>
+  </div>
+
+  <footer>Dashboard GLPI · Dados ao vivo · Última atualização: <span id="dt-update">—</span></footer>
+</div>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────────────────
+// Ajuste o caminho abaixo para a URL da sua API no servidor
+const API_URL = '/dashboard/api.php';
+// Ex: const API_URL = 'http://[IP_SERVIDOR]/dashboard/api.php';
+
+// ── ESTADO ─────────────────────────────────────────────────────
+let charts = {};
+let tecnicos = [];
+let sortCol = 'total', sortDir = -1;
+
+// ── PALETAS ────────────────────────────────────────────────────
+const STATUS_CORES  = ['#3498db','#2ecc71','#f39c12','#9b59b6','#95a5a6'];
+const PRIO_CORES    = ['#2ecc71','#27ae60','#f39c12','#e74c3c','#c0392b'];
+const TIPO_CORES    = ['#e74c3c','#3498db'];
+const CAT_CORES     = ['#1a6fd4','#2196f3','#42a5f5','#1565c0','#0d47a1','#64b5f6','#1976d2','#1e88e5'];
+const TMR_CORES     = ['#2ecc71','#27ae60','#f39c12','#e74c3c','#c0392b'];
+
+// ── LOAD DATA ──────────────────────────────────────────────────
+async function loadData() {
+  const meses = document.getElementById('f-periodo').value;
+  setStatus('loading', 'Carregando...');
+  setBtn(true);
+
+  try {
+    const res = await fetch(`${API_URL}?meses=${meses}&_=${Date.now()}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const d = await res.json();
+    if (d.erro) throw new Error(d.erro);
+
+    hideError();
+    document.getElementById('overlay').classList.add('hidden');
+    renderAll(d);
+    setStatus('ok', `Atualizado às ${d.gerado_em}`);
+    document.getElementById('dt-update').textContent = d.gerado_em;
+  } catch(e) {
+    showError(`Erro ao carregar dados: ${e.message}. Verifique se api.php está acessível em ${API_URL}`);
+    setStatus('err', 'Erro na conexão');
+    document.getElementById('overlay').classList.add('hidden');
+  } finally {
+    setBtn(false);
+  }
+}
+
+function setStatus(state, txt) {
+  const dot = document.getElementById('status-dot');
+  dot.className = 'status-dot ' + state;
+  document.getElementById('status-txt').textContent = txt;
+}
+function setBtn(loading) {
+  const btn = document.querySelector('.btn-refresh');
+  btn.classList.toggle('loading', loading);
+  btn.disabled = loading;
+}
+function showError(msg) {
+  const b = document.getElementById('error-banner');
+  document.getElementById('error-msg').textContent = msg;
+  b.classList.add('visible');
+}
+function hideError() { document.getElementById('error-banner').classList.remove('visible'); }
+
+// ── RENDER ALL ─────────────────────────────────────────────────
+function renderAll(d) {
+  renderKPIs(d);
+  renderVolume(d.volume_mensal);
+  renderSLA(d.volume_mensal);
+  renderStatus(d.por_status);
+  renderPrioridade(d.por_prioridade);
+  renderTipo(d.por_tipo);
+  renderCategorias(d.top_categorias);
+  renderTMR(d.tmr_prioridade);
+  tecnicos = d.tecnicos;
+  renderTecnicos();
+}
+
+// ── KPIs ───────────────────────────────────────────────────────
+function renderKPIs(d) {
+  const k = d.kpis;
+  const m = d.volume_mensal;
+  const ini = m.length ? m[0].mes : '';
+  const fim = m.length ? m[m.length-1].mes : '';
+  document.getElementById('k-total').textContent    = fmt(k.total_chamados);
+  document.getElementById('k-abertos').textContent  = fmt(k.em_aberto);
+  document.getElementById('k-fechados').textContent = fmt(k.fechados);
+  document.getElementById('k-sla-v').textContent    = fmt(k.sla_violado);
+  document.getElementById('k-tmr').textContent      = k.tmr_horas ?? '—';
+  document.getElementById('k-hoje').textContent     = fmt(k.abertos_hoje);
+  document.getElementById('k-periodo').textContent  = `${ini} – ${fim}`;
+  document.getElementById('k-sla-sub').textContent  = `${k.pct_sla ?? '—'}% cumprido`;
+}
+
+// ── CHARTS ─────────────────────────────────────────────────────
+function dc(id) { if(charts[id]){charts[id].destroy();delete charts[id];} }
+
+function renderVolume(m) {
+  dc('vol');
+  charts['vol'] = new Chart(document.getElementById('chart-volume'), {
+    type:'bar',
+    data:{
+      labels: m.map(r=>r.mes),
+      datasets:[
+        { label:'Abertos',  data:m.map(r=>r.abertos),  backgroundColor:'#1a6fd4cc', borderRadius:4 },
+        { label:'Fechados', data:m.map(r=>r.fechados), type:'line', borderColor:'#27ae60', backgroundColor:'#27ae6018', fill:true, tension:0.4, pointRadius:3 }
+      ]
+    },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'top', labels:{usePointStyle:true,padding:14,font:{size:11}} } },
+      scales:{ x:{grid:{display:false}}, y:{beginAtZero:true,grid:{color:'#f0f0f0'}} }
+    }
+  });
+}
+
+function renderSLA(m) {
+  dc('sla');
+  const pcts = m.map(r => r.sla_total ? +((r.sla_ok/r.sla_total)*100).toFixed(1) : 0);
+  charts['sla'] = new Chart(document.getElementById('chart-sla'), {
+    type:'line',
+    data:{
+      labels: m.map(r=>r.mes),
+      datasets:[
+        { label:'% SLA', data:pcts, borderColor:'#27ae60', backgroundColor:'#27ae6018', fill:true, tension:0.4, pointRadius:4, pointBackgroundColor:'#27ae60' },
+        { label:'Meta 90%', data:m.map(()=>90), borderColor:'#e74c3c88', borderDash:[6,4], borderWidth:1.5, pointRadius:0 }
+      ]
+    },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'top', labels:{usePointStyle:true,padding:14,font:{size:11}} } },
+      scales:{ x:{grid:{display:false}}, y:{min:50,max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}} }
+    }
+  });
+}
+
+function renderStatus(data) {
+  dc('st');
+  charts['st'] = new Chart(document.getElementById('chart-status'), {
+    type:'doughnut',
+    data:{ labels:data.map(d=>d.label), datasets:[{ data:data.map(d=>d.valor), backgroundColor:STATUS_CORES, borderWidth:2, borderColor:'#fff' }] },
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'62%',
+      plugins:{ legend:{ position:'right', labels:{usePointStyle:true,padding:10,font:{size:11}} } }
+    }
+  });
+}
+
+function renderPrioridade(data) {
+  dc('pr');
+  const sorted = [...data].sort((a,b)=>a.ordem-b.ordem);
+  charts['pr'] = new Chart(document.getElementById('chart-prio'), {
+    type:'bar',
+    data:{ labels:sorted.map(d=>d.label), datasets:[{ data:sorted.map(d=>d.valor), backgroundColor:PRIO_CORES, borderRadius:4 }] },
+    options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
+      plugins:{ legend:{display:false} },
+      scales:{ x:{beginAtZero:true,grid:{color:'#f0f0f0'}}, y:{grid:{display:false}} }
+    }
+  });
+}
+
+function renderTipo(data) {
+  dc('tp');
+  charts['tp'] = new Chart(document.getElementById('chart-tipo'), {
+    type:'doughnut',
+    data:{ labels:data.map(d=>d.label), datasets:[{ data:data.map(d=>d.valor), backgroundColor:TIPO_CORES, borderWidth:2, borderColor:'#fff' }] },
+    options:{ responsive:true, maintainAspectRatio:false, cutout:'62%',
+      plugins:{ legend:{ position:'bottom', labels:{usePointStyle:true,padding:14,font:{size:12}} } }
+    }
+  });
+}
+
+function renderCategorias(data) {
+  dc('cat');
+  charts['cat'] = new Chart(document.getElementById('chart-cat'), {
+    type:'bar',
+    data:{ labels:data.map(d=>d.cat), datasets:[{ data:data.map(d=>d.total), backgroundColor:CAT_CORES.map(c=>c+'cc'), borderRadius:4 }] },
+    options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
+      plugins:{ legend:{display:false} },
+      scales:{ x:{beginAtZero:true,grid:{color:'#f0f0f0'}}, y:{grid:{display:false}} }
+    }
+  });
+}
+
+function renderTMR(data) {
+  dc('tmr');
+  const sorted = [...data].sort((a,b)=>a.ordem-b.ordem);
+  charts['tmr'] = new Chart(document.getElementById('chart-tmr'), {
+    type:'bar',
+    data:{ labels:sorted.map(d=>d.label), datasets:[{ label:'Horas', data:sorted.map(d=>d.tmr), backgroundColor:TMR_CORES.map(c=>c+'cc'), borderRadius:4 }] },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{ x:{grid:{display:false}}, y:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'h'}} }
+    }
+  });
+}
+
+// ── TABELA TÉCNICOS ─────────────────────────────────────────────
+function sortBy(col) {
+  if(sortCol===col) sortDir*=-1; else { sortCol=col; sortDir=-1; }
+  renderTecnicos();
+}
+
+function renderTecnicos() {
+  const rows = [...tecnicos].sort((a,b) => {
+    if(sortCol==='nome') return sortDir * a.nome.localeCompare(b.nome);
+    return sortDir * ((b[sortCol]??0) - (a[sortCol]??0));
+  });
+  const maxT = Math.max(...rows.map(r=>r.total||0));
+  document.getElementById('tbl-body').innerHTML = rows.map((t,i) => {
+    const cls = (t.sla>=95)?'verde':(t.sla>=80)?'amarelo':'vermelho';
+    const barC = (t.sla>=95)?'#27ae60':(t.sla>=80)?'#f39c12':'#e74c3c';
+    const pct = maxT ? Math.round((t.total/maxT)*100) : 0;
+    return `<tr>
+      <td><strong>${i+1}º</strong></td>
+      <td><strong>${t.nome}</strong></td>
+      <td>${fmt(t.total)}</td>
+      <td>${fmt(t.resolvidos)}</td>
+      <td>${fmt(t.abertos)}</td>
+      <td><span class="badge ${cls}">${t.sla??'—'}%</span></td>
+      <td>${t.tmr??'—'}h</td>
+      <td style="min-width:90px"><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${barC}"></div></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function fmt(v) { return v!=null ? (+v).toLocaleString('pt-BR') : '—'; }
+
+// ── INIT ───────────────────────────────────────────────────────
+loadData();
+// Auto-refresh a cada 5 minutos
+setInterval(loadData, 5 * 60 * 1000);
+</script>
+</body>
+</html>
