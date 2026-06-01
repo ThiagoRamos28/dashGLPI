@@ -47,13 +47,19 @@ function query(PDO $pdo, string $sql, array $params = []): array {
     return $stmt->fetchAll();
 }
 
-// Filtro de categoria (inclui subcategorias 1 nível abaixo)
+// Filtro de categoria — inclui a categoria selecionada e TODAS as subcategorias
+// Usa completename para navegar a hierarquia em qualquer profundidade
 function cf(int $c): string {
     if ($c === 0) return '';
-    return "AND (t.itilcategories_id = {$c} OR t.itilcategories_id IN (
-        SELECT id FROM glpi_itilcategories WHERE itilcategories_id = {$c}
-    ))";
-}
+    return "AND t.itilcategories_id IN (
+        SELECT _ic.id FROM glpi_itilcategories _ic
+        WHERE _ic.id = {$c}
+           OR _ic.completename LIKE (
+               SELECT CONCAT(_p.completename, ' > %')
+               FROM glpi_itilcategories _p WHERE _p.id = {$c}
+           )
+    )";}
+
 
 $gf = cf($categoria_id);
 $p  = [':data_inicio' => $data_inicio];
@@ -259,7 +265,6 @@ $comentarios = query($pdo, "
 $categorias = query($pdo, "
     SELECT id, name, completename, level
     FROM glpi_itilcategories
-    WHERE is_deleted = 0
     ORDER BY completename
 ");
 
