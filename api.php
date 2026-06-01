@@ -23,7 +23,7 @@ define('DB_PASS', $env['DB_PASS']);
 // ── Parâmetros ───────────────────────────────────────────────
 $meses    = isset($_GET['meses'])  ? (int)$_GET['meses']  : 12;
 $meses    = in_array($meses, [1, 3, 6, 12]) ? $meses : 12;
-$grupo_id = isset($_GET['grupo'])  ? (int)$_GET['grupo']  : 0; // 0 = todos os grupos
+$categoria_id = isset($_GET['categoria']) ? (int)$_GET['categoria'] : 0; // 0 = todas as categorias
 $data_inicio = date('Y-m-d', strtotime("-{$meses} months"));
 
 // ── Conexão ─────────────────────────────────────────────────
@@ -47,16 +47,15 @@ function query(PDO $pdo, string $sql, array $params = []): array {
     return $stmt->fetchAll();
 }
 
-// Filtro de grupo via EXISTS (grupo_id é int, sem risco de SQL injection)
-function gf(int $g): string {
-    if ($g === 0) return '';
-    return "AND EXISTS (
-        SELECT 1 FROM glpi_groups_tickets _gt
-        WHERE _gt.tickets_id = t.id AND _gt.type = 2 AND _gt.groups_id = {$g}
-    )";
+// Filtro de categoria (inclui subcategorias 1 nível abaixo)
+function cf(int $c): string {
+    if ($c === 0) return '';
+    return "AND (t.itilcategories_id = {$c} OR t.itilcategories_id IN (
+        SELECT id FROM glpi_itilcategories WHERE itilcategories_id = {$c}
+    ))";
 }
 
-$gf = gf($grupo_id);
+$gf = cf($categoria_id);
 $p  = [':data_inicio' => $data_inicio];
 
 // ============================================================
@@ -255,12 +254,13 @@ $comentarios = query($pdo, "
 ", $p);
 
 // ============================================================
-// 11. LISTA DE GRUPOS DISPONÍVEIS
+// 11. LISTA DE CATEGORIAS DISPONÍVEIS
 // ============================================================
-$grupos = query($pdo, "
-    SELECT id, name FROM glpi_groups
-    WHERE is_assign = 1
-    ORDER BY name
+$categorias = query($pdo, "
+    SELECT id, name, completename, level
+    FROM glpi_itilcategories
+    WHERE is_deleted = 0
+    ORDER BY completename
 ");
 
 // ============================================================
@@ -269,7 +269,7 @@ $grupos = query($pdo, "
 echo json_encode([
     'gerado_em'      => date('d/m/Y H:i:s'),
     'periodo_meses'  => $meses,
-    'grupo_id'       => $grupo_id,
+    'categoria_id'   => $categoria_id,
     'data_inicio'    => $data_inicio,
     'kpis'           => $kpis[0] ?? [],
     'volume_mensal'  => $volume_mensal,
@@ -281,5 +281,5 @@ echo json_encode([
     'tecnicos'       => $tecnicos,
     'satisfacao'     => $satisfacao[0] ?? [],
     'comentarios'    => $comentarios,
-    'grupos'         => $grupos,
+    'categorias'     => $categorias,
 ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);

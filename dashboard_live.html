@@ -341,8 +341,8 @@
     </div>
     <div class="sep"></div>
     <div class="h-filters">
-      <span class="f-label">Equipe</span>
-      <select id="f-grupo" class="f-select" onchange="loadData()">
+      <span class="f-label">Categoria</span>
+      <select id="f-categoria" class="f-select" onchange="loadData()">
         <option value="0">Todas</option>
       </select>
       <span class="f-label">Período</span>
@@ -528,17 +528,17 @@ const TICK = { color:'#7d8590' };
 
 // ── LOAD DATA ────────────────────────────────────────────────
 async function loadData() {
-  const meses = document.getElementById('f-periodo').value;
-  const grupo = document.getElementById('f-grupo').value;
+  const meses      = document.getElementById('f-periodo').value;
+  const categoria  = document.getElementById('f-categoria').value;
   setStatus('loading', 'Carregando...');
   try {
-    const res = await fetch(`${API_URL}?meses=${meses}&grupo=${grupo}&_=${Date.now()}`);
+    const res = await fetch(`${API_URL}?meses=${meses}&categoria=${categoria}&_=${Date.now()}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const d = await res.json();
     if (d.erro) throw new Error(d.erro);
     hideError();
     document.getElementById('overlay').classList.add('hidden');
-    populateGrupos(d.grupos, d.grupo_id);
+    populateCategorias(d.categorias, d.categoria_id);
     renderAll(d);
     setStatus('ok', d.gerado_em);
     document.getElementById('dt-update').textContent = d.gerado_em;
@@ -549,13 +549,15 @@ async function loadData() {
   }
 }
 
-function populateGrupos(grupos, gid) {
-  const sel = document.getElementById('f-grupo');
+function populateCategorias(categorias, cid) {
+  const sel = document.getElementById('f-categoria');
   if (sel.options.length > 1) return;
-  grupos.forEach(g => {
+  categorias.forEach(c => {
     const o = document.createElement('option');
-    o.value = g.id; o.textContent = g.name;
-    if (g.id == gid) o.selected = true;
+    o.value = c.id;
+    // Indenta subcategorias com nível
+    o.textContent = (c.level > 1 ? '　'.repeat(c.level - 1) + '└ ' : '') + c.name;
+    if (c.id == cid) o.selected = true;
     sel.appendChild(o);
   });
 }
@@ -778,8 +780,8 @@ function restartProgress() {
 // ── INIT ─────────────────────────────────────────────────────
 (function initFromURL() {
   const p = new URLSearchParams(window.location.search);
-  if (p.get('grupo')) document.getElementById('f-grupo').value   = p.get('grupo');
-  if (p.get('meses')) document.getElementById('f-periodo').value = p.get('meses');
+  if (p.get('categoria')) document.getElementById('f-categoria').value = p.get('categoria');
+  if (p.get('meses'))     document.getElementById('f-periodo').value   = p.get('meses');
 })();
 
 loadData();
