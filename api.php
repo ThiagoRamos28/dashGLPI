@@ -259,7 +259,7 @@ $comentarios = query($pdo, "
 // ============================================================
 $grupos = query($pdo, "
     SELECT id, name FROM glpi_groups
-    WHERE is_deleted = 0 AND is_assign = 1
+    WHERE is_assign = 1
     ORDER BY name
 ");
 
