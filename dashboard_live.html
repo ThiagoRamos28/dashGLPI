@@ -10,108 +10,201 @@
       --bg: #f0f4f9; --card: #ffffff;
       --header: #0d2b5e; --header2: #1a4894;
       --accent: #1a6fd4; --accent2: #2196f3;
-      --green: #27ae60; --red: #e74c3c; --orange: #f39c12;
+      --green: #27ae60; --red: #e74c3c; --orange: #f39c12; --purple: #9b59b6;
       --text: #1a2340; --muted: #6b7a9d; --border: #dde3f0;
-      --radius: 10px; --gap: 16px;
+      --radius: 10px; --gap: 14px;
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); font-size:14px; }
-    .wrap { max-width:1440px; margin:0 auto; padding:var(--gap); }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 15px; display: flex; flex-direction: column; }
 
+    /* ── HEADER ─────────────────────────────────────── */
     header {
       background: linear-gradient(135deg, var(--header) 0%, var(--header2) 100%);
-      color:#fff; border-radius:var(--radius); padding:18px 24px;
-      margin-bottom:var(--gap); display:flex; justify-content:space-between;
-      align-items:center; flex-wrap:wrap; gap:12px;
-      box-shadow:0 4px 16px rgba(13,43,94,0.18);
+      color: #fff; padding: 10px 20px; flex-shrink: 0;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      box-shadow: 0 3px 12px rgba(13,43,94,0.25); z-index: 10;
     }
-    header h1 { font-size:20px; font-weight:700; display:flex; align-items:center; gap:10px; }
-    .subtitle { font-size:12px; opacity:0.7; margin-top:2px; }
+    .h-left { display: flex; align-items: center; gap: 14px; }
+    .h-title { font-size: 17px; font-weight: 700; white-space: nowrap; }
+    .h-sub   { font-size: 11px; opacity: 0.65; margin-top: 1px; }
 
-    .header-right { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
-    .filters { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .filter-group { display:flex; align-items:center; gap:6px; }
-    .filter-group label { font-size:11px; opacity:0.8; white-space:nowrap; }
-    .filter-group select {
-      padding:6px 10px; border:1px solid rgba(255,255,255,0.25);
-      border-radius:6px; background:rgba(255,255,255,0.12);
-      color:#fff; font-size:12px; cursor:pointer; outline:none;
+    .h-filters { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .f-label  { font-size: 11px; opacity: 0.75; white-space: nowrap; }
+    .f-select {
+      padding: 5px 10px; border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 6px; background: rgba(255,255,255,0.12);
+      color: #fff; font-size: 12px; cursor: pointer; outline: none;
     }
-    .filter-group select option { background:var(--header); color:#fff; }
+    .f-select option { background: var(--header); }
 
-    .btn-refresh {
-      display:flex; align-items:center; gap:6px;
-      background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3);
-      color:#fff; padding:6px 14px; border-radius:6px; font-size:12px;
-      cursor:pointer; transition:background .2s;
+    .h-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+
+    /* Dots navegação */
+    .nav-dots { display: flex; gap: 8px; align-items: center; }
+    .dot-btn {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(255,255,255,0.3); border: none; cursor: pointer;
+      transition: background .2s, transform .2s;
     }
-    .btn-refresh:hover { background:rgba(255,255,255,0.25); }
-    .btn-refresh.loading .icon { display:inline-block; animation:spin .8s linear infinite; }
-    @keyframes spin { to { transform:rotate(360deg); } }
+    .dot-btn.active { background: #fff; transform: scale(1.3); }
 
-    /* STATUS BAR */
-    .status-bar { font-size:11px; display:flex; align-items:center; gap:6px; }
-    .status-dot { width:7px; height:7px; border-radius:50%; background:#aaa; }
-    .status-dot.ok { background:var(--green); }
-    .status-dot.err { background:var(--red); }
-    .status-dot.loading { background:var(--orange); animation:pulse 1s ease-in-out infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    /* Screen label */
+    .screen-label { font-size: 11px; opacity: 0.7; white-space: nowrap; }
 
-    /* LOADING OVERLAY */
+    /* Botões header */
+    .btn-icon {
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+      color: #fff; padding: 5px 10px; border-radius: 6px; font-size: 12px;
+      cursor: pointer; transition: background .2s; white-space: nowrap;
+    }
+    .btn-icon:hover { background: rgba(255,255,255,0.22); }
+    .btn-icon.loading .spin { display: inline-block; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .status-bar { font-size: 11px; display: flex; align-items: center; gap: 5px; }
+    .sdot { width: 7px; height: 7px; border-radius: 50%; background: #aaa; flex-shrink: 0; }
+    .sdot.ok { background: var(--green); }
+    .sdot.err { background: var(--red); }
+    .sdot.loading { background: var(--orange); animation: pulse 1s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.35} }
+
+    /* ── LOADING OVERLAY ─────────────────────────────── */
     #overlay {
-      position:fixed; inset:0; background:rgba(13,43,94,0.55);
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      z-index:999; color:#fff; gap:16px;
+      position: fixed; inset: 0; background: rgba(13,43,94,0.6);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 999; color: #fff; gap: 16px;
     }
-    #overlay.hidden { display:none; }
-    .spinner { width:40px; height:40px; border:4px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin .8s linear infinite; }
-    #overlay p { font-size:14px; opacity:0.9; }
+    #overlay.hidden { display: none; }
+    .spinner { width: 44px; height: 44px; border: 4px solid rgba(255,255,255,0.25); border-top-color: #fff; border-radius: 50%; animation: spin .8s linear infinite; }
 
-    /* ERROR BANNER */
+    /* ── ERROR BANNER ────────────────────────────────── */
     #error-banner {
-      background:#fdecea; border:1px solid #f5c6c6; border-radius:var(--radius);
-      padding:12px 18px; margin-bottom:var(--gap); display:none;
-      color:#c0392b; font-size:13px; align-items:center; gap:10px;
+      background: #fdecea; border: 1px solid #f5c6c6; border-radius: var(--radius);
+      padding: 10px 16px; margin: var(--gap); display: none;
+      color: #c0392b; font-size: 13px; align-items: center; gap: 10px; flex-shrink: 0;
     }
-    #error-banner.visible { display:flex; }
+    #error-banner.visible { display: flex; }
 
-    /* KPIs */
-    .kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:var(--gap); margin-bottom:var(--gap); }
-    .kpi { background:var(--card); border-radius:var(--radius); padding:18px 20px; box-shadow:0 1px 4px rgba(0,0,0,0.07); border-top:3px solid var(--accent); }
-    .kpi.green { border-top-color:var(--green); } .kpi.red { border-top-color:var(--red); } .kpi.orange { border-top-color:var(--orange); }
-    .kpi-label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:6px; }
-    .kpi-value { font-size:30px; font-weight:800; line-height:1; }
-    .kpi-sub { font-size:12px; margin-top:4px; color:var(--muted); }
+    /* ── SCREENS CONTAINER ───────────────────────────── */
+    .screens-wrap {
+      flex: 1; position: relative; overflow: hidden;
+    }
+    .screen {
+      position: absolute; inset: 0;
+      opacity: 0; pointer-events: none;
+      transition: opacity .7s ease;
+      overflow-y: auto; padding: var(--gap);
+      display: flex; flex-direction: column; gap: var(--gap);
+    }
+    .screen.active { opacity: 1; pointer-events: auto; }
 
-    /* CHARTS */
-    .chart-row { display:grid; gap:var(--gap); margin-bottom:var(--gap); }
-    .chart-row.c2 { grid-template-columns:2fr 1fr; }
-    .chart-row.c3 { grid-template-columns:1fr 1fr 1fr; }
-    .chart-row.c2e { grid-template-columns:1fr 1fr; }
-    .card { background:var(--card); border-radius:var(--radius); padding:18px 20px; box-shadow:0 1px 4px rgba(0,0,0,0.07); }
-    .card h3 { font-size:13px; font-weight:600; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
-    .dot { width:8px; height:8px; border-radius:50%; background:var(--accent); display:inline-block; }
-    .card canvas { max-height:240px; }
+    .screen-title {
+      font-size: 13px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 1px;
+      padding-bottom: 4px; border-bottom: 2px solid var(--border);
+      flex-shrink: 0;
+    }
 
-    /* TABLE */
-    .table-card { background:var(--card); border-radius:var(--radius); padding:18px 20px; box-shadow:0 1px 4px rgba(0,0,0,0.07); margin-bottom:var(--gap); overflow-x:auto; }
-    .table-card h3 { font-size:13px; font-weight:600; margin-bottom:14px; display:flex; align-items:center; gap:6px; }
-    table { width:100%; border-collapse:collapse; font-size:13px; }
-    thead th { text-align:left; padding:8px 12px; border-bottom:2px solid var(--border); color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; cursor:pointer; white-space:nowrap; }
-    thead th:hover { color:var(--text); background:#f5f7fc; }
-    tbody td { padding:9px 12px; border-bottom:1px solid var(--border); }
-    tbody tr:last-child td { border-bottom:none; }
-    tbody tr:hover { background:#f5f7fc; }
-    .badge { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
-    .badge.verde { background:#e8f8f0; color:#1a8a4a; } .badge.amarelo { background:#fef9e7; color:#b7770d; } .badge.vermelho { background:#fdecea; color:#c0392b; }
-    .progress-bar { width:100%; height:6px; background:#eee; border-radius:3px; overflow:hidden; }
-    .progress-fill { height:100%; border-radius:3px; }
+    /* ── PROGRESS BAR ────────────────────────────────── */
+    .progress-track { height: 4px; background: rgba(13,43,94,0.1); flex-shrink: 0; }
+    .progress-fill  { height: 100%; background: var(--accent); width: 0%; transition: none; }
 
-    footer { text-align:center; font-size:11px; color:var(--muted); padding:12px; }
+    /* ── CARDS E LAYOUTS ─────────────────────────────── */
+    .card { background: var(--card); border-radius: var(--radius); padding: 16px 18px; box-shadow: 0 1px 5px rgba(0,0,0,0.07); }
+    .card h3 { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+    .cdot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; flex-shrink: 0; }
 
-    @media(max-width:900px) {
-      .chart-row.c2,.chart-row.c3,.chart-row.c2e { grid-template-columns:1fr; }
-      .kpi-row { grid-template-columns:repeat(2,1fr); }
+    .row  { display: grid; gap: var(--gap); }
+    .c2   { grid-template-columns: 1fr 1fr; }
+    .c3   { grid-template-columns: 1fr 1fr 1fr; }
+    .c4   { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .c2w  { grid-template-columns: 2fr 1fr; }
+    .c3w  { grid-template-columns: 2fr 1fr 1fr; }
+
+    /* ── KPI CARDS ───────────────────────────────────── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--gap); flex-shrink: 0; }
+    .kpi { background: var(--card); border-radius: var(--radius); padding: 18px 20px; box-shadow: 0 1px 5px rgba(0,0,0,0.07); border-top: 3px solid var(--accent); }
+    .kpi.green  { border-top-color: var(--green); }
+    .kpi.red    { border-top-color: var(--red); }
+    .kpi.orange { border-top-color: var(--orange); }
+    .kpi.purple { border-top-color: var(--purple); }
+    .kpi-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
+    .kpi-val { font-size: 48px; font-weight: 800; line-height: 1; }
+    .kpi-sub { font-size: 12px; margin-top: 5px; color: var(--muted); }
+
+    /* ── CHARTS ──────────────────────────────────────── */
+    .chart-wrap { position: relative; }
+    .chart-wrap canvas { display: block; }
+    .h240 { height: 240px; }
+    .h280 { height: 280px; }
+    .h320 { height: 320px; }
+
+    /* ── TABELA TÉCNICOS ─────────────────────────────── */
+    .tbl-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    thead th {
+      text-align: left; padding: 9px 12px; border-bottom: 2px solid var(--border);
+      color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .5px;
+      cursor: pointer; white-space: nowrap;
+    }
+    thead th:hover { color: var(--text); background: #f5f7fc; }
+    tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #f5f7fc; }
+    .badge { display: inline-block; padding: 3px 9px; border-radius: 10px; font-size: 12px; font-weight: 700; }
+    .verde    { background: #e8f8f0; color: #1a8a4a; }
+    .amarelo  { background: #fef9e7; color: #b7770d; }
+    .vermelho { background: #fdecea; color: #c0392b; }
+    .prog-bar { width: 100%; height: 7px; background: #eee; border-radius: 4px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 4px; }
+
+    /* ── SATISFAÇÃO ──────────────────────────────────── */
+    .csat-score {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .csat-num { font-size: 80px; font-weight: 900; line-height: 1; }
+    .csat-max { font-size: 22px; color: var(--muted); font-weight: 400; }
+    .csat-stars { font-size: 28px; margin-top: 6px; letter-spacing: 2px; }
+    .csat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-top: 8px; }
+    .csat-green  { color: var(--green); }
+    .csat-yellow { color: var(--orange); }
+    .csat-red    { color: var(--red); }
+
+    .rating-list { display: flex; flex-direction: column; gap: 10px; }
+    .rating-row  { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .rating-stars { width: 72px; flex-shrink: 0; font-size: 14px; }
+    .rating-bar-wrap { flex: 1; height: 14px; background: #eee; border-radius: 7px; overflow: hidden; }
+    .rating-bar-fill { height: 100%; border-radius: 7px; background: var(--accent); transition: width .6s ease; }
+    .rating-count { width: 32px; text-align: right; color: var(--muted); font-size: 12px; flex-shrink: 0; }
+
+    .kpi-mini { text-align: center; padding: 20px 16px; }
+    .kpi-mini .val { font-size: 40px; font-weight: 800; line-height: 1; }
+    .kpi-mini .lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 6px; }
+
+    .comment-list { display: flex; flex-direction: column; gap: 8px; }
+    .comment-item {
+      background: #f8f9fc; border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0; padding: 10px 14px;
+      display: flex; gap: 12px; align-items: flex-start; font-size: 13px;
+    }
+    .comment-nota { font-size: 16px; flex-shrink: 0; }
+    .comment-text { flex: 1; color: var(--text); line-height: 1.4; }
+    .comment-date { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+
+    /* ── FOOTER ──────────────────────────────────────── */
+    footer { text-align: center; font-size: 11px; color: var(--muted); padding: 6px; flex-shrink: 0; }
+
+    /* ── RESPONSIVO ──────────────────────────────────── */
+    @media (max-width: 1100px) {
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+      .c3, .c4 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 700px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .c2, .c2w, .c3, .c3w, .c4 { grid-template-columns: 1fr; }
+      .h-filters { display: none; }
     }
   </style>
 </head>
@@ -120,154 +213,251 @@
 <!-- LOADING -->
 <div id="overlay">
   <div class="spinner"></div>
-  <p>Carregando dados do GLPI...</p>
+  <p style="font-size:15px;opacity:.9">Carregando dados do GLPI...</p>
 </div>
 
-<div class="wrap">
+<!-- HEADER -->
+<header>
+  <div class="h-left">
+    <div>
+      <div class="h-title">🖥️ Dashboard TI — GLPI</div>
+      <div class="h-sub">Gestão de chamados em tempo real</div>
+    </div>
+    <div class="h-filters">
+      <span class="f-label">Equipe</span>
+      <select id="f-grupo" class="f-select" onchange="loadData()">
+        <option value="0">Todas</option>
+      </select>
+      <span class="f-label">Período</span>
+      <select id="f-periodo" class="f-select" onchange="loadData()">
+        <option value="12">12 meses</option>
+        <option value="6">6 meses</option>
+        <option value="3">3 meses</option>
+        <option value="1">1 mês</option>
+      </select>
+    </div>
+  </div>
+  <div class="h-right">
+    <div class="nav-dots">
+      <button class="dot-btn active" onclick="goTo(0)" title="Visão Geral"></button>
+      <button class="dot-btn"        onclick="goTo(1)" title="Distribuição"></button>
+      <button class="dot-btn"        onclick="goTo(2)" title="Equipe"></button>
+      <button class="dot-btn"        onclick="goTo(3)" title="Satisfação"></button>
+    </div>
+    <span class="screen-label" id="screen-label">Visão Geral</span>
+    <button class="btn-icon" id="btn-pause" onclick="togglePause()" title="Pausar rotação">⏸</button>
+    <button class="btn-icon" onclick="loadData()"><span class="spin">↻</span> Atualizar</button>
+    <div class="status-bar">
+      <div class="sdot" id="sdot"></div>
+      <span id="stxt" style="white-space:nowrap">—</span>
+    </div>
+  </div>
+</header>
 
-  <!-- ERROR BANNER -->
-  <div id="error-banner">
-    <span>⚠️</span>
-    <span id="error-msg">Não foi possível conectar à API.</span>
+<!-- ERROR BANNER -->
+<div id="error-banner"><span>⚠️</span><span id="error-msg"></span></div>
+
+<!-- SCREENS -->
+<div class="screens-wrap">
+
+  <!-- TELA 1 — VISÃO GERAL -->
+  <div class="screen active" id="s0">
+    <div class="screen-title">📊 Visão Geral</div>
+    <div class="kpi-grid">
+      <div class="kpi">         <div class="kpi-lbl">Total Chamados</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub" id="k-periodo"></div></div>
+      <div class="kpi red">     <div class="kpi-lbl">Em Aberto</div>    <div class="kpi-val" id="k-abertos">—</div><div class="kpi-sub">agora</div></div>
+      <div class="kpi green">   <div class="kpi-lbl">Resolvidos</div>   <div class="kpi-val" id="k-fechados">—</div><div class="kpi-sub">no período</div></div>
+      <div class="kpi orange">  <div class="kpi-lbl">SLA Violado</div>  <div class="kpi-val" id="k-slav">—</div><div class="kpi-sub" id="k-slasub"></div></div>
+      <div class="kpi">         <div class="kpi-lbl">TMR Médio</div>    <div class="kpi-val" id="k-tmr">—</div><div class="kpi-sub">horas</div></div>
+      <div class="kpi green">   <div class="kpi-lbl">Abertos Hoje</div> <div class="kpi-val" id="k-hoje">—</div><div class="kpi-sub">novos</div></div>
+    </div>
+    <div class="row c2" style="flex:1">
+      <div class="card" style="display:flex;flex-direction:column">
+        <h3><span class="cdot"></span> Volume de Chamados por Mês</h3>
+        <div class="chart-wrap" style="flex:1;min-height:220px"><canvas id="ch-volume"></canvas></div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column">
+        <h3><span class="cdot" style="background:var(--green)"></span> % SLA Cumprido por Mês</h3>
+        <div class="chart-wrap" style="flex:1;min-height:220px"><canvas id="ch-sla"></canvas></div>
+      </div>
+    </div>
   </div>
 
-  <!-- HEADER -->
-  <header>
-    <div>
-      <h1>🖥️ Dashboard TI — GLPI</h1>
-      <div class="subtitle">Gestão de chamados e desempenho da equipe · Dados em tempo real</div>
+  <!-- TELA 2 — DISTRIBUIÇÃO -->
+  <div class="screen" id="s1">
+    <div class="screen-title">📈 Distribuição de Chamados</div>
+    <div class="row c3">
+      <div class="card">
+        <h3><span class="cdot" style="background:var(--purple)"></span> Por Status</h3>
+        <div class="chart-wrap h280"><canvas id="ch-status"></canvas></div>
+      </div>
+      <div class="card">
+        <h3><span class="cdot" style="background:var(--orange)"></span> Por Prioridade</h3>
+        <div class="chart-wrap h280"><canvas id="ch-prio"></canvas></div>
+      </div>
+      <div class="card">
+        <h3><span class="cdot" style="background:var(--accent2)"></span> Incidente vs Requisição</h3>
+        <div class="chart-wrap h280"><canvas id="ch-tipo"></canvas></div>
+      </div>
     </div>
-    <div class="header-right">
-      <div class="filters">
-        <div class="filter-group">
-          <label>Período</label>
-          <select id="f-periodo" onchange="loadData()">
-            <option value="12">12 meses</option>
-            <option value="6">6 meses</option>
-            <option value="3">3 meses</option>
-            <option value="1">1 mês</option>
-          </select>
+    <div class="row c2">
+      <div class="card">
+        <h3><span class="cdot" style="background:#e67e22"></span> Top Categorias</h3>
+        <div class="chart-wrap h240"><canvas id="ch-cat"></canvas></div>
+      </div>
+      <div class="card">
+        <h3><span class="cdot" style="background:#16a085"></span> TMR por Prioridade (horas)</h3>
+        <div class="chart-wrap h240"><canvas id="ch-tmr"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 3 — EQUIPE -->
+  <div class="screen" id="s2">
+    <div class="screen-title">👥 Desempenho da Equipe</div>
+    <div class="card" style="flex:1">
+      <h3><span class="cdot" style="background:#2980b9"></span> Ranking de Técnicos</h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th>
+            <th onclick="sortBy('nome')">Técnico ⇅</th>
+            <th onclick="sortBy('total')">Total ⇅</th>
+            <th onclick="sortBy('resolvidos')">Resolvidos ⇅</th>
+            <th onclick="sortBy('abertos')">Abertos ⇅</th>
+            <th onclick="sortBy('sla')">SLA % ⇅</th>
+            <th onclick="sortBy('tmr')">TMR (h) ⇅</th>
+            <th>Carga</th>
+          </tr></thead>
+          <tbody id="tbl-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 4 — SATISFAÇÃO -->
+  <div class="screen" id="s3">
+    <div class="screen-title">⭐ Satisfação dos Usuários</div>
+    <div class="row c3w">
+      <!-- Score principal -->
+      <div class="card csat-score">
+        <div class="csat-num" id="csat-num">—</div>
+        <div class="csat-stars" id="csat-stars">☆☆☆☆☆</div>
+        <div class="csat-label">Nota Média (escala 1–5)</div>
+      </div>
+      <!-- Taxa de resposta -->
+      <div class="card kpi-mini">
+        <div class="val" id="csat-taxa" style="color:var(--accent)">—%</div>
+        <div class="lbl">Taxa de Resposta</div>
+      </div>
+      <!-- Total enviadas -->
+      <div class="card kpi-mini">
+        <div class="val" id="csat-total">—</div>
+        <div class="lbl">Avaliações Enviadas</div>
+      </div>
+    </div>
+    <div class="row c2">
+      <!-- Distribuição por nota -->
+      <div class="card">
+        <h3><span class="cdot" style="background:var(--orange)"></span> Distribuição de Notas</h3>
+        <div class="rating-list" id="rating-list">
+          <div class="rating-row"><span class="rating-stars">⭐⭐⭐⭐⭐</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="rb5" style="width:0%"></div></div><span class="rating-count" id="rn5">0</span></div>
+          <div class="rating-row"><span class="rating-stars">⭐⭐⭐⭐</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="rb4" style="width:0%;background:var(--green)"></div></div><span class="rating-count" id="rn4">0</span></div>
+          <div class="rating-row"><span class="rating-stars">⭐⭐⭐</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="rb3" style="width:0%;background:var(--orange)"></div></div><span class="rating-count" id="rn3">0</span></div>
+          <div class="rating-row"><span class="rating-stars">⭐⭐</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="rb2" style="width:0%;background:#e67e22"></div></div><span class="rating-count" id="rn2">0</span></div>
+          <div class="rating-row"><span class="rating-stars">⭐</span><div class="rating-bar-wrap"><div class="rating-bar-fill" id="rb1" style="width:0%;background:var(--red)"></div></div><span class="rating-count" id="rn1">0</span></div>
         </div>
       </div>
-      <button class="btn-refresh" onclick="loadData()">
-        <span class="icon">↻</span> Atualizar
-      </button>
-      <div class="status-bar">
-        <div class="status-dot" id="status-dot"></div>
-        <span id="status-txt">—</span>
+      <!-- Comentários recentes -->
+      <div class="card">
+        <h3><span class="cdot" style="background:var(--green)"></span> Comentários Recentes</h3>
+        <div class="comment-list" id="comment-list">
+          <p style="color:var(--muted);font-size:13px">Nenhum comentário no período.</p>
+        </div>
       </div>
     </div>
-  </header>
-
-  <!-- KPIs -->
-  <div class="kpi-row">
-    <div class="kpi">         <div class="kpi-label">Total Chamados</div><div class="kpi-value" id="k-total">—</div><div class="kpi-sub" id="k-periodo"></div></div>
-    <div class="kpi red">     <div class="kpi-label">Em Aberto</div>    <div class="kpi-value" id="k-abertos">—</div><div class="kpi-sub">abertos agora</div></div>
-    <div class="kpi green">   <div class="kpi-label">Resolvidos</div>   <div class="kpi-value" id="k-fechados">—</div><div class="kpi-sub">no período</div></div>
-    <div class="kpi orange">  <div class="kpi-label">SLA Violado</div>  <div class="kpi-value" id="k-sla-v">—</div><div class="kpi-sub" id="k-sla-sub"></div></div>
-    <div class="kpi">         <div class="kpi-label">TMR Médio</div>    <div class="kpi-value" id="k-tmr">—</div><div class="kpi-sub">horas</div></div>
-    <div class="kpi green">   <div class="kpi-label">Abertos Hoje</div> <div class="kpi-value" id="k-hoje">—</div><div class="kpi-sub">novos chamados</div></div>
   </div>
 
-  <!-- Linha 1 -->
-  <div class="chart-row c2">
-    <div class="card"><h3><span class="dot"></span> Volume de Chamados por Mês</h3><canvas id="chart-volume"></canvas></div>
-    <div class="card"><h3><span class="dot" style="background:var(--green)"></span> % SLA Cumprido</h3><canvas id="chart-sla"></canvas></div>
-  </div>
+</div><!-- /screens-wrap -->
 
-  <!-- Linha 2 -->
-  <div class="chart-row c3">
-    <div class="card"><h3><span class="dot" style="background:#9b59b6"></span> Por Status</h3><canvas id="chart-status"></canvas></div>
-    <div class="card"><h3><span class="dot" style="background:var(--orange)"></span> Por Prioridade</h3><canvas id="chart-prio"></canvas></div>
-    <div class="card"><h3><span class="dot" style="background:var(--accent2)"></span> Incidente vs Requisição</h3><canvas id="chart-tipo"></canvas></div>
-  </div>
+<!-- PROGRESS BAR -->
+<div class="progress-track"><div class="progress-fill" id="progress"></div></div>
 
-  <!-- Linha 3 -->
-  <div class="chart-row c2e">
-    <div class="card"><h3><span class="dot" style="background:#e67e22"></span> Top Categorias</h3><canvas id="chart-cat"></canvas></div>
-    <div class="card"><h3><span class="dot" style="background:#16a085"></span> TMR por Prioridade (horas)</h3><canvas id="chart-tmr"></canvas></div>
-  </div>
-
-  <!-- Tabela técnicos -->
-  <div class="table-card">
-    <h3><span class="dot" style="background:#2980b9"></span> Desempenho por Técnico</h3>
-    <table><thead><tr>
-      <th>#</th><th onclick="sortBy('nome')">Técnico ⇅</th>
-      <th onclick="sortBy('total')">Total ⇅</th>
-      <th onclick="sortBy('resolvidos')">Resolvidos ⇅</th>
-      <th onclick="sortBy('abertos')">Abertos ⇅</th>
-      <th onclick="sortBy('sla')">SLA % ⇅</th>
-      <th onclick="sortBy('tmr')">TMR (h) ⇅</th>
-      <th>Carga</th>
-    </tr></thead>
-    <tbody id="tbl-body"></tbody></table>
-  </div>
-
-  <footer>Dashboard GLPI · Dados ao vivo · Última atualização: <span id="dt-update">—</span></footer>
-</div>
+<footer>Dashboard GLPI · Atualizado em: <span id="dt-update">—</span></footer>
 
 <script>
-// ── CONFIG ─────────────────────────────────────────────────────
-// Ajuste o caminho abaixo para a URL da sua API no servidor
-const API_URL = '/dashboard/api.php';
-// Ex: const API_URL = 'http://[IP_SERVIDOR]/dashboard/api.php';
+// ── CONFIG ─────────────────────────────────────────────────
+const API_URL      = '/dashboard/api.php';
+const SCREEN_TIME  = 60000; // 60 segundos por tela
 
-// ── ESTADO ─────────────────────────────────────────────────────
-let charts = {};
-let tecnicos = [];
-let sortCol = 'total', sortDir = -1;
+// ── ESTADO ─────────────────────────────────────────────────
+let charts     = {};
+let tecnicos   = [];
+let sortCol    = 'total', sortDir = -1;
+let current    = 0;
+let paused     = false;
+let rotTimer   = null;
+let progAnim   = null;
+let progStart  = null;
 
-// ── PALETAS ────────────────────────────────────────────────────
-const STATUS_CORES  = ['#3498db','#2ecc71','#f39c12','#9b59b6','#95a5a6'];
-const PRIO_CORES    = ['#2ecc71','#27ae60','#f39c12','#e74c3c','#c0392b'];
-const TIPO_CORES    = ['#e74c3c','#3498db'];
-const CAT_CORES     = ['#1a6fd4','#2196f3','#42a5f5','#1565c0','#0d47a1','#64b5f6','#1976d2','#1e88e5'];
-const TMR_CORES     = ['#2ecc71','#27ae60','#f39c12','#e74c3c','#c0392b'];
+const SCREEN_NAMES = ['Visão Geral', 'Distribuição', 'Equipe', 'Satisfação'];
 
-// ── LOAD DATA ──────────────────────────────────────────────────
+// ── PALETAS ─────────────────────────────────────────────────
+const C_STATUS = ['#3498db','#2ecc71','#f39c12','#9b59b6','#95a5a6'];
+const C_PRIO   = ['#2ecc71','#27ae60','#f39c12','#e74c3c','#c0392b'];
+const C_TIPO   = ['#e74c3c','#3498db'];
+const C_CAT    = ['#1a6fd4','#2196f3','#42a5f5','#1565c0','#0d47a1','#64b5f6','#1976d2','#1e88e5'];
+const C_TMR    = ['#2ecc71','#27ae60','#f39c12','#e74c3c','#c0392b'];
+
+// ── LOAD DATA ───────────────────────────────────────────────
 async function loadData() {
-  const meses = document.getElementById('f-periodo').value;
+  const meses  = document.getElementById('f-periodo').value;
+  const grupo  = document.getElementById('f-grupo').value;
   setStatus('loading', 'Carregando...');
-  setBtn(true);
 
   try {
-    const res = await fetch(`${API_URL}?meses=${meses}&_=${Date.now()}`);
+    const res = await fetch(`${API_URL}?meses=${meses}&grupo=${grupo}&_=${Date.now()}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const d = await res.json();
     if (d.erro) throw new Error(d.erro);
 
     hideError();
     document.getElementById('overlay').classList.add('hidden');
+    populateGrupos(d.grupos, d.grupo_id);
     renderAll(d);
-    setStatus('ok', `Atualizado às ${d.gerado_em}`);
+    setStatus('ok', d.gerado_em);
     document.getElementById('dt-update').textContent = d.gerado_em;
   } catch(e) {
-    showError(`Erro ao carregar dados: ${e.message}. Verifique se api.php está acessível em ${API_URL}`);
+    showError(`Erro: ${e.message} — verifique se api.php está acessível em ${API_URL}`);
     setStatus('err', 'Erro na conexão');
     document.getElementById('overlay').classList.add('hidden');
-  } finally {
-    setBtn(false);
   }
 }
 
-function setStatus(state, txt) {
-  const dot = document.getElementById('status-dot');
-  dot.className = 'status-dot ' + state;
-  document.getElementById('status-txt').textContent = txt;
+// ── GRUPOS DROPDOWN ─────────────────────────────────────────
+function populateGrupos(grupos, grupo_id_atual) {
+  const sel = document.getElementById('f-grupo');
+  if (sel.options.length > 1) return; // já preenchido
+  grupos.forEach(g => {
+    const o = document.createElement('option');
+    o.value = g.id; o.textContent = g.name;
+    if (g.id == grupo_id_atual) o.selected = true;
+    sel.appendChild(o);
+  });
 }
-function setBtn(loading) {
-  const btn = document.querySelector('.btn-refresh');
-  btn.classList.toggle('loading', loading);
-  btn.disabled = loading;
+
+// ── STATUS / ERRORS ─────────────────────────────────────────
+function setStatus(s, t) {
+  document.getElementById('sdot').className = 'sdot ' + s;
+  document.getElementById('stxt').textContent = t;
 }
-function showError(msg) {
-  const b = document.getElementById('error-banner');
-  document.getElementById('error-msg').textContent = msg;
-  b.classList.add('visible');
+function showError(m) {
+  document.getElementById('error-msg').textContent = m;
+  document.getElementById('error-banner').classList.add('visible');
 }
 function hideError() { document.getElementById('error-banner').classList.remove('visible'); }
 
-// ── RENDER ALL ─────────────────────────────────────────────────
+// ── RENDER ALL ──────────────────────────────────────────────
 function renderAll(d) {
   renderKPIs(d);
   renderVolume(d.volume_mensal);
@@ -279,125 +469,96 @@ function renderAll(d) {
   renderTMR(d.tmr_prioridade);
   tecnicos = d.tecnicos;
   renderTecnicos();
+  renderSatisfacao(d.satisfacao, d.comentarios);
+  // resize charts in active screen
+  setTimeout(() => Object.values(charts).forEach(c => c.resize()), 100);
 }
 
-// ── KPIs ───────────────────────────────────────────────────────
+// ── KPIs ────────────────────────────────────────────────────
 function renderKPIs(d) {
-  const k = d.kpis;
-  const m = d.volume_mensal;
-  const ini = m.length ? m[0].mes : '';
-  const fim = m.length ? m[m.length-1].mes : '';
-  document.getElementById('k-total').textContent    = fmt(k.total_chamados);
-  document.getElementById('k-abertos').textContent  = fmt(k.em_aberto);
-  document.getElementById('k-fechados').textContent = fmt(k.fechados);
-  document.getElementById('k-sla-v').textContent    = fmt(k.sla_violado);
-  document.getElementById('k-tmr').textContent      = k.tmr_horas ?? '—';
-  document.getElementById('k-hoje').textContent     = fmt(k.abertos_hoje);
-  document.getElementById('k-periodo').textContent  = `${ini} – ${fim}`;
-  document.getElementById('k-sla-sub').textContent  = `${k.pct_sla ?? '—'}% cumprido`;
+  const k = d.kpis, m = d.volume_mensal;
+  const ini = m.length ? m[0].mes : '', fim = m.length ? m[m.length-1].mes : '';
+  document.getElementById('k-total').textContent   = fmt(k.total_chamados);
+  document.getElementById('k-abertos').textContent = fmt(k.em_aberto);
+  document.getElementById('k-fechados').textContent= fmt(k.fechados);
+  document.getElementById('k-slav').textContent    = fmt(k.sla_violado);
+  document.getElementById('k-tmr').textContent     = k.tmr_horas ?? '—';
+  document.getElementById('k-hoje').textContent    = fmt(k.abertos_hoje);
+  document.getElementById('k-periodo').textContent = `${ini} – ${fim}`;
+  document.getElementById('k-slasub').textContent  = `${k.pct_sla ?? '—'}% cumprido`;
 }
 
-// ── CHARTS ─────────────────────────────────────────────────────
-function dc(id) { if(charts[id]){charts[id].destroy();delete charts[id];} }
+// ── CHARTS ──────────────────────────────────────────────────
+function dc(id) { if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
+
+function mkChart(id, type, data, options) {
+  dc(id);
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  charts[id] = new Chart(ctx, { type, data, options: { responsive:true, maintainAspectRatio:false, ...options } });
+}
+
+const legendOpts = { position:'top', labels:{ usePointStyle:true, padding:12, font:{size:11} } };
 
 function renderVolume(m) {
-  dc('vol');
-  charts['vol'] = new Chart(document.getElementById('chart-volume'), {
-    type:'bar',
-    data:{
-      labels: m.map(r=>r.mes),
-      datasets:[
-        { label:'Abertos',  data:m.map(r=>r.abertos),  backgroundColor:'#1a6fd4cc', borderRadius:4 },
-        { label:'Fechados', data:m.map(r=>r.fechados), type:'line', borderColor:'#27ae60', backgroundColor:'#27ae6018', fill:true, tension:0.4, pointRadius:3 }
-      ]
-    },
-    options:{ responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ position:'top', labels:{usePointStyle:true,padding:14,font:{size:11}} } },
-      scales:{ x:{grid:{display:false}}, y:{beginAtZero:true,grid:{color:'#f0f0f0'}} }
-    }
-  });
+  mkChart('ch-volume','bar',{
+    labels: m.map(r=>r.mes),
+    datasets:[
+      { label:'Abertos',  data:m.map(r=>r.abertos),  backgroundColor:'#1a6fd4cc', borderRadius:4 },
+      { label:'Fechados', data:m.map(r=>r.fechados), type:'line', borderColor:'#27ae60', backgroundColor:'#27ae6018', fill:true, tension:.4, pointRadius:3 }
+    ]
+  },{ plugins:{legend:legendOpts}, scales:{x:{grid:{display:false}},y:{beginAtZero:true,grid:{color:'#f0f0f0'}}} });
 }
 
 function renderSLA(m) {
-  dc('sla');
   const pcts = m.map(r => r.sla_total ? +((r.sla_ok/r.sla_total)*100).toFixed(1) : 0);
-  charts['sla'] = new Chart(document.getElementById('chart-sla'), {
-    type:'line',
-    data:{
-      labels: m.map(r=>r.mes),
-      datasets:[
-        { label:'% SLA', data:pcts, borderColor:'#27ae60', backgroundColor:'#27ae6018', fill:true, tension:0.4, pointRadius:4, pointBackgroundColor:'#27ae60' },
-        { label:'Meta 90%', data:m.map(()=>90), borderColor:'#e74c3c88', borderDash:[6,4], borderWidth:1.5, pointRadius:0 }
-      ]
-    },
-    options:{ responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ position:'top', labels:{usePointStyle:true,padding:14,font:{size:11}} } },
-      scales:{ x:{grid:{display:false}}, y:{min:50,max:100,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'%'}} }
-    }
-  });
+  mkChart('ch-sla','line',{
+    labels: m.map(r=>r.mes),
+    datasets:[
+      { label:'% SLA',   data:pcts, borderColor:'#27ae60', backgroundColor:'#27ae6018', fill:true, tension:.4, pointRadius:4, pointBackgroundColor:'#27ae60' },
+      { label:'Meta 90%',data:m.map(()=>90), borderColor:'#e74c3c88', borderDash:[6,4], borderWidth:1.5, pointRadius:0 }
+    ]
+  },{ plugins:{legend:legendOpts}, scales:{x:{grid:{display:false}},y:{min:50,max:100,ticks:{callback:v=>v+'%'},grid:{color:'#f0f0f0'}}} });
 }
 
 function renderStatus(data) {
-  dc('st');
-  charts['st'] = new Chart(document.getElementById('chart-status'), {
-    type:'doughnut',
-    data:{ labels:data.map(d=>d.label), datasets:[{ data:data.map(d=>d.valor), backgroundColor:STATUS_CORES, borderWidth:2, borderColor:'#fff' }] },
-    options:{ responsive:true, maintainAspectRatio:false, cutout:'62%',
-      plugins:{ legend:{ position:'right', labels:{usePointStyle:true,padding:10,font:{size:11}} } }
-    }
-  });
+  mkChart('ch-status','doughnut',{
+    labels:data.map(d=>d.label),
+    datasets:[{ data:data.map(d=>d.valor), backgroundColor:C_STATUS, borderWidth:2, borderColor:'#fff' }]
+  },{ cutout:'60%', plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:10,font:{size:11}}}} });
 }
 
 function renderPrioridade(data) {
-  dc('pr');
-  const sorted = [...data].sort((a,b)=>a.ordem-b.ordem);
-  charts['pr'] = new Chart(document.getElementById('chart-prio'), {
-    type:'bar',
-    data:{ labels:sorted.map(d=>d.label), datasets:[{ data:sorted.map(d=>d.valor), backgroundColor:PRIO_CORES, borderRadius:4 }] },
-    options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
-      plugins:{ legend:{display:false} },
-      scales:{ x:{beginAtZero:true,grid:{color:'#f0f0f0'}}, y:{grid:{display:false}} }
-    }
-  });
+  const s = [...data].sort((a,b)=>a.ordem-b.ordem);
+  mkChart('ch-prio','bar',{
+    labels:s.map(d=>d.label),
+    datasets:[{ data:s.map(d=>d.valor), backgroundColor:C_PRIO, borderRadius:4 }]
+  },{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true,grid:{color:'#f0f0f0'}},y:{grid:{display:false}}} });
 }
 
 function renderTipo(data) {
-  dc('tp');
-  charts['tp'] = new Chart(document.getElementById('chart-tipo'), {
-    type:'doughnut',
-    data:{ labels:data.map(d=>d.label), datasets:[{ data:data.map(d=>d.valor), backgroundColor:TIPO_CORES, borderWidth:2, borderColor:'#fff' }] },
-    options:{ responsive:true, maintainAspectRatio:false, cutout:'62%',
-      plugins:{ legend:{ position:'bottom', labels:{usePointStyle:true,padding:14,font:{size:12}} } }
-    }
-  });
+  mkChart('ch-tipo','doughnut',{
+    labels:data.map(d=>d.label),
+    datasets:[{ data:data.map(d=>d.valor), backgroundColor:C_TIPO, borderWidth:2, borderColor:'#fff' }]
+  },{ cutout:'60%', plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:12,font:{size:12}}}} });
 }
 
 function renderCategorias(data) {
-  dc('cat');
-  charts['cat'] = new Chart(document.getElementById('chart-cat'), {
-    type:'bar',
-    data:{ labels:data.map(d=>d.cat), datasets:[{ data:data.map(d=>d.total), backgroundColor:CAT_CORES.map(c=>c+'cc'), borderRadius:4 }] },
-    options:{ responsive:true, maintainAspectRatio:false, indexAxis:'y',
-      plugins:{ legend:{display:false} },
-      scales:{ x:{beginAtZero:true,grid:{color:'#f0f0f0'}}, y:{grid:{display:false}} }
-    }
-  });
+  mkChart('ch-cat','bar',{
+    labels:data.map(d=>d.cat),
+    datasets:[{ data:data.map(d=>d.total), backgroundColor:C_CAT.map(c=>c+'cc'), borderRadius:4 }]
+  },{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true,grid:{color:'#f0f0f0'}},y:{grid:{display:false}}} });
 }
 
 function renderTMR(data) {
-  dc('tmr');
-  const sorted = [...data].sort((a,b)=>a.ordem-b.ordem);
-  charts['tmr'] = new Chart(document.getElementById('chart-tmr'), {
-    type:'bar',
-    data:{ labels:sorted.map(d=>d.label), datasets:[{ label:'Horas', data:sorted.map(d=>d.tmr), backgroundColor:TMR_CORES.map(c=>c+'cc'), borderRadius:4 }] },
-    options:{ responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales:{ x:{grid:{display:false}}, y:{beginAtZero:true,grid:{color:'#f0f0f0'},ticks:{callback:v=>v+'h'}} }
-    }
-  });
+  const s = [...data].sort((a,b)=>a.ordem-b.ordem);
+  mkChart('ch-tmr','bar',{
+    labels:s.map(d=>d.label),
+    datasets:[{ label:'Horas', data:s.map(d=>d.tmr), backgroundColor:C_TMR.map(c=>c+'cc'), borderRadius:4 }]
+  },{ plugins:{legend:{display:false}}, scales:{x:{grid:{display:false}},y:{beginAtZero:true,ticks:{callback:v=>v+'h'},grid:{color:'#f0f0f0'}}} });
 }
 
-// ── TABELA TÉCNICOS ─────────────────────────────────────────────
+// ── TABELA TÉCNICOS ─────────────────────────────────────────
 function sortBy(col) {
   if(sortCol===col) sortDir*=-1; else { sortCol=col; sortDir=-1; }
   renderTecnicos();
@@ -408,11 +569,11 @@ function renderTecnicos() {
     if(sortCol==='nome') return sortDir * a.nome.localeCompare(b.nome);
     return sortDir * ((b[sortCol]??0) - (a[sortCol]??0));
   });
-  const maxT = Math.max(...rows.map(r=>r.total||0));
+  const maxT = Math.max(...rows.map(r=>r.total||0), 1);
   document.getElementById('tbl-body').innerHTML = rows.map((t,i) => {
-    const cls = (t.sla>=95)?'verde':(t.sla>=80)?'amarelo':'vermelho';
-    const barC = (t.sla>=95)?'#27ae60':(t.sla>=80)?'#f39c12':'#e74c3c';
-    const pct = maxT ? Math.round((t.total/maxT)*100) : 0;
+    const cls = t.sla>=95?'verde':t.sla>=80?'amarelo':'vermelho';
+    const barC = t.sla>=95?'#27ae60':t.sla>=80?'#f39c12':'#e74c3c';
+    const pct = Math.round((t.total/maxT)*100);
     return `<tr>
       <td><strong>${i+1}º</strong></td>
       <td><strong>${t.nome}</strong></td>
@@ -421,17 +582,122 @@ function renderTecnicos() {
       <td>${fmt(t.abertos)}</td>
       <td><span class="badge ${cls}">${t.sla??'—'}%</span></td>
       <td>${t.tmr??'—'}h</td>
-      <td style="min-width:90px"><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${barC}"></div></div></td>
+      <td style="min-width:100px"><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${barC}"></div></div></td>
     </tr>`;
   }).join('');
 }
 
-function fmt(v) { return v!=null ? (+v).toLocaleString('pt-BR') : '—'; }
+// ── SATISFAÇÃO ──────────────────────────────────────────────
+function renderSatisfacao(s, comentarios) {
+  if (!s || !s.media) {
+    document.getElementById('csat-num').textContent = '—';
+    document.getElementById('csat-stars').textContent = '☆☆☆☆☆';
+    return;
+  }
+  const media = parseFloat(s.media);
+  const cls = media >= 4 ? 'csat-green' : media >= 3 ? 'csat-yellow' : 'csat-red';
+  const numEl = document.getElementById('csat-num');
+  numEl.textContent = media.toFixed(1);
+  numEl.className = 'csat-num ' + cls;
+  document.getElementById('csat-stars').textContent = stars(media);
+  document.getElementById('csat-taxa').textContent  = (s.taxa_resposta ?? '—') + '%';
+  document.getElementById('csat-total').textContent = fmt(s.total_enviadas);
 
-// ── INIT ───────────────────────────────────────────────────────
+  // Barras de distribuição
+  const respondidas = parseInt(s.respondidas) || 1;
+  [5,4,3,2,1].forEach(n => {
+    const count = parseInt(s['nota_'+n]) || 0;
+    const pct = Math.round((count / respondidas) * 100);
+    document.getElementById('rb'+n).style.width = pct + '%';
+    document.getElementById('rn'+n).textContent = count;
+  });
+
+  // Comentários
+  const cl = document.getElementById('comment-list');
+  if (!comentarios || !comentarios.length) {
+    cl.innerHTML = '<p style="color:var(--muted);font-size:13px">Nenhum comentário no período.</p>';
+    return;
+  }
+  cl.innerHTML = comentarios.map(c => `
+    <div class="comment-item">
+      <span class="comment-nota">${stars(c.nota)}</span>
+      <span class="comment-text">${esc(c.comment)}</span>
+      <span class="comment-date">${c.data}</span>
+    </div>`).join('');
+}
+
+function stars(v) {
+  const n = Math.round(parseFloat(v) || 0);
+  return '⭐'.repeat(Math.max(0, Math.min(5, n)));
+}
+function esc(s) { return s.replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmt(v) { return v != null ? (+v).toLocaleString('pt-BR') : '—'; }
+
+// ── ROTAÇÃO DE TELAS ────────────────────────────────────────
+function goTo(n) {
+  document.getElementById('s' + current).classList.remove('active');
+  document.querySelectorAll('.dot-btn')[current].classList.remove('active');
+  current = n;
+  document.getElementById('s' + current).classList.add('active');
+  document.querySelectorAll('.dot-btn')[current].classList.add('active');
+  document.getElementById('screen-label').textContent = SCREEN_NAMES[current];
+  // Resize charts na tela ativa
+  setTimeout(() => Object.values(charts).forEach(c => c.resize()), 80);
+  if (!paused) restartProgress();
+}
+
+function nextScreen() { goTo((current + 1) % 4); }
+
+function startRotation() {
+  if (rotTimer) clearInterval(rotTimer);
+  rotTimer = setInterval(nextScreen, SCREEN_TIME);
+  restartProgress();
+}
+
+function togglePause() {
+  paused = !paused;
+  document.getElementById('btn-pause').textContent = paused ? '▶' : '⏸';
+  if (paused) {
+    clearInterval(rotTimer); rotTimer = null;
+    cancelAnimationFrame(progAnim);
+  } else {
+    startRotation();
+  }
+}
+
+// Progress bar via requestAnimationFrame
+function restartProgress() {
+  cancelAnimationFrame(progAnim);
+  const bar = document.getElementById('progress');
+  bar.style.transition = 'none';
+  bar.style.width = '0%';
+  progStart = performance.now();
+  function step(now) {
+    const pct = Math.min(((now - progStart) / SCREEN_TIME) * 100, 100);
+    bar.style.width = pct + '%';
+    if (pct < 100) progAnim = requestAnimationFrame(step);
+  }
+  progAnim = requestAnimationFrame(step);
+}
+
+// ── INIT ────────────────────────────────────────────────────
+// Lê parâmetros da URL
+(function initFromURL() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('grupo'))  document.getElementById('f-grupo').value  = p.get('grupo');
+  if (p.get('meses'))  document.getElementById('f-periodo').value = p.get('meses');
+})();
+
 loadData();
-// Auto-refresh a cada 5 minutos
-setInterval(loadData, 5 * 60 * 1000);
+startRotation();
+setInterval(loadData, 5 * 60 * 1000); // refresh dados a cada 5 min
+
+// Teclado: ← → para navegar, espaço para pausar
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') { clearInterval(rotTimer); nextScreen(); if(!paused) startRotation(); }
+  if (e.key === 'ArrowLeft')  { clearInterval(rotTimer); goTo((current + 3) % 4); if(!paused) startRotation(); }
+  if (e.key === ' ')          { e.preventDefault(); togglePause(); }
+});
 </script>
 </body>
 </html>
