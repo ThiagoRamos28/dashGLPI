@@ -233,8 +233,8 @@ $satisfacao = query($pdo, "
         ROUND(100.0 * SUM(CASE WHEN ts.date_answered IS NOT NULL THEN 1 ELSE 0 END)
             / NULLIF(COUNT(*), 0), 1)                                                   AS taxa_resposta
     FROM glpi_ticketsatisfactions ts
-    INNER JOIN glpi_tickets t ON t.id = ts.tickets_id
-    WHERE t.is_deleted = 0 AND t.date >= :data_inicio $gf
+    INNER JOIN glpi_tickets t ON t.id = ts.tickets_id AND t.is_deleted = 0 AND t.date >= :data_inicio
+    WHERE 1=1 $gf
 ", $p);
 
 // ============================================================
@@ -242,15 +242,14 @@ $satisfacao = query($pdo, "
 // ============================================================
 $comentarios = query($pdo, "
     SELECT
-        ts.satisfaction_scaled_to_5             AS nota,
+        ts.satisfaction_scaled_to_5               AS nota,
         ts.comment,
         DATE_FORMAT(ts.date_answered, '%d/%m/%Y') AS data
     FROM glpi_ticketsatisfactions ts
-    INNER JOIN glpi_tickets t ON t.id = ts.tickets_id
-    WHERE t.is_deleted = 0
-      AND ts.date_answered IS NOT NULL
+    INNER JOIN glpi_tickets t ON t.id = ts.tickets_id AND t.is_deleted = 0 AND t.date >= :data_inicio
+    WHERE ts.date_answered IS NOT NULL
       AND ts.comment IS NOT NULL AND ts.comment != ''
-      AND t.date >= :data_inicio $gf
+      $gf
     ORDER BY ts.date_answered DESC
     LIMIT 5
 ", $p);
