@@ -624,7 +624,6 @@ function renderTela3() {
     slaAnoEl.style.color = slaAno >= 90 ? 'var(--green)' : slaAno >= 75 ? 'var(--amber)' : 'var(--red)';
   }
 
-  const notaAno = parseFloat(csat.media || 0);
   setText('k3-csat', (csat.media ?? '—') + '★');
 
   // Melhor mês (maior pct SLA nos dados mensais)
@@ -638,7 +637,8 @@ function renderTela3() {
 
   // Gráfico SLA por mês (últimos 6 meses)
   const last6 = meses.slice(-6);
-  document.getElementById('k3-chart').innerHTML = last6.map(m => {
+  document.getElementById('k3-chart').innerHTML = last6.length
+    ? last6.map(m => {
     const pct    = m.sla_total > 0 ? (m.sla_ok / m.sla_total * 100) : 0;
     const isBest = m.mes === melhor.mes;
     const lbl    = esc((m.mes || '').split('/')[0]);
@@ -648,7 +648,8 @@ function renderTela3() {
         <div class="bar-lbl">${lbl}</div>
         <div class="bar-pct ${isBest ? 'best' : ''}">${pct.toFixed(0)}</div>
       </div>`;
-  }).join('');
+    }).join('')
+    : '<div class="empty-state">Sem dados de SLA no período</div>';
 
   // Ranking anual (top 5 por resolvidos)
   const tecs = (cache.ano.tecnicos || []).slice(0, 5);
