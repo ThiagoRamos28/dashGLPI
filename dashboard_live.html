@@ -159,8 +159,6 @@
     .c3w { grid-template-columns: 2fr 1fr 1fr; }
 
     /* ── KPI CARDS ───────────────────────────────────── */
-    .kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--gap); flex-shrink: 0; }
-
     .kpi {
       background: var(--s1);
       border: 1px solid var(--border);
@@ -272,13 +270,43 @@
 
     footer { text-align: center; font-size: 10px; color: var(--dim); padding: 5px; flex-shrink: 0; letter-spacing: .4px; }
 
+    /* ── TV KPI ZONE ─────────────────────────────────────── */
+    .tv-kpi-zone {
+      flex-shrink: 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: var(--gap);
+      padding: 12px 16px;
+      background: var(--s1);
+      border-bottom: 2px solid rgba(88,166,255,0.1);
+    }
+
+    /* ── SLA ALERT STATES ────────────────────────────────── */
+    .kpi.sla-warn {
+      border: 1px solid rgba(227,179,65,0.35);
+      border-top-color: var(--orange);
+    }
+    .kpi.sla-warn .kpi-val { color: var(--orange); }
+
+    .kpi.sla-crit {
+      background: rgba(248,81,73,0.08);
+      border: 1px solid rgba(248,81,73,0.4);
+      border-top-color: var(--red);
+    }
+    .kpi.sla-crit .kpi-val {
+      color: var(--red);
+      text-shadow: 0 0 20px rgba(248,81,73,0.5);
+    }
+    .kpi.sla-crit .kpi-sub::before {
+      content: '⚠ CRÍTICO · ';
+      color: var(--red);
+    }
+
     /* ── RESPONSIVE ──────────────────────────────────── */
     @media (max-width: 1100px) {
-      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
       .c3 { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 700px) {
-      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
       .c2, .c2w, .c3, .c3w { grid-template-columns: 1fr; }
     }
   </style>
@@ -310,6 +338,35 @@
   </div>
 </header>
 
+<!-- TV KPI ZONE -->
+<div class="tv-kpi-zone">
+  <div class="kpi" id="kpi-total">
+    <div class="kpi-lbl">Total de Chamados</div>
+    <div class="kpi-val" id="k-total">—</div>
+    <div class="kpi-sub" id="k-periodo">—</div>
+  </div>
+  <div class="kpi g" id="kpi-fechados">
+    <div class="kpi-lbl">Resolvidos</div>
+    <div class="kpi-val" id="k-fechados">—</div>
+    <div class="kpi-sub">no período</div>
+  </div>
+  <div class="kpi r" id="kpi-abertos">
+    <div class="kpi-lbl">Em Aberto</div>
+    <div class="kpi-val" id="k-abertos">—</div>
+    <div class="kpi-sub">agora</div>
+  </div>
+  <div class="kpi g" id="kpi-hoje">
+    <div class="kpi-lbl">Abertos Hoje</div>
+    <div class="kpi-val" id="k-hoje">—</div>
+    <div class="kpi-sub">novos</div>
+  </div>
+  <div class="kpi o" id="kpi-sla">
+    <div class="kpi-lbl">SLA Violado</div>
+    <div class="kpi-val" id="k-slav">—</div>
+    <div class="kpi-sub" id="k-slasub">no período</div>
+  </div>
+</div>
+
 <!-- ERROR -->
 <div id="error-banner"><span>⚠</span><span id="error-msg"></span></div>
 
@@ -319,14 +376,6 @@
   <!-- S0 — VISÃO GERAL -->
   <div class="screen active" id="s0">
     <div class="screen-title">Visão Geral</div>
-    <div class="kpi-grid">
-      <div class="kpi">   <div class="kpi-lbl">Total de Chamados</div><div class="kpi-val" id="k-total">—</div><div class="kpi-sub" id="k-periodo"></div></div>
-      <div class="kpi r"> <div class="kpi-lbl">Em Aberto</div>       <div class="kpi-val" id="k-abertos">—</div><div class="kpi-sub">agora</div></div>
-      <div class="kpi g"> <div class="kpi-lbl">Resolvidos</div>      <div class="kpi-val" id="k-fechados">—</div><div class="kpi-sub">no período</div></div>
-      <div class="kpi o"> <div class="kpi-lbl">SLA Violado</div>     <div class="kpi-val" id="k-slav">—</div><div class="kpi-sub" id="k-slasub"></div></div>
-      <div class="kpi">   <div class="kpi-lbl">TMR Médio</div>       <div class="kpi-val" id="k-tmr">—</div><div class="kpi-sub">horas</div></div>
-      <div class="kpi g"> <div class="kpi-lbl">Abertos Hoje</div>    <div class="kpi-val" id="k-hoje">—</div><div class="kpi-sub">novos</div></div>
-    </div>
     <div class="row c2" style="flex:1">
       <div class="card" style="display:flex;flex-direction:column">
         <h3><span class="cdot"></span>Volume de Chamados por Mês</h3>
