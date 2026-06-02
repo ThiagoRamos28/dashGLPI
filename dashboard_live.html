@@ -607,6 +607,60 @@ function renderTela2() {
     });
   }));
 }
+
+// ── RENDER TELA 3 — DESEMPENHO DO ANO ────────────────────────
+function renderTela3() {
+  const k     = cache.ano.kpis           || {};
+  const meses = cache.ano.volume_mensal  || [];
+  const csat  = cache.ano.satisfacao     || {};
+
+  // KPIs anuais
+  setText('k3-total', fmt(k.total_chamados));
+
+  const slaAno = parseFloat(k.pct_sla);
+  setText('k3-sla', (k.pct_sla ?? '—') + '%');
+  const slaAnoEl = document.getElementById('k3-sla');
+  if (slaAnoEl && !isNaN(slaAno)) {
+    slaAnoEl.style.color = slaAno >= 90 ? 'var(--green)' : slaAno >= 75 ? 'var(--amber)' : 'var(--red)';
+  }
+
+  const notaAno = parseFloat(csat.media || 0);
+  setText('k3-csat', (csat.media ?? '—') + '★');
+
+  // Melhor mês (maior pct SLA nos dados mensais)
+  const melhor = meses.reduce((best, m) => {
+    const pct = m.sla_total > 0 ? (m.sla_ok / m.sla_total * 100) : 0;
+    return pct > (best.pct || 0) ? { ...m, pct } : best;
+  }, { pct: 0 });
+  setText('k3-melhor-val', melhor.mes
+    ? `${melhor.mes} — ${melhor.pct.toFixed(0)}% SLA · ${fmt(melhor.abertos)} chamados`
+    : 'Dados insuficientes');
+
+  // Gráfico SLA por mês (últimos 6 meses)
+  const last6 = meses.slice(-6);
+  document.getElementById('k3-chart').innerHTML = last6.map(m => {
+    const pct    = m.sla_total > 0 ? (m.sla_ok / m.sla_total * 100) : 0;
+    const isBest = m.mes === melhor.mes;
+    const lbl    = esc((m.mes || '').split('/')[0]);
+    return `
+      <div class="bar-wrap">
+        <div class="bar-col ${isBest ? 'best' : ''}" style="height:${pct.toFixed(1)}%"></div>
+        <div class="bar-lbl">${lbl}</div>
+        <div class="bar-pct ${isBest ? 'best' : ''}">${pct.toFixed(0)}</div>
+      </div>`;
+  }).join('');
+
+  // Ranking anual (top 5 por resolvidos)
+  const tecs = (cache.ano.tecnicos || []).slice(0, 5);
+  document.getElementById('k3-ranking').innerHTML = tecs.length
+    ? tecs.map((t, i) => `
+        <div class="tec-row">
+          <span class="tec-rank">${i + 1}</span>
+          <span class="tec-nome">${esc(t.nome)}</span>
+          <span class="tec-stats">${fmt(t.resolvidos)} · <span class="${slaClass(t.sla)}">${esc(t.sla ?? '—')}%</span></span>
+        </div>`).join('')
+    : '<div class="empty-state">Sem dados de técnicos</div>';
+}
 </script>
 </body>
 </html>
