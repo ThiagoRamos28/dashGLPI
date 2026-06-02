@@ -137,8 +137,8 @@
     .screen-title {
       display: flex; align-items: center; gap: 10px;
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 13px; font-weight: 700;
-      color: var(--muted); text-transform: uppercase; letter-spacing: 3px;
+      font-size: 14px; font-weight: 700;
+      color: rgba(230,237,243,0.80); text-transform: uppercase; letter-spacing: 3px;
       flex-shrink: 0;
     }
     .screen-title::before {
@@ -167,8 +167,8 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04);
     }
     .card h3 {
-      font-size: 11px; font-weight: 600;
-      color: var(--muted); text-transform: uppercase;
+      font-size: 11px; font-weight: 700;
+      color: rgba(230,237,243,0.65); text-transform: uppercase;
       letter-spacing: 1.4px; margin-bottom: 14px;
       display: flex; align-items: center; gap: 6px;
     }
@@ -205,13 +205,13 @@
     .kpi.o  { border-top-color: var(--orange); box-shadow: 0 0 30px rgba(227,179,65,0.07), 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04); }
     .kpi.o::after  { background: linear-gradient(160deg, rgba(227,179,65,0.07) 0%, transparent 55%); }
 
-    .kpi-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; position: relative; z-index: 1; }
+    .kpi-lbl { font-size: 11px; color: rgba(230,237,243,0.60); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; position: relative; z-index: 1; font-weight: 600; }
     .kpi-val {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 54px; font-weight: 800; line-height: 1;
       color: var(--text); position: relative; z-index: 1;
     }
-    .kpi-sub { font-size: 11px; margin-top: 5px; color: var(--muted); position: relative; z-index: 1; }
+    .kpi-sub { font-size: 12px; margin-top: 5px; color: rgba(230,237,243,0.50); position: relative; z-index: 1; }
 
     /* ── CHARTS ──────────────────────────────────────── */
     .chart-wrap { position: relative; }
@@ -221,27 +221,27 @@
     .tbl-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     thead th {
-      text-align: left; padding: 8px 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      color: var(--muted); font-size: 10px;
-      text-transform: uppercase; letter-spacing: 1px;
-      font-weight: 600; white-space: nowrap;
+      text-align: left; padding: 10px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      color: rgba(230,237,243,0.55); font-size: 11px;
+      text-transform: uppercase; letter-spacing: 1.2px;
+      font-weight: 700; white-space: nowrap;
     }
-    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background .2s, box-shadow .2s; }
-    tbody tr:hover { background: rgba(88,166,255,0.06); }
+    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background .2s, box-shadow .2s; }
+    tbody tr:hover { background: rgba(88,166,255,0.07); }
     tbody tr:last-child { border-bottom: none; }
-    tbody td { padding: 12px 14px; font-size: 15px; }
+    tbody td { padding: 13px 14px; font-size: 17px; }
     .rank {
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 20px; font-weight: 800; color: var(--dim); line-height: 1;
+      font-size: 26px; font-weight: 800; color: var(--dim); line-height: 1;
     }
     .rank.top1 { color: #ffd700; }
     .rank.top2 { color: #c0c0c0; }
     .rank.top3 { color: #cd7f32; }
-    .tname { font-weight: 500; }
-    .mono  { font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+    .tname { font-weight: 700; color: var(--text); }
+    .mono  { font-family: 'JetBrains Mono', monospace; font-size: 16px; }
 
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 5px; font-size: 13px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
     .b-g { background: rgba(63,185,80,0.12);  color: #3fb950; border: 1px solid rgba(63,185,80,0.2); }
     .b-y { background: rgba(227,179,65,0.12); color: #e3b341; border: 1px solid rgba(227,179,65,0.2); }
     .b-r { background: rgba(248,81,73,0.12);  color: #f85149; border: 1px solid rgba(248,81,73,0.2); }
@@ -254,18 +254,18 @@
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 92px; font-weight: 900; line-height: 1;
     }
-    .csat-stars { font-size: 22px; letter-spacing: 4px; margin-top: 8px; }
-    .csat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 8px; }
+    .csat-stars { font-size: 28px; letter-spacing: 4px; margin-top: 8px; color: var(--orange); }
+    .csat-lbl { font-size: 11px; color: rgba(230,237,243,0.60); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 10px; }
     .c-green  { color: var(--green);  text-shadow: 0 0 20px rgba(63,185,80,0.4); }
     .c-yellow { color: var(--orange); text-shadow: 0 0 20px rgba(227,179,65,0.4); }
     .c-red    { color: var(--red);    text-shadow: 0 0 20px rgba(248,81,73,0.4); }
 
-    .rating-list { display: flex; flex-direction: column; gap: 12px; padding: 4px 0; }
-    .rating-row  { display: flex; align-items: center; gap: 10px; }
-    .rating-stars { width: 70px; flex-shrink: 0; font-size: 13px; }
-    .rating-track { flex: 1; height: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; overflow: hidden; }
-    .rating-bar   { height: 100%; border-radius: 5px; transition: width .8s ease; }
-    .rating-n     { width: 28px; text-align: right; color: var(--muted); font-size: 11px; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+    .rating-list { display: flex; flex-direction: column; gap: 14px; padding: 4px 0; }
+    .rating-row  { display: flex; align-items: center; gap: 12px; }
+    .rating-stars { width: 80px; flex-shrink: 0; font-size: 16px; color: var(--orange); }
+    .rating-track { flex: 1; height: 12px; background: rgba(255,255,255,0.06); border-radius: 6px; overflow: hidden; }
+    .rating-bar   { height: 100%; border-radius: 6px; transition: width .8s ease; }
+    .rating-n     { width: 32px; text-align: right; color: rgba(230,237,243,0.70); font-size: 14px; flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-weight: 600; }
 
     .comment-list { display: flex; flex-direction: column; gap: 7px; }
     .comment-item {
@@ -276,9 +276,9 @@
       padding: 8px 12px;
       display: flex; gap: 10px; align-items: flex-start;
     }
-    .comment-nota { font-size: 13px; flex-shrink: 0; }
-    .comment-text { flex: 1; color: var(--muted); font-size: 12px; line-height: 1.5; }
-    .comment-date { font-size: 10px; color: var(--dim); flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
+    .comment-nota { font-size: 16px; flex-shrink: 0; color: var(--orange); }
+    .comment-text { flex: 1; color: rgba(230,237,243,0.72); font-size: 14px; line-height: 1.6; }
+    .comment-date { font-size: 11px; color: rgba(230,237,243,0.40); flex-shrink: 0; font-family: 'JetBrains Mono', monospace; }
 
     footer { text-align: center; font-size: 10px; color: var(--dim); padding: 5px; flex-shrink: 0; letter-spacing: .4px; }
 
@@ -344,12 +344,12 @@
     }
 
     /* ── CATEGORIAS TV ───────────────────────────────────── */
-    .cat-list { display: flex; flex-direction: column; gap: 14px; padding: 8px 0; flex: 1; justify-content: center; }
-    .cat-row  { display: grid; grid-template-columns: 200px 1fr 64px; gap: 12px; align-items: center; }
-    .cat-name { font-size: 15px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cat-track { height: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; overflow: hidden; }
+    .cat-list { display: flex; flex-direction: column; gap: 18px; padding: 8px 0; flex: 1; justify-content: center; }
+    .cat-row  { display: grid; grid-template-columns: 220px 1fr 72px; gap: 16px; align-items: center; }
+    .cat-name { font-size: 17px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cat-track { height: 14px; background: rgba(255,255,255,0.06); border-radius: 7px; overflow: hidden; }
     .cat-bar  { height: 100%; background: linear-gradient(90deg, #58a6ff, #388bfd); border-radius: 5px; transition: width .8s ease; box-shadow: 0 0 8px rgba(88,166,255,0.35); }
-    .cat-num  { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; color: var(--text); text-align: right; }
+    .cat-num  { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 800; color: var(--text); text-align: right; }
   </style>
 </head>
 <body>
@@ -482,7 +482,7 @@
         <div class="csat-num" id="csat-num">—</div>
         <div class="csat-stars" id="csat-stars">☆☆☆☆☆</div>
         <div class="csat-lbl">Nota Média · Escala 1 a 5</div>
-        <div style="margin-top:8px;font-size:13px;color:var(--muted)">
+        <div style="margin-top:10px;font-size:15px;color:rgba(230,237,243,0.60);font-weight:500">
           <span id="csat-taxa">—%</span> de resposta &nbsp;·&nbsp; <span id="csat-total">—</span> avaliações
         </div>
       </div>
@@ -525,12 +525,13 @@ let progAnim  = null;
 let progStart = null;
 
 // Dark theme defaults para Chart.js
-Chart.defaults.color       = '#7d8590';
-Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
+Chart.defaults.color       = '#b0bcc8';
+Chart.defaults.font.size   = 13;
+Chart.defaults.borderColor = 'rgba(255,255,255,0.07)';
 
-const LEG  = { position:'top', labels:{ usePointStyle:true, padding:14, font:{size:11}, color:'#7d8590' } };
-const GRD  = { color:'rgba(255,255,255,0.04)' };
-const TICK = { color:'#7d8590' };
+const LEG  = { position:'top', labels:{ usePointStyle:true, padding:18, font:{size:13, weight:'600'}, color:'#c8d3dc' } };
+const GRD  = { color:'rgba(255,255,255,0.07)' };
+const TICK = { color:'#b0bcc8', font:{size:12} };
 
 // ── LOAD DATA ────────────────────────────────────────────────
 async function loadData() {
@@ -608,11 +609,22 @@ function mkChart(id, type, data, opts) {
 }
 
 function renderVolume(m) {
+  const n = m.length;
+  const barColors = m.map((_, i) =>
+    i === n - 1 ? 'rgba(227,179,65,0.90)' : 'rgba(88,166,255,0.35)'
+  );
+  const borderColors = m.map((_, i) =>
+    i === n - 1 ? 'rgba(248,140,50,1)' : 'rgba(88,166,255,0.6)'
+  );
   mkChart('ch-volume','bar',{
     labels: m.map(r=>r.mes),
     datasets:[
-      { label:'Abertos',  data:m.map(r=>r.abertos),  backgroundColor:'rgba(88,166,255,0.55)', borderRadius:3, borderSkipped:false },
-      { label:'Fechados', data:m.map(r=>r.fechados), type:'line', borderColor:'#3fb950', backgroundColor:'rgba(63,185,80,0.08)', fill:true, tension:.4, pointRadius:3, pointBackgroundColor:'#3fb950' }
+      { label:'Abertos',  data:m.map(r=>r.abertos),
+        backgroundColor: barColors, borderColor: borderColors, borderWidth: 1,
+        borderRadius:4, borderSkipped:false },
+      { label:'Fechados', data:m.map(r=>r.fechados),
+        type:'line', borderColor:'#3fb950', backgroundColor:'rgba(63,185,80,0.10)',
+        fill:true, tension:.4, pointRadius:4, pointBackgroundColor:'#3fb950', borderWidth:2 }
     ]
   },{ plugins:{legend:LEG}, scales:{ x:{grid:GRD,ticks:TICK}, y:{grid:GRD,ticks:TICK,beginAtZero:true} } });
 }
@@ -622,8 +634,8 @@ function renderSLA(m) {
   mkChart('ch-sla','line',{
     labels: m.map(r=>r.mes),
     datasets:[
-      { label:'% SLA', data:pcts, borderColor:'#3fb950', backgroundColor:'rgba(63,185,80,0.08)', fill:true, tension:.4, pointRadius:4, pointBackgroundColor:'#3fb950' },
-      { label:'Meta 90%', data:m.map(()=>90), borderColor:'rgba(248,81,73,0.45)', borderDash:[6,4], borderWidth:1.5, pointRadius:0 }
+      { label:'% SLA', data:pcts, borderColor:'#3fb950', backgroundColor:'rgba(63,185,80,0.12)', fill:true, tension:.4, pointRadius:5, pointBackgroundColor:'#3fb950', borderWidth:2.5 },
+      { label:'Meta 90%', data:m.map(()=>90), borderColor:'rgba(248,81,73,0.55)', borderDash:[6,4], borderWidth:2, pointRadius:0 }
     ]
   },{ plugins:{legend:LEG}, scales:{ x:{grid:GRD,ticks:TICK}, y:{min:50,max:100,grid:GRD,ticks:{...TICK,callback:v=>v+'%'}} } });
 }
