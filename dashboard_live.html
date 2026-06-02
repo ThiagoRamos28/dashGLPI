@@ -576,7 +576,7 @@ function renderTela2() {
     ? criticos.map(c => {
         const cls   = c.sla_violado == 1 ? 'sla-viol' : '';
         const tempo = fmtH(c.horas_aberto);
-        const titulo = esc(c.titulo || 'Sem título').substring(0, 60);
+        const titulo = esc((c.titulo || 'Sem título').substring(0, 60));
         return `
           <div class="alert-row ${cls}">
             <span class="alert-id">#${esc(String(c.id))}</span>
@@ -601,11 +601,11 @@ function renderTela2() {
     : '<div class="empty-state">Sem categorias no período</div>';
 
   // Animar barras após render
-  requestAnimationFrame(() => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
     document.querySelectorAll('#s2-cats .cat-bar-fill').forEach(el => {
       el.style.width = el.dataset.w || '0%';
     });
-  });
+  }));
 }
 </script>
 </body>
