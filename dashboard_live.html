@@ -715,6 +715,7 @@ function startProgress() {
 
 function startRotation() {
   clearInterval(rotTimer);
+  currentScreen = 0;
   showScreen(0);
   rotTimer = setInterval(nextScreen, SCREEN_TIME);
 }
