@@ -91,44 +91,7 @@
     .h-title { font-family: 'Barlow Condensed', sans-serif; font-size: 19px; font-weight: 700; letter-spacing: .3px; }
     .h-sub   { font-size: 10px; color: var(--muted); letter-spacing: .8px; text-transform: uppercase; margin-top: 1px; }
 
-    .sep { width: 1px; height: 22px; background: var(--border); flex-shrink: 0; }
-
-    .h-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .f-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; white-space: nowrap; }
-    .f-select {
-      padding: 5px 10px;
-      background: var(--s2); border: 1px solid var(--border);
-      border-radius: 6px; color: var(--text);
-      font-size: 12px; font-family: 'DM Sans', sans-serif;
-      cursor: pointer; outline: none; transition: border-color .2s;
-    }
-    .f-select:hover, .f-select:focus { border-color: rgba(88,166,255,0.4); }
-    .f-select option { background: var(--s1); }
-
     .h-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-
-    .nav-dots { display: flex; gap: 6px; align-items: center; }
-    .dot-btn {
-      width: 8px; height: 8px; border-radius: 4px;
-      background: var(--dim); border: none; cursor: pointer;
-      transition: all .3s ease;
-    }
-    .dot-btn.active { background: var(--accent); width: 22px; box-shadow: 0 0 8px rgba(88,166,255,0.6); }
-
-    .screen-badge {
-      font-size: 11px; color: var(--muted);
-      background: var(--s2); border: 1px solid var(--border);
-      border-radius: 4px; padding: 3px 9px;
-      white-space: nowrap; font-family: 'DM Sans', sans-serif;
-    }
-
-    .btn-ctrl {
-      background: var(--s2); border: 1px solid var(--border);
-      color: var(--muted); padding: 5px 11px; border-radius: 6px;
-      font-size: 12px; cursor: pointer; transition: all .2s;
-      white-space: nowrap; font-family: 'DM Sans', sans-serif;
-    }
-    .btn-ctrl:hover { border-color: rgba(88,166,255,0.4); color: var(--text); }
 
     .status-row { display: flex; align-items: center; gap: 6px; }
     .sdot { width: 6px; height: 6px; border-radius: 50%; background: var(--dim); flex-shrink: 0; }
@@ -317,7 +280,6 @@
     @media (max-width: 700px) {
       .kpi-grid { grid-template-columns: repeat(2, 1fr); }
       .c2, .c2w, .c3, .c3w { grid-template-columns: 1fr; }
-      .h-filters { display: none; }
     }
   </style>
 </head>
@@ -339,34 +301,11 @@
         <div class="h-sub">Central de chamados · tempo real</div>
       </div>
     </div>
-    <div class="sep"></div>
-    <div class="h-filters">
-      <span class="f-label">Categoria</span>
-      <select id="f-categoria" class="f-select" onchange="loadData()">
-        <option value="0">Todas</option>
-      </select>
-      <span class="f-label">Período</span>
-      <select id="f-periodo" class="f-select" onchange="loadData()">
-        <option value="12">12 meses</option>
-        <option value="6">6 meses</option>
-        <option value="3">3 meses</option>
-        <option value="1">1 mês</option>
-      </select>
-    </div>
   </div>
   <div class="h-right">
-    <div class="nav-dots">
-      <button class="dot-btn active" onclick="goTo(0)" title="Visão Geral"></button>
-      <button class="dot-btn"        onclick="goTo(1)" title="Distribuição"></button>
-      <button class="dot-btn"        onclick="goTo(2)" title="Equipe"></button>
-      <button class="dot-btn"        onclick="goTo(3)" title="Satisfação"></button>
-    </div>
-    <span class="screen-badge" id="screen-label">Visão Geral</span>
-    <div class="sep"></div>
-    <button class="btn-ctrl" onclick="loadData()">↻ Atualizar</button>
     <div class="status-row">
       <div class="sdot" id="sdot"></div>
-      <span id="stxt">—</span>
+      <span id="stxt" style="font-size:11px;color:var(--muted)">—</span>
     </div>
   </div>
 </header>
@@ -670,10 +609,8 @@ function fmt(v)   { return v!=null ? (+v).toLocaleString('pt-BR') : '—'; }
 // ── ROTAÇÃO ──────────────────────────────────────────────────
 function goTo(n) {
   document.getElementById('s'+current).classList.remove('active');
-  document.querySelectorAll('.dot-btn')[current].classList.remove('active');
   current = n;
   document.getElementById('s'+current).classList.add('active');
-  document.querySelectorAll('.dot-btn')[current].classList.add('active');
   setTimeout(() => Object.values(charts).forEach(c => c.resize()), 80);
   if (!paused) restartProgress();
 }
