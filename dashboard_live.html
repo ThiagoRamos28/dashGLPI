@@ -518,6 +518,51 @@ function setHtml(id, val) {
   const el = document.getElementById(id);
   if (el) el.innerHTML = val ?? '';
 }
+
+// ── RENDER TELA 1 — MÊS ATUAL ────────────────────────────────
+function renderTela1() {
+  const k  = cache.mes.kpis     || {};
+  const kp = cache.anterior.kpis || {};
+
+  // SLA
+  const sla = parseFloat(k.pct_sla);
+  setText('k1-sla-val', (k.pct_sla ?? '—') + '%');
+  setHtml('k1-sla-delta', fmtDelta(calcDelta(k.pct_sla, kp.pct_sla)));
+  const slaEl = document.getElementById('k1-sla-val');
+  if (slaEl) slaEl.style.color = sla >= 90 ? 'var(--green)' : sla >= 75 ? 'var(--amber)' : 'var(--red)';
+  const barEl = document.getElementById('k1-sla-bar');
+  if (barEl) { barEl.style.width = '0%'; requestAnimationFrame(() => { barEl.style.width = (sla || 0) + '%'; }); }
+
+  // Resolvidos
+  setText('k1-res-val', fmt(k.fechados));
+  setHtml('k1-res-delta', fmtDelta(calcDelta(k.fechados, kp.fechados)));
+
+  // TMR (menor = melhor → inverse: true)
+  setText('k1-tmr-val', fmtH(k.tmr_horas));
+  setHtml('k1-tmr-delta', fmtDelta(calcDelta(k.tmr_horas, kp.tmr_horas), true));
+
+  // Em aberto
+  setText('k1-aberto-val', fmt(k.em_aberto));
+  setText('k1-aberto-sub', (k.abertos_hoje ?? 0) + ' abertos hoje');
+
+  // CSAT
+  const csat  = cache.mes.satisfacao || {};
+  const nota  = parseFloat(csat.media || 0);
+  const stars = '★'.repeat(Math.max(0, Math.min(5, Math.round(nota)))) +
+                '☆'.repeat(5 - Math.max(0, Math.min(5, Math.round(nota))));
+  setText('k1-csat-val', (csat.media ?? '—') + ' ' + stars);
+  setText('k1-csat-sub', fmt(csat.respondidas) + ' avaliações no mês');
+
+  // Top técnicos
+  const tecs = (cache.mes.tecnicos || []).slice(0, 3);
+  document.getElementById('k1-tec-list').innerHTML = tecs.length
+    ? tecs.map(t => `
+        <div class="tec-row">
+          <span class="tec-nome">${t.nome}</span>
+          <span class="tec-stats">${fmt(t.resolvidos)} · <span class="${slaClass(t.sla)}">${t.sla ?? '—'}%</span></span>
+        </div>`).join('')
+    : '<div class="empty-state">Sem dados de técnicos</div>';
+}
 </script>
 </body>
 </html>
