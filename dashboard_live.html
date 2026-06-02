@@ -409,7 +409,109 @@
 </div>
 
 <script>
-// JS adicionado nas Tasks 3–7
+// ── CONFIGURAÇÃO ──────────────────────────────────────────────
+const API_URL      = '/dashboard/api.php';
+const CATEGORIA_ID = 0;       // Preencher com ID da categoria Tecnologia no GLPI
+const SCREEN_TIME  = 45000;   // 45s por tela
+const REFRESH_TIME = 300000;  // 5min entre re-fetches
+
+const MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                  'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MESES_SHORT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+// ── HELPERS ───────────────────────────────────────────────────
+function fmt(n) {
+  return n == null ? '—' : Number(n).toLocaleString('pt-BR');
+}
+
+function fmtH(h) {
+  if (h == null || h === '') return '—';
+  const hh = parseFloat(h);
+  if (hh < 24) return hh.toFixed(1) + 'h';
+  const d = Math.floor(hh / 24), r = Math.round(hh % 24);
+  return r > 0 ? `${d}d ${r}h` : `${d}d`;
+}
+
+function calcDelta(curr, prev) {
+  if (prev == null || curr == null || parseFloat(prev) === 0) return null;
+  return ((parseFloat(curr) - parseFloat(prev)) / parseFloat(prev)) * 100;
+}
+
+function fmtDelta(delta, inverse = false) {
+  if (delta == null) return '';
+  const pct   = Math.abs(delta).toFixed(1);
+  const good  = inverse ? delta < 0 : delta > 0;
+  const arrow = delta > 0 ? '▲ +' : '▼ −';
+  const cls   = good ? 'delta-good' : 'delta-bad';
+  return `<span class="${cls}">${arrow}${pct}%</span>`;
+}
+
+function slaClass(pct) {
+  const n = parseFloat(pct);
+  if (n >= 90) return 'sla-good';
+  if (n >= 75) return 'sla-warn';
+  return 'sla-bad';
+}
+
+// ── UTILITÁRIOS DE DATA ───────────────────────────────────────
+function toYMD(d) { return d.toISOString().split('T')[0]; }
+
+function firstDayOfMonth(d)     { return toYMD(new Date(d.getFullYear(), d.getMonth(), 1)); }
+function lastDayOfPrevMonth(d)  { return toYMD(new Date(d.getFullYear(), d.getMonth(), 0)); }
+function firstDayOfPrevMonth(d) { return toYMD(new Date(d.getFullYear(), d.getMonth() - 1, 1)); }
+function firstDayOfYear(d)      { return toYMD(new Date(d.getFullYear(), 0, 1)); }
+
+// ── CACHE DE DADOS ────────────────────────────────────────────
+let cache = { mes: null, anterior: null, ano: null };
+
+// ── FETCH ─────────────────────────────────────────────────────
+async function fetchAll() {
+  setStatus('loading', 'Atualizando...');
+  const hoje = new Date();
+  const cat  = CATEGORIA_ID;
+
+  function buildUrl(inicio, fim) {
+    return `${API_URL}?${new URLSearchParams({
+      data_inicio: inicio,
+      data_fim: fim,
+      categoria: cat,
+      _: Date.now(),
+    })}`;
+  }
+
+  try {
+    const [mes, anterior, ano] = await Promise.all([
+      fetch(buildUrl(firstDayOfMonth(hoje), toYMD(hoje))).then(r => r.json()),
+      fetch(buildUrl(firstDayOfPrevMonth(hoje), lastDayOfPrevMonth(hoje))).then(r => r.json()),
+      fetch(buildUrl(firstDayOfYear(hoje), toYMD(hoje))).then(r => r.json()),
+    ]);
+
+    if (mes.erro || anterior.erro || ano.erro) throw new Error(mes.erro || 'Erro na API');
+
+    cache = { mes, anterior, ano };
+    renderAll();
+    setStatus('ok', 'Atualizado às ' + mes.gerado_em.split(' ')[1]);
+    document.getElementById('overlay').classList.add('hidden');
+  } catch (e) {
+    setStatus('err', 'Erro na conexão');
+    document.getElementById('overlay').classList.add('hidden');
+  }
+}
+
+function setStatus(type, txt = '') {
+  document.getElementById('status-dot').className = 'status-dot ' + type;
+  if (txt) document.getElementById('status-txt').textContent = txt;
+}
+
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val ?? '—';
+}
+
+function setHtml(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = val ?? '';
+}
 </script>
 </body>
 </html>
