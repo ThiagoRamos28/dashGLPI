@@ -460,9 +460,7 @@ const SLA_CRIT_THRESHOLD = 15;
 
 let charts    = {};
 let tecnicos  = [];
-let sortCol   = 'total', sortDir = -1;
 let current   = 0;
-let paused    = false;
 let rotTimer  = null;
 let progAnim  = null;
 let progStart = null;
@@ -472,7 +470,6 @@ Chart.defaults.color       = '#7d8590';
 Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
 
 // Paletas para dark mode
-const C_CAT    = ['#58a6ff','#79c0ff','#388bfd','#4493f8','#1f6feb','#6cb6ff','#2188ff','#cae8ff'];
 
 const LEG  = { position:'top', labels:{ usePointStyle:true, padding:14, font:{size:11}, color:'#7d8590' } };
 const GRD  = { color:'rgba(255,255,255,0.04)' };
@@ -480,11 +477,9 @@ const TICK = { color:'#7d8590' };
 
 // ── LOAD DATA ────────────────────────────────────────────────
 async function loadData() {
-  const meses      = 12;
-  const categoria  = 0;
   setStatus('loading', 'Carregando...');
   try {
-    const res = await fetch(`${API_URL}?meses=${meses}&categoria=${categoria}&_=${Date.now()}`);
+    const res = await fetch(`${API_URL}?meses=12&_=${Date.now()}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const d = await res.json();
     if (d.erro) throw new Error(d.erro);
@@ -527,12 +522,23 @@ function renderKPIs(d) {
   const k = d.kpis, m = d.volume_mensal;
   const ini = m.length ? m[0].mes : '', fim = m.length ? m[m.length-1].mes : '';
   document.getElementById('k-total').textContent    = fmt(k.total_chamados);
-  document.getElementById('k-abertos').textContent  = fmt(k.em_aberto);
   document.getElementById('k-fechados').textContent = fmt(k.fechados);
-  document.getElementById('k-slav').textContent     = fmt(k.sla_violado);
+  document.getElementById('k-abertos').textContent  = fmt(k.em_aberto);
   document.getElementById('k-hoje').textContent     = fmt(k.abertos_hoje);
+  document.getElementById('k-slav').textContent     = fmt(k.sla_violado);
   document.getElementById('k-periodo').textContent  = `${ini} – ${fim}`;
   document.getElementById('k-slasub').textContent   = `${k.pct_sla ?? '—'}% cumprido`;
+  updateSLAAlert(k.sla_violado ?? 0);
+}
+
+function updateSLAAlert(n) {
+  const card = document.getElementById('kpi-sla');
+  card.classList.remove('sla-warn', 'sla-crit');
+  if (n > SLA_CRIT_THRESHOLD) {
+    card.classList.add('sla-crit');
+  } else if (n > SLA_WARN_THRESHOLD) {
+    card.classList.add('sla-warn');
+  }
 }
 
 // ── CHARTS ───────────────────────────────────────────────────
@@ -578,30 +584,24 @@ function renderCategorias(data) {
 }
 
 // ── TÉCNICOS ─────────────────────────────────────────────────
-function sortBy(col) {
-  if(sortCol===col) sortDir*=-1; else { sortCol=col; sortDir=-1; }
-  renderTecnicos();
-}
-
 function renderTecnicos() {
-  const rows = [...tecnicos].sort((a,b) => {
-    if(sortCol==='nome') return sortDir * a.nome.localeCompare(b.nome);
-    return sortDir * ((b[sortCol]??0) - (a[sortCol]??0));
-  });
-  const maxT = Math.max(...rows.map(r=>r.total||0), 1);
-  document.getElementById('tbl-body').innerHTML = rows.map((t,i) => {
-    const bc  = t.sla>=95?'b-g':t.sla>=80?'b-y':'b-r';
-    const pc  = t.sla>=95?'#3fb950':t.sla>=80?'#e3b341':'#f85149';
-    const pct = Math.round((t.total/maxT)*100);
-    const rc  = i===0?'rank top1':i===1?'rank top2':i===2?'rank top3':'rank';
+  const rows = [...tecnicos]
+    .sort((a, b) => (b.resolvidos ?? 0) - (a.resolvidos ?? 0))
+    .slice(0, 10);
+  const maxT = Math.max(...rows.map(r => r.total || 0), 1);
+  document.getElementById('tbl-body').innerHTML = rows.map((t, i) => {
+    const bc  = t.sla >= 90 ? 'b-g' : t.sla >= 75 ? 'b-y' : 'b-r';
+    const pc  = t.sla >= 90 ? '#3fb950' : t.sla >= 75 ? '#e3b341' : '#f85149';
+    const pct = Math.round((t.total / maxT) * 100);
+    const rc  = i === 0 ? 'rank top1' : i === 1 ? 'rank top2' : i === 2 ? 'rank top3' : 'rank';
     return `<tr>
-      <td><span class="${rc}">${i+1}</span></td>
+      <td><span class="${rc}">${i + 1}</span></td>
       <td class="tname">${t.nome}</td>
       <td class="mono">${fmt(t.total)}</td>
       <td class="mono" style="color:var(--green)">${fmt(t.resolvidos)}</td>
       <td class="mono" style="color:var(--red)">${fmt(t.abertos)}</td>
-      <td><span class="badge ${bc}">${t.sla??'—'}%</span></td>
-      <td class="mono">${t.tmr??'—'}h</td>
+      <td><span class="badge ${bc}">${t.sla ?? '—'}%</span></td>
+      <td class="mono">${t.tmr ?? '—'}h</td>
       <td style="min-width:90px"><div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${pc}"></div></div></td>
     </tr>`;
   }).join('');
@@ -647,11 +647,11 @@ function fmt(v)   { return v!=null ? (+v).toLocaleString('pt-BR') : '—'; }
 
 // ── ROTAÇÃO ──────────────────────────────────────────────────
 function goTo(n) {
-  document.getElementById('s'+current).classList.remove('active');
+  document.getElementById('s' + current).classList.remove('active');
   current = n;
-  document.getElementById('s'+current).classList.add('active');
+  document.getElementById('s' + current).classList.add('active');
   setTimeout(() => Object.values(charts).forEach(c => c.resize()), 80);
-  if (!paused) restartProgress();
+  restartProgress();
 }
 
 function nextScreen() { goTo((current+1)%4); }
@@ -678,11 +678,11 @@ function restartProgress() {
 // ── INIT ─────────────────────────────────────────────────────
 loadData();
 startRotation();
-setInterval(loadData, 5*60*1000);
+setInterval(loadData, 5 * 60 * 1000);
 
 document.addEventListener('keydown', e => {
-  if (e.key==='ArrowRight') { clearInterval(rotTimer); nextScreen();          if(!paused) startRotation(); }
-  if (e.key==='ArrowLeft')  { clearInterval(rotTimer); goTo((current+3)%4);  if(!paused) startRotation(); }
+  if (e.key === 'ArrowRight') { clearInterval(rotTimer); nextScreen(); startRotation(); }
+  if (e.key === 'ArrowLeft')  { clearInterval(rotTimer); goTo((current + 3) % 4); startRotation(); }
 });
 </script>
 </body>
