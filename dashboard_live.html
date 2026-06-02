@@ -544,7 +544,6 @@ function renderKPIs(d) {
   document.getElementById('k-abertos').textContent  = fmt(k.em_aberto);
   document.getElementById('k-fechados').textContent = fmt(k.fechados);
   document.getElementById('k-slav').textContent     = fmt(k.sla_violado);
-  document.getElementById('k-tmr').textContent      = k.tmr_horas ?? '—';
   document.getElementById('k-hoje').textContent     = fmt(k.abertos_hoje);
   document.getElementById('k-periodo').textContent  = `${ini} – ${fim}`;
   document.getElementById('k-slasub').textContent   = `${k.pct_sla ?? '—'}% cumprido`;
