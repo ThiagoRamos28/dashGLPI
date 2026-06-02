@@ -205,7 +205,7 @@
     tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background .15s; }
     tbody tr:hover { background: rgba(88,166,255,0.04); }
     tbody tr:last-child { border-bottom: none; }
-    tbody td { padding: 10px 12px; font-size: 13px; }
+    tbody td { padding: 12px 14px; font-size: 15px; }
     .rank {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 20px; font-weight: 800; color: var(--dim); line-height: 1;
@@ -214,7 +214,7 @@
     .rank.top2 { color: #c0c0c0; }
     .rank.top3 { color: #cd7f32; }
     .tname { font-weight: 500; }
-    .mono  { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+    .mono  { font-family: 'JetBrains Mono', monospace; font-size: 14px; }
 
     .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
     .b-g { background: rgba(63,185,80,0.12);  color: #3fb950; border: 1px solid rgba(63,185,80,0.2); }
@@ -225,11 +225,6 @@
     .prog-fill { height: 100%; border-radius: 2px; }
 
     /* ── CSAT ────────────────────────────────────────── */
-    .csat-hero {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 20px; text-align: center; gap: 2px;
-    }
     .csat-num {
       font-family: 'Barlow Condensed', sans-serif;
       font-size: 92px; font-weight: 900; line-height: 1;
@@ -239,14 +234,6 @@
     .c-green  { color: var(--green);  text-shadow: 0 0 20px rgba(63,185,80,0.4); }
     .c-yellow { color: var(--orange); text-shadow: 0 0 20px rgba(227,179,65,0.4); }
     .c-red    { color: var(--red);    text-shadow: 0 0 20px rgba(248,81,73,0.4); }
-
-    .kpi-stat {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 16px; text-align: center; gap: 4px;
-    }
-    .kpi-stat .val { font-family: 'Barlow Condensed', sans-serif; font-size: 46px; font-weight: 800; color: var(--accent); }
-    .kpi-stat .lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
 
     .rating-list { display: flex; flex-direction: column; gap: 12px; padding: 4px 0; }
     .rating-row  { display: flex; align-items: center; gap: 10px; }
@@ -309,6 +296,14 @@
     @media (max-width: 700px) {
       .c2, .c2w, .c3, .c3w { grid-template-columns: 1fr; }
     }
+
+    /* ── CATEGORIAS TV ───────────────────────────────────── */
+    .cat-list { display: flex; flex-direction: column; gap: 14px; padding: 8px 0; flex: 1; justify-content: center; }
+    .cat-row  { display: grid; grid-template-columns: 200px 1fr 64px; gap: 12px; align-items: center; }
+    .cat-name { font-size: 15px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cat-track { height: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; overflow: hidden; }
+    .cat-bar  { height: 100%; background: linear-gradient(90deg, #58a6ff, #388bfd); border-radius: 5px; transition: width .8s ease; }
+    .cat-num  { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; color: var(--text); text-align: right; }
   </style>
 </head>
 <body>
@@ -571,7 +566,15 @@ function renderSLA(m) {
 }
 
 function renderCategorias(data) {
-  // replaced in Task 7 with CSS bar implementation
+  const maxVal = Math.max(...data.map(d => d.total), 1);
+  document.getElementById('cat-list').innerHTML = data.slice(0, 8).map(d => {
+    const pct = Math.round((d.total / maxVal) * 100);
+    return `<div class="cat-row">
+      <span class="cat-name">${esc(d.cat)}</span>
+      <div class="cat-track"><div class="cat-bar" style="width:${pct}%"></div></div>
+      <span class="cat-num">${fmt(d.total)}</span>
+    </div>`;
+  }).join('');
 }
 
 // ── TÉCNICOS ─────────────────────────────────────────────────
