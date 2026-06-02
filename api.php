@@ -280,7 +280,7 @@ $comentarios = query($pdo, "
 $categorias = query($pdo, "
     SELECT ic.id, ic.name, ic.completename, ic.level
     FROM glpi_itilcategories ic
-    WHERE ic.level <= 2
+    WHERE ic.level = 1
       AND ic.id IN (
           SELECT DISTINCT t.itilcategories_id
           FROM glpi_tickets t

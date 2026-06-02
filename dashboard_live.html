@@ -693,9 +693,17 @@ function renderAll(d) {
 }
 
 // ── KPIs ─────────────────────────────────────────────────────
+function fmtMonthLabel(s) {
+  if (!s) return '—';
+  const [y, m] = s.split('-');
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return (meses[parseInt(m, 10) - 1] || '?') + '/' + y.slice(2);
+}
+
 function renderKPIs(d) {
-  const k = d.kpis, m = d.volume_mensal;
-  const ini = m.length ? m[0].mes : '', fim = m.length ? m[m.length-1].mes : '';
+  const k = d.kpis;
+  const ini = fmtMonthLabel(d.data_inicio);
+  const fim = fmtMonthLabel(d.data_fim);
   document.getElementById('k-total').textContent    = fmt(k.total_chamados);
   document.getElementById('k-fechados').textContent = fmt(k.fechados);
   document.getElementById('k-abertos').textContent  = fmt(k.em_aberto);
