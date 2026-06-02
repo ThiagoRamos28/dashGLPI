@@ -21,10 +21,23 @@ define('DB_USER', $env['DB_USER']);
 define('DB_PASS', $env['DB_PASS']);
 
 // ── Parâmetros ───────────────────────────────────────────────
-$meses    = isset($_GET['meses'])  ? (int)$_GET['meses']  : 12;
-$meses    = in_array($meses, [1, 3, 6, 12]) ? $meses : 12;
-$categoria_id = isset($_GET['categoria']) ? (int)$_GET['categoria'] : 0; // 0 = todas as categorias
-$data_inicio = date('Y-m-d', strtotime("-{$meses} months"));
+$categoria_id = isset($_GET['categoria']) ? (int)$_GET['categoria'] : 0;
+
+if (!empty($_GET['data_inicio']) && !empty($_GET['data_fim'])) {
+    // Período customizado via data_inicio + data_fim
+    $data_inicio = preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['data_inicio'])
+        ? $_GET['data_inicio'] : date('Y-m-d', strtotime('-12 months'));
+    $data_fim    = preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['data_fim'])
+        ? $_GET['data_fim']    : date('Y-m-d');
+    if ($data_fim < $data_inicio) { [$data_inicio, $data_fim] = [$data_fim, $data_inicio]; }
+    $meses = null;
+} else {
+    // Fallback: ?meses=1|3|6|12
+    $meses       = isset($_GET['meses']) ? (int)$_GET['meses'] : 12;
+    $meses       = in_array($meses, [1, 3, 6, 12]) ? $meses : 12;
+    $data_inicio = date('Y-m-d', strtotime("-{$meses} months"));
+    $data_fim    = date('Y-m-d');
+}
 
 // ── Conexão ─────────────────────────────────────────────────
 try {
@@ -62,7 +75,7 @@ function cf(int $c): string {
 
 
 $gf = cf($categoria_id);
-$p  = [':data_inicio' => $data_inicio];
+$p  = [':data_inicio' => $data_inicio, ':data_fim' => $data_fim];
 
 // ============================================================
 // 1. KPIs GERAIS
@@ -85,7 +98,7 @@ $kpis = query($pdo, "
             / NULLIF(SUM(CASE WHEN t.time_to_resolve IS NOT NULL
                               AND t.solvedate IS NOT NULL THEN 1 ELSE 0 END), 0), 1) AS pct_sla
     FROM glpi_tickets t
-    WHERE t.is_deleted = 0 AND t.date >= :data_inicio $gf
+    WHERE t.is_deleted = 0 AND t.date >= :data_inicio AND t.date <= :data_fim $gf
 ", $p);
 
 // ============================================================
@@ -102,7 +115,7 @@ $volume_mensal = query($pdo, "
         SUM(CASE WHEN t.time_to_resolve IS NOT NULL
                   AND t.solvedate IS NOT NULL THEN 1 ELSE 0 END)             AS sla_total
     FROM glpi_tickets t
-    WHERE t.is_deleted = 0 AND t.date >= :data_inicio $gf
+    WHERE t.is_deleted = 0 AND t.date >= :data_inicio AND t.date <= :data_fim $gf
     GROUP BY DATE_FORMAT(t.date, '%Y-%m'), DATE_FORMAT(t.date, '%b/%y')
     ORDER BY mes_ordem
 ", $p);
@@ -123,7 +136,7 @@ $por_status = query($pdo, "
         END AS label,
         COUNT(*) AS valor
     FROM glpi_tickets t
-    WHERE t.is_deleted = 0 AND t.date >= :data_inicio $gf
+    WHERE t.is_deleted = 0 AND t.date >= :data_inicio AND t.date <= :data_fim $gf
     GROUP BY t.status
     ORDER BY t.status
 ", $p);
@@ -145,7 +158,7 @@ $por_prioridade = query($pdo, "
         t.priority AS ordem,
         COUNT(*) AS valor
     FROM glpi_tickets t
-    WHERE t.is_deleted = 0 AND t.date >= :data_inicio $gf
+    WHERE t.is_deleted = 0 AND t.date >= :data_inicio AND t.date <= :data_fim $gf
     GROUP BY t.priority
     ORDER BY t.priority
 ", $p);
@@ -158,7 +171,7 @@ $por_tipo = query($pdo, "
         CASE t.type WHEN 1 THEN 'Incidente' WHEN 2 THEN 'Requisição' ELSE 'Outro' END AS label,
         COUNT(*) AS valor
     FROM glpi_tickets t
-    WHERE t.is_deleted = 0 AND t.date >= :data_inicio $gf
+    WHERE t.is_deleted = 0 AND t.date >= :data_inicio AND t.date <= :data_fim $gf
     GROUP BY t.type
 ", $p);
 
@@ -171,7 +184,7 @@ $top_categorias = query($pdo, "
         COUNT(t.id)                         AS total
     FROM glpi_tickets t
     LEFT JOIN glpi_itilcategories ic ON ic.id = t.itilcategories_id
-    WHERE t.is_deleted = 0 AND t.date >= :data_inicio $gf
+    WHERE t.is_deleted = 0 AND t.date >= :data_inicio AND t.date <= :data_fim $gf
     GROUP BY ic.id, ic.name
     ORDER BY total DESC
     LIMIT 8
@@ -190,7 +203,7 @@ $tmr_prioridade = query($pdo, "
         ROUND(AVG(TIMESTAMPDIFF(MINUTE, t.date, t.solvedate)) / 60.0, 1) AS tmr
     FROM glpi_tickets t
     WHERE t.is_deleted = 0 AND t.status IN (5,6) AND t.solvedate IS NOT NULL
-      AND t.date >= :data_inicio $gf
+      AND t.date >= :data_inicio AND t.date <= :data_fim $gf
     GROUP BY t.priority
     ORDER BY t.priority
 ", $p);
@@ -214,7 +227,7 @@ $tecnicos = query($pdo, "
     FROM glpi_tickets t
     INNER JOIN glpi_tickets_users tu ON tu.tickets_id = t.id AND tu.type = 2
     INNER JOIN glpi_users u ON u.id = tu.users_id
-    WHERE t.is_deleted = 0 AND t.date >= :data_inicio AND u.is_deleted = 0 $gf
+    WHERE t.is_deleted = 0 AND t.date >= :data_inicio AND t.date <= :data_fim AND u.is_deleted = 0 $gf
     GROUP BY u.id, u.firstname, u.realname
     HAVING total >= 3
     ORDER BY total DESC
@@ -238,7 +251,8 @@ $satisfacao = query($pdo, "
         ROUND(100.0 * SUM(CASE WHEN ts.date_answered IS NOT NULL THEN 1 ELSE 0 END)
             / NULLIF(COUNT(*), 0), 1)                                                   AS taxa_resposta
     FROM glpi_ticketsatisfactions ts
-    INNER JOIN glpi_tickets t ON t.id = ts.tickets_id AND t.is_deleted = 0 AND t.date >= :data_inicio
+    INNER JOIN glpi_tickets t ON t.id = ts.tickets_id AND t.is_deleted = 0
+        AND t.date >= :data_inicio AND t.date <= :data_fim
     WHERE 1=1 $gf
 ", $p);
 
@@ -251,7 +265,8 @@ $comentarios = query($pdo, "
         ts.comment,
         DATE_FORMAT(ts.date_answered, '%d/%m/%Y') AS data
     FROM glpi_ticketsatisfactions ts
-    INNER JOIN glpi_tickets t ON t.id = ts.tickets_id AND t.is_deleted = 0 AND t.date >= :data_inicio
+    INNER JOIN glpi_tickets t ON t.id = ts.tickets_id AND t.is_deleted = 0
+        AND t.date >= :data_inicio AND t.date <= :data_fim
     WHERE ts.date_answered IS NOT NULL
       AND ts.comment IS NOT NULL AND ts.comment != ''
       $gf
@@ -260,13 +275,21 @@ $comentarios = query($pdo, "
 ", $p);
 
 // ============================================================
-// 11. LISTA DE CATEGORIAS DISPONÍVEIS
+// 11. CATEGORIAS PRINCIPAIS (nível 1 ou 2 com tickets no período)
 // ============================================================
 $categorias = query($pdo, "
-    SELECT id, name, completename, level
-    FROM glpi_itilcategories
-    ORDER BY completename
-");
+    SELECT ic.id, ic.name, ic.completename, ic.level
+    FROM glpi_itilcategories ic
+    WHERE ic.level <= 2
+      AND ic.id IN (
+          SELECT DISTINCT t.itilcategories_id
+          FROM glpi_tickets t
+          WHERE t.is_deleted = 0
+            AND t.date >= :data_inicio AND t.date <= :data_fim
+            AND t.itilcategories_id > 0
+      )
+    ORDER BY ic.level, ic.name
+", $p);
 
 // ============================================================
 // RESPOSTA JSON
@@ -276,6 +299,7 @@ echo json_encode([
     'periodo_meses'  => $meses,
     'categoria_id'   => $categoria_id,
     'data_inicio'    => $data_inicio,
+    'data_fim'       => $data_fim,
     'kpis'           => $kpis[0] ?? [],
     'volume_mensal'  => $volume_mensal,
     'por_status'     => $por_status,
