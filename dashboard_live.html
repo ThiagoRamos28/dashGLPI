@@ -662,6 +662,71 @@ function renderTela3() {
         </div>`).join('')
     : '<div class="empty-state">Sem dados de técnicos</div>';
 }
+
+// ── RENDER ALL ────────────────────────────────────────────────
+function renderAll() {
+  renderTela1();
+  renderTela2();
+  renderTela3();
+}
+
+// ── ROTAÇÃO + PROGRESS BAR ───────────────────────────────────
+let currentScreen = 0;
+let rotTimer      = null;
+const SCREENS     = ['s1', 's2', 's3'];
+
+function screenTitle(idx) {
+  const hoje = new Date();
+  const mes  = MESES_PT[hoje.getMonth()];
+  const ano  = hoje.getFullYear();
+  const mesAbrev = MESES_SHORT[hoje.getMonth()];
+  const titles = [
+    `${mes} ${ano} — Mês Atual`,
+    `Radar Operacional — ${mes} ${ano}`,
+    `${ano} — Acumulado até ${mesAbrev}`,
+  ];
+  return titles[idx] || '';
+}
+
+function showScreen(idx) {
+  SCREENS.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', i === idx);
+  });
+  document.getElementById('h-title').textContent    = screenTitle(idx);
+  document.getElementById('h-indicator').textContent = `${idx + 1} / ${SCREENS.length}`;
+  startProgress();
+}
+
+function nextScreen() {
+  currentScreen = (currentScreen + 1) % SCREENS.length;
+  showScreen(currentScreen);
+}
+
+function startProgress() {
+  const fill = document.getElementById('prog-fill');
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+  requestAnimationFrame(() => {
+    fill.style.transition = `width ${SCREEN_TIME}ms linear`;
+    fill.style.width = '100%';
+  });
+}
+
+function startRotation() {
+  clearInterval(rotTimer);
+  showScreen(0);
+  rotTimer = setInterval(nextScreen, SCREEN_TIME);
+}
+
+// ── INIT ─────────────────────────────────────────────────────
+async function init() {
+  await fetchAll();
+  startRotation();
+  setInterval(fetchAll, REFRESH_TIME);
+}
+
+init();
 </script>
 </body>
 </html>
