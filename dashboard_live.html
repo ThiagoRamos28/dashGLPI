@@ -571,10 +571,7 @@ function renderSLA(m) {
 }
 
 function renderCategorias(data) {
-  mkChart('ch-cat','bar',{
-    labels: data.map(d=>d.cat),
-    datasets:[{ data:data.map(d=>d.total), backgroundColor:C_CAT.map(c=>c+'88'), borderRadius:3 }]
-  },{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{grid:GRD,ticks:TICK,beginAtZero:true}, y:{grid:{display:false},ticks:TICK} } });
+  // replaced in Task 7 with CSS bar implementation
 }
 
 // ── TÉCNICOS ─────────────────────────────────────────────────
