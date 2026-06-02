@@ -519,6 +519,10 @@ function setHtml(id, val) {
   if (el) el.innerHTML = val ?? '';
 }
 
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 // ── RENDER TELA 1 — MÊS ATUAL ────────────────────────────────
 function renderTela1() {
   const k  = cache.mes.kpis     || {};
@@ -529,7 +533,7 @@ function renderTela1() {
   setText('k1-sla-val', (k.pct_sla ?? '—') + '%');
   setHtml('k1-sla-delta', fmtDelta(calcDelta(k.pct_sla, kp.pct_sla)));
   const slaEl = document.getElementById('k1-sla-val');
-  if (slaEl) slaEl.style.color = sla >= 90 ? 'var(--green)' : sla >= 75 ? 'var(--amber)' : 'var(--red)';
+  if (slaEl && !isNaN(sla)) slaEl.style.color = sla >= 90 ? 'var(--green)' : sla >= 75 ? 'var(--amber)' : 'var(--red)';
   const barEl = document.getElementById('k1-sla-bar');
   if (barEl) { barEl.style.width = '0%'; requestAnimationFrame(() => { barEl.style.width = (sla || 0) + '%'; }); }
 
@@ -558,8 +562,8 @@ function renderTela1() {
   document.getElementById('k1-tec-list').innerHTML = tecs.length
     ? tecs.map(t => `
         <div class="tec-row">
-          <span class="tec-nome">${t.nome}</span>
-          <span class="tec-stats">${fmt(t.resolvidos)} · <span class="${slaClass(t.sla)}">${t.sla ?? '—'}%</span></span>
+          <span class="tec-nome">${esc(t.nome)}</span>
+          <span class="tec-stats">${fmt(t.resolvidos)} · <span class="${slaClass(t.sla)}">${esc(t.sla ?? '—')}%</span></span>
         </div>`).join('')
     : '<div class="empty-state">Sem dados de técnicos</div>';
 }
