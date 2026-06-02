@@ -403,28 +403,10 @@
   <!-- S1 — DISTRIBUIÇÃO -->
   <div class="screen" id="s1">
     <div class="screen-title">Distribuição de Chamados</div>
-    <div class="row c3">
-      <div class="card">
-        <h3><span class="cdot" style="background:var(--purple)"></span>Por Status</h3>
-        <div class="chart-wrap" style="height:260px"><canvas id="ch-status"></canvas></div>
-      </div>
-      <div class="card">
-        <h3><span class="cdot" style="background:var(--orange)"></span>Por Prioridade</h3>
-        <div class="chart-wrap" style="height:260px"><canvas id="ch-prio"></canvas></div>
-      </div>
-      <div class="card">
-        <h3><span class="cdot" style="background:var(--cyan)"></span>Incidente vs Requisição</h3>
-        <div class="chart-wrap" style="height:260px"><canvas id="ch-tipo"></canvas></div>
-      </div>
-    </div>
-    <div class="row c2">
+    <div class="row c1">
       <div class="card">
         <h3><span class="cdot" style="background:var(--amber)"></span>Top Categorias</h3>
         <div class="chart-wrap" style="height:220px"><canvas id="ch-cat"></canvas></div>
-      </div>
-      <div class="card">
-        <h3><span class="cdot" style="background:var(--green)"></span>TMR por Prioridade (horas)</h3>
-        <div class="chart-wrap" style="height:220px"><canvas id="ch-tmr"></canvas></div>
       </div>
     </div>
   </div>
@@ -516,11 +498,7 @@ Chart.defaults.color       = '#7d8590';
 Chart.defaults.borderColor = 'rgba(255,255,255,0.05)';
 
 // Paletas para dark mode
-const C_STATUS = ['#58a6ff','#3fb950','#e3b341','#bc8cff','#6e7681'];
-const C_PRIO   = ['#3fb950','#57ab5a','#e3b341','#ffa657','#f85149'];
-const C_TIPO   = ['#f85149','#58a6ff'];
 const C_CAT    = ['#58a6ff','#79c0ff','#388bfd','#4493f8','#1f6feb','#6cb6ff','#2188ff','#cae8ff'];
-const C_TMR    = ['#3fb950','#57ab5a','#e3b341','#ffa657','#f85149'];
 
 const LEG  = { position:'top', labels:{ usePointStyle:true, padding:14, font:{size:11}, color:'#7d8590' } };
 const GRD  = { color:'rgba(255,255,255,0.04)' };
