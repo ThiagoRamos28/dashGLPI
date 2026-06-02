@@ -363,7 +363,6 @@
     </div>
     <span class="screen-badge" id="screen-label">Visão Geral</span>
     <div class="sep"></div>
-    <button class="btn-ctrl" id="btn-pause" onclick="togglePause()">⏸ Pausar</button>
     <button class="btn-ctrl" onclick="loadData()">↻ Atualizar</button>
     <div class="status-row">
       <div class="sdot" id="sdot"></div>
@@ -498,9 +497,10 @@
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
-const API_URL      = '/dashboard/api.php';
-const SCREEN_TIME  = 60000;
-const SCREEN_NAMES = ['Visão Geral', 'Distribuição', 'Equipe', 'Satisfação'];
+const API_URL            = '/dashboard/api.php';
+const SCREEN_TIME        = 45000;
+const SLA_WARN_THRESHOLD = 5;
+const SLA_CRIT_THRESHOLD = 15;
 
 let charts    = {};
 let tecnicos  = [];
@@ -538,7 +538,6 @@ async function loadData() {
     if (d.erro) throw new Error(d.erro);
     hideError();
     document.getElementById('overlay').classList.add('hidden');
-    populateCategorias(d.categorias, d.categoria_id);
     renderAll(d);
     setStatus('ok', d.gerado_em);
     document.getElementById('dt-update').textContent = d.gerado_em;
@@ -547,19 +546,6 @@ async function loadData() {
     setStatus('err', 'Erro na conexão');
     document.getElementById('overlay').classList.add('hidden');
   }
-}
-
-function populateCategorias(categorias, cid) {
-  const sel = document.getElementById('f-categoria');
-  if (sel.options.length > 1) return;
-  categorias.forEach(c => {
-    const o = document.createElement('option');
-    o.value = c.id;
-    // Indenta subcategorias com nível
-    o.textContent = (c.level > 1 ? '　'.repeat(c.level - 1) + '└ ' : '') + c.name;
-    if (c.id == cid) o.selected = true;
-    sel.appendChild(o);
-  });
 }
 
 function setStatus(s, t) {
@@ -577,11 +563,7 @@ function renderAll(d) {
   renderKPIs(d);
   renderVolume(d.volume_mensal);
   renderSLA(d.volume_mensal);
-  renderStatus(d.por_status);
-  renderPrioridade(d.por_prioridade);
-  renderTipo(d.por_tipo);
   renderCategorias(d.top_categorias);
-  renderTMR(d.tmr_prioridade);
   tecnicos = d.tecnicos;
   renderTecnicos();
   renderSatisfacao(d.satisfacao, d.comentarios);
@@ -632,41 +614,11 @@ function renderSLA(m) {
   },{ plugins:{legend:LEG}, scales:{ x:{grid:GRD,ticks:TICK}, y:{min:50,max:100,grid:GRD,ticks:{...TICK,callback:v=>v+'%'}} } });
 }
 
-function renderStatus(data) {
-  mkChart('ch-status','doughnut',{
-    labels: data.map(d=>d.label),
-    datasets:[{ data:data.map(d=>d.valor), backgroundColor:C_STATUS, borderWidth:0, hoverBorderWidth:2, hoverBorderColor:'rgba(255,255,255,0.3)' }]
-  },{ cutout:'65%', plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:10,font:{size:11},color:'#7d8590'}}} });
-}
-
-function renderPrioridade(data) {
-  const s = [...data].sort((a,b)=>a.ordem-b.ordem);
-  mkChart('ch-prio','bar',{
-    labels: s.map(d=>d.label),
-    datasets:[{ data:s.map(d=>d.valor), backgroundColor:C_PRIO, borderRadius:3 }]
-  },{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{grid:GRD,ticks:TICK,beginAtZero:true}, y:{grid:{display:false},ticks:TICK} } });
-}
-
-function renderTipo(data) {
-  mkChart('ch-tipo','doughnut',{
-    labels: data.map(d=>d.label),
-    datasets:[{ data:data.map(d=>d.valor), backgroundColor:C_TIPO, borderWidth:0 }]
-  },{ cutout:'65%', plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:12,font:{size:12},color:'#7d8590'}}} });
-}
-
 function renderCategorias(data) {
   mkChart('ch-cat','bar',{
     labels: data.map(d=>d.cat),
     datasets:[{ data:data.map(d=>d.total), backgroundColor:C_CAT.map(c=>c+'88'), borderRadius:3 }]
   },{ indexAxis:'y', plugins:{legend:{display:false}}, scales:{ x:{grid:GRD,ticks:TICK,beginAtZero:true}, y:{grid:{display:false},ticks:TICK} } });
-}
-
-function renderTMR(data) {
-  const s = [...data].sort((a,b)=>a.ordem-b.ordem);
-  mkChart('ch-tmr','bar',{
-    labels: s.map(d=>d.label),
-    datasets:[{ label:'Horas', data:s.map(d=>d.tmr), backgroundColor:C_TMR.map(c=>c+'88'), borderRadius:3 }]
-  },{ plugins:{legend:{display:false}}, scales:{ x:{grid:{display:false},ticks:TICK}, y:{grid:GRD,ticks:{...TICK,callback:v=>v+'h'},beginAtZero:true} } });
 }
 
 // ── TÉCNICOS ─────────────────────────────────────────────────
@@ -744,7 +696,6 @@ function goTo(n) {
   current = n;
   document.getElementById('s'+current).classList.add('active');
   document.querySelectorAll('.dot-btn')[current].classList.add('active');
-  document.getElementById('screen-label').textContent = SCREEN_NAMES[current];
   setTimeout(() => Object.values(charts).forEach(c => c.resize()), 80);
   if (!paused) restartProgress();
 }
@@ -755,13 +706,6 @@ function startRotation() {
   if (rotTimer) clearInterval(rotTimer);
   rotTimer = setInterval(nextScreen, SCREEN_TIME);
   restartProgress();
-}
-
-function togglePause() {
-  paused = !paused;
-  document.getElementById('btn-pause').textContent = paused ? '▶ Retomar' : '⏸ Pausar';
-  if (paused) { clearInterval(rotTimer); rotTimer=null; cancelAnimationFrame(progAnim); }
-  else startRotation();
 }
 
 function restartProgress() {
@@ -778,12 +722,6 @@ function restartProgress() {
 }
 
 // ── INIT ─────────────────────────────────────────────────────
-(function initFromURL() {
-  const p = new URLSearchParams(window.location.search);
-  if (p.get('categoria')) document.getElementById('f-categoria').value = p.get('categoria');
-  if (p.get('meses'))     document.getElementById('f-periodo').value   = p.get('meses');
-})();
-
 loadData();
 startRotation();
 setInterval(loadData, 5*60*1000);
@@ -791,7 +729,6 @@ setInterval(loadData, 5*60*1000);
 document.addEventListener('keydown', e => {
   if (e.key==='ArrowRight') { clearInterval(rotTimer); nextScreen();          if(!paused) startRotation(); }
   if (e.key==='ArrowLeft')  { clearInterval(rotTimer); goTo((current+3)%4);  if(!paused) startRotation(); }
-  if (e.key===' ')          { e.preventDefault(); togglePause(); }
 });
 </script>
 </body>
