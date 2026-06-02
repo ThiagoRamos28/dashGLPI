@@ -36,10 +36,13 @@
       font-family: 'DM Sans', system-ui, sans-serif;
       background-color: var(--bg);
       background-image:
-        radial-gradient(ellipse 80% 50% at 15% -5%,  rgba(88,166,255,0.07) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 85% 105%, rgba(63,185,80,0.05)  0%, transparent 60%),
-        radial-gradient(circle at 50% 50%, rgba(88,166,255,0.025) 1px, transparent 1px);
-      background-size: 100% 100%, 100% 100%, 28px 28px;
+        radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.75) 100%),
+        radial-gradient(ellipse 80% 55% at 15% -5%,  rgba(88,166,255,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 45% at 85% 105%, rgba(63,185,80,0.07)  0%, transparent 55%),
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.018) 39px, rgba(255,255,255,0.018) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.018) 39px, rgba(255,255,255,0.018) 40px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      background-attachment: fixed;
       color: var(--text);
       font-size: 14px;
       display: flex;
@@ -65,12 +68,22 @@
     #overlay p { font-size: 13px; color: var(--muted); letter-spacing: .5px; }
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+    @keyframes sla-pulse-glow {
+      0%,100% { box-shadow: 0 0 20px rgba(248,81,73,0.2), 0 0 50px rgba(248,81,73,0.08); }
+      50%     { box-shadow: 0 0 40px rgba(248,81,73,0.55), 0 0 80px rgba(248,81,73,0.18); }
+    }
+    @keyframes kpi-in {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
 
     /* ── HEADER ──────────────────────────────────────── */
     header {
-      background: rgba(13,17,23,0.95);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
+      background: rgba(7,9,15,0.92);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid rgba(88,166,255,0.14);
+      box-shadow: 0 1px 0 rgba(88,166,255,0.06), 0 4px 24px rgba(0,0,0,0.5);
       padding: 9px 20px;
       flex-shrink: 0;
       display: flex; justify-content: space-between; align-items: center; gap: 16px;
@@ -114,43 +127,52 @@
     .screen {
       position: absolute; inset: 0;
       opacity: 0; pointer-events: none;
-      transition: opacity .65s ease;
+      transform: scale(0.99) translateY(5px);
+      transition: opacity .65s ease, transform .65s ease;
       overflow-y: auto; padding: var(--gap);
       display: flex; flex-direction: column; gap: var(--gap);
     }
-    .screen.active { opacity: 1; pointer-events: auto; }
+    .screen.active { opacity: 1; pointer-events: auto; transform: scale(1) translateY(0); }
 
     .screen-title {
       display: flex; align-items: center; gap: 10px;
       font-family: 'Barlow Condensed', sans-serif;
-      font-size: 11px; font-weight: 700;
-      color: var(--muted); text-transform: uppercase; letter-spacing: 2.5px;
+      font-size: 13px; font-weight: 700;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 3px;
       flex-shrink: 0;
     }
     .screen-title::before {
       content: ''; display: block;
-      width: 3px; height: 14px; border-radius: 2px;
-      background: var(--accent); box-shadow: 0 0 8px rgba(88,166,255,0.7);
+      width: 3px; height: 16px; border-radius: 2px;
+      background: var(--accent); box-shadow: 0 0 10px rgba(88,166,255,0.9);
     }
+    #s0 .screen-title::before { background: var(--accent);  box-shadow: 0 0 10px rgba(88,166,255,0.9); }
+    #s1 .screen-title::before { background: var(--amber);   box-shadow: 0 0 10px rgba(255,166,87,0.9); }
+    #s2 .screen-title::before { background: var(--cyan);    box-shadow: 0 0 10px rgba(57,211,240,0.9); }
+    #s3 .screen-title::before { background: var(--purple);  box-shadow: 0 0 10px rgba(188,140,255,0.9); }
 
     /* ── PROGRESS BAR ────────────────────────────────── */
-    .progress-track { height: 2px; background: rgba(255,255,255,0.04); flex-shrink: 0; }
-    .progress-fill  { height: 100%; background: linear-gradient(90deg, var(--accent), var(--cyan)); width: 0%; box-shadow: 0 0 8px rgba(88,166,255,0.5); }
+    .progress-track { height: 3px; background: rgba(255,255,255,0.04); flex-shrink: 0; }
+    .progress-fill  { height: 100%; background: linear-gradient(90deg, var(--accent), var(--cyan)); width: 0%; box-shadow: 0 0 12px rgba(88,166,255,0.8), 0 0 4px rgba(57,211,240,0.6); }
 
     /* ── CARD ────────────────────────────────────────── */
     .card {
-      background: var(--s1);
-      border: 1px solid var(--border);
+      background: rgba(13,17,23,0.60);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-top: 1px solid rgba(255,255,255,0.11);
       border-radius: var(--r);
       padding: 14px 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04);
     }
     .card h3 {
-      font-size: 10px; font-weight: 600;
+      font-size: 11px; font-weight: 600;
       color: var(--muted); text-transform: uppercase;
-      letter-spacing: 1.2px; margin-bottom: 14px;
+      letter-spacing: 1.4px; margin-bottom: 14px;
       display: flex; align-items: center; gap: 6px;
     }
-    .cdot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; flex-shrink: 0; }
+    .cdot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; flex-shrink: 0; box-shadow: 0 0 5px currentColor; }
 
     .row { display: grid; gap: var(--gap); }
     .c2  { grid-template-columns: 1fr 1fr; }
@@ -160,24 +182,28 @@
 
     /* ── KPI CARDS ───────────────────────────────────── */
     .kpi {
-      background: var(--s1);
-      border: 1px solid var(--border);
+      background: rgba(13,17,23,0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.07);
       border-radius: var(--r);
       padding: 16px 18px;
       position: relative; overflow: hidden;
       border-top: 2px solid var(--accent);
+      box-shadow: 0 0 30px rgba(88,166,255,0.05), 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+      transition: box-shadow .4s ease;
     }
     .kpi::after {
       content: ''; position: absolute; inset: 0;
-      background: linear-gradient(180deg, rgba(88,166,255,0.04) 0%, transparent 50%);
+      background: linear-gradient(160deg, rgba(88,166,255,0.06) 0%, transparent 55%);
       pointer-events: none;
     }
-    .kpi.g  { border-top-color: var(--green); }
-    .kpi.g::after  { background: linear-gradient(180deg, rgba(63,185,80,0.05) 0%, transparent 50%); }
-    .kpi.r  { border-top-color: var(--red); }
-    .kpi.r::after  { background: linear-gradient(180deg, rgba(248,81,73,0.05) 0%, transparent 50%); }
-    .kpi.o  { border-top-color: var(--orange); }
-    .kpi.o::after  { background: linear-gradient(180deg, rgba(227,179,65,0.05) 0%, transparent 50%); }
+    .kpi.g  { border-top-color: var(--green);  box-shadow: 0 0 30px rgba(63,185,80,0.07),  0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04); }
+    .kpi.g::after  { background: linear-gradient(160deg, rgba(63,185,80,0.07) 0%, transparent 55%); }
+    .kpi.r  { border-top-color: var(--red);    box-shadow: 0 0 30px rgba(248,81,73,0.07),  0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04); }
+    .kpi.r::after  { background: linear-gradient(160deg, rgba(248,81,73,0.07) 0%, transparent 55%); }
+    .kpi.o  { border-top-color: var(--orange); box-shadow: 0 0 30px rgba(227,179,65,0.07), 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04); }
+    .kpi.o::after  { background: linear-gradient(160deg, rgba(227,179,65,0.07) 0%, transparent 55%); }
 
     .kpi-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; position: relative; z-index: 1; }
     .kpi-val {
@@ -201,8 +227,8 @@
       text-transform: uppercase; letter-spacing: 1px;
       font-weight: 600; white-space: nowrap;
     }
-    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background .15s; }
-    tbody tr:hover { background: rgba(88,166,255,0.04); }
+    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); transition: background .2s, box-shadow .2s; }
+    tbody tr:hover { background: rgba(88,166,255,0.06); }
     tbody tr:last-child { border-bottom: none; }
     tbody td { padding: 12px 14px; font-size: 15px; }
     .rank {
@@ -263,8 +289,18 @@
       grid-template-columns: repeat(5, 1fr);
       gap: var(--gap);
       padding: 12px 16px;
-      background: var(--s1);
-      border-bottom: 2px solid rgba(88,166,255,0.1);
+      background: rgba(7,9,15,0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(88,166,255,0.12);
+      box-shadow: 0 1px 0 rgba(88,166,255,0.06), 0 8px 32px rgba(0,0,0,0.3);
+      position: relative;
+    }
+    .tv-kpi-zone::after {
+      content: '';
+      position: absolute; bottom: -1px; left: 8%; right: 8%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--cyan), transparent);
+      opacity: 0.45;
     }
 
     /* ── SLA ALERT STATES ────────────────────────────────── */
@@ -278,6 +314,7 @@
       background: rgba(248,81,73,0.08);
       border: 1px solid rgba(248,81,73,0.4);
       border-top-color: var(--red);
+      animation: sla-pulse-glow 2s ease-in-out infinite;
     }
     .kpi.sla-crit .kpi-val {
       color: var(--red);
@@ -286,6 +323,16 @@
     .kpi.sla-crit .kpi-sub::before {
       content: '⚠ CRÍTICO · ';
       color: var(--red);
+    }
+
+    /* ── REDUCED MOTION ─────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .spinner          { animation: none; }
+      .sdot.loading     { animation: none; opacity: 1; }
+      .screen           { transition: none; }
+      .cat-bar          { transition: none; }
+      .rating-bar       { transition: none; }
+      .kpi.sla-crit     { animation: none; }
     }
 
     /* ── RESPONSIVE ──────────────────────────────────── */
@@ -301,7 +348,7 @@
     .cat-row  { display: grid; grid-template-columns: 200px 1fr 64px; gap: 12px; align-items: center; }
     .cat-name { font-size: 15px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .cat-track { height: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; overflow: hidden; }
-    .cat-bar  { height: 100%; background: linear-gradient(90deg, #58a6ff, #388bfd); border-radius: 5px; transition: width .8s ease; }
+    .cat-bar  { height: 100%; background: linear-gradient(90deg, #58a6ff, #388bfd); border-radius: 5px; transition: width .8s ease; box-shadow: 0 0 8px rgba(88,166,255,0.35); }
     .cat-num  { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; color: var(--text); text-align: right; }
   </style>
 </head>
@@ -317,7 +364,13 @@
 <header>
   <div class="h-left">
     <div class="h-logo">
-      <div class="h-logo-icon">🖥</div>
+      <div class="h-logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+      </div>
       <div>
         <div class="h-title">Dashboard TI — GLPI</div>
         <div class="h-sub">Central de chamados · tempo real</div>
@@ -362,7 +415,14 @@
 </div>
 
 <!-- ERROR -->
-<div id="error-banner"><span>⚠</span><span id="error-msg"></span></div>
+<div id="error-banner">
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f8a9a5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
+    <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+    <line x1="12" y1="9" x2="12" y2="13"/>
+    <line x1="12" y1="17" x2="12.01" y2="17"/>
+  </svg>
+  <span id="error-msg"></span>
+</div>
 
 <!-- SCREENS -->
 <div class="screens-wrap">
@@ -429,11 +489,11 @@
       <div class="card" style="display:flex;flex-direction:column">
         <h3><span class="cdot" style="background:var(--orange)"></span>Distribuição de Notas</h3>
         <div class="rating-list">
-          <div class="rating-row"><span class="rating-stars">⭐⭐⭐⭐⭐</span><div class="rating-track"><div class="rating-bar" id="rb5" style="width:0%;background:var(--green)"></div></div><span class="rating-n" id="rn5">0</span></div>
-          <div class="rating-row"><span class="rating-stars">⭐⭐⭐⭐</span>  <div class="rating-track"><div class="rating-bar" id="rb4" style="width:0%;background:var(--green)"></div></div><span class="rating-n" id="rn4">0</span></div>
-          <div class="rating-row"><span class="rating-stars">⭐⭐⭐</span>    <div class="rating-track"><div class="rating-bar" id="rb3" style="width:0%;background:var(--orange)"></div></div><span class="rating-n" id="rn3">0</span></div>
-          <div class="rating-row"><span class="rating-stars">⭐⭐</span>      <div class="rating-track"><div class="rating-bar" id="rb2" style="width:0%;background:var(--amber)"></div></div><span class="rating-n" id="rn2">0</span></div>
-          <div class="rating-row"><span class="rating-stars">⭐</span>        <div class="rating-track"><div class="rating-bar" id="rb1" style="width:0%;background:var(--red)"></div></div><span class="rating-n" id="rn1">0</span></div>
+          <div class="rating-row"><span class="rating-stars">★★★★★</span><div class="rating-track"><div class="rating-bar" id="rb5" style="width:0%;background:var(--green)"></div></div><span class="rating-n" id="rn5">0</span></div>
+          <div class="rating-row"><span class="rating-stars">★★★★☆</span><div class="rating-track"><div class="rating-bar" id="rb4" style="width:0%;background:var(--green)"></div></div><span class="rating-n" id="rn4">0</span></div>
+          <div class="rating-row"><span class="rating-stars">★★★☆☆</span><div class="rating-track"><div class="rating-bar" id="rb3" style="width:0%;background:var(--orange)"></div></div><span class="rating-n" id="rn3">0</span></div>
+          <div class="rating-row"><span class="rating-stars">★★☆☆☆</span><div class="rating-track"><div class="rating-bar" id="rb2" style="width:0%;background:var(--amber)"></div></div><span class="rating-n" id="rn2">0</span></div>
+          <div class="rating-row"><span class="rating-stars">★☆☆☆☆</span><div class="rating-track"><div class="rating-bar" id="rb1" style="width:0%;background:var(--red)"></div></div><span class="rating-n" id="rn1">0</span></div>
         </div>
         <div style="margin-top:auto;padding-top:12px">
           <h3><span class="cdot" style="background:var(--green)"></span>Comentário Recente</h3>
@@ -638,7 +698,7 @@ function renderSatisfacao(s, comentarios) {
     </div>`).join('');
 }
 
-function stars(v) { const n=Math.round(parseFloat(v)||0); return '⭐'.repeat(Math.max(0,Math.min(5,n))); }
+function stars(v) { const n=Math.max(0,Math.min(5,Math.round(parseFloat(v)||0))); return '★'.repeat(n)+'☆'.repeat(5-n); }
 function esc(s)   { return s.replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function fmt(v)   { return v!=null ? (+v).toLocaleString('pt-BR') : '—'; }
 
@@ -663,6 +723,10 @@ function restartProgress() {
   cancelAnimationFrame(progAnim);
   const bar = document.getElementById('progress');
   bar.style.width = '0%';
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    bar.style.width = '100%';
+    return;
+  }
   progStart = performance.now();
   function step(now) {
     const pct = Math.min(((now-progStart)/SCREEN_TIME)*100, 100);
