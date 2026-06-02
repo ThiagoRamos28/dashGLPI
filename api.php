@@ -121,62 +121,7 @@ $volume_mensal = query($pdo, "
 ", $p);
 
 // ============================================================
-// 3. POR STATUS
-// ============================================================
-$por_status = query($pdo, "
-    SELECT
-        CASE t.status
-            WHEN 1 THEN 'Novo'
-            WHEN 2 THEN 'Em Andamento'
-            WHEN 3 THEN 'Em Andamento'
-            WHEN 4 THEN 'Em Espera'
-            WHEN 5 THEN 'Resolvido'
-            WHEN 6 THEN 'Fechado'
-            ELSE 'Outro'
-        END AS label,
-        COUNT(*) AS valor
-    FROM glpi_tickets t
-    WHERE t.is_deleted = 0 AND t.date >= :data_inicio AND t.date <= :data_fim $gf
-    GROUP BY t.status
-    ORDER BY t.status
-", $p);
-
-// ============================================================
-// 4. POR PRIORIDADE
-// ============================================================
-$por_prioridade = query($pdo, "
-    SELECT
-        CASE t.priority
-            WHEN 1 THEN 'Muito Baixa'
-            WHEN 2 THEN 'Baixa'
-            WHEN 3 THEN 'Média'
-            WHEN 4 THEN 'Alta'
-            WHEN 5 THEN 'Muito Alta'
-            WHEN 6 THEN 'Maior'
-            ELSE 'Indefinida'
-        END AS label,
-        t.priority AS ordem,
-        COUNT(*) AS valor
-    FROM glpi_tickets t
-    WHERE t.is_deleted = 0 AND t.date >= :data_inicio AND t.date <= :data_fim $gf
-    GROUP BY t.priority
-    ORDER BY t.priority
-", $p);
-
-// ============================================================
-// 5. POR TIPO
-// ============================================================
-$por_tipo = query($pdo, "
-    SELECT
-        CASE t.type WHEN 1 THEN 'Incidente' WHEN 2 THEN 'Requisição' ELSE 'Outro' END AS label,
-        COUNT(*) AS valor
-    FROM glpi_tickets t
-    WHERE t.is_deleted = 0 AND t.date >= :data_inicio AND t.date <= :data_fim $gf
-    GROUP BY t.type
-", $p);
-
-// ============================================================
-// 6. TOP CATEGORIAS
+// 3. TOP CATEGORIAS
 // ============================================================
 $top_categorias = query($pdo, "
     SELECT
@@ -191,25 +136,7 @@ $top_categorias = query($pdo, "
 ", $p);
 
 // ============================================================
-// 7. TMR POR PRIORIDADE
-// ============================================================
-$tmr_prioridade = query($pdo, "
-    SELECT
-        CASE t.priority
-            WHEN 1 THEN 'Muito Baixa' WHEN 2 THEN 'Baixa'   WHEN 3 THEN 'Média'
-            WHEN 4 THEN 'Alta'        WHEN 5 THEN 'Muito Alta' WHEN 6 THEN 'Maior'
-        END AS label,
-        t.priority AS ordem,
-        ROUND(AVG(TIMESTAMPDIFF(MINUTE, t.date, t.solvedate)) / 60.0, 1) AS tmr
-    FROM glpi_tickets t
-    WHERE t.is_deleted = 0 AND t.status IN (5,6) AND t.solvedate IS NOT NULL
-      AND t.date >= :data_inicio AND t.date <= :data_fim $gf
-    GROUP BY t.priority
-    ORDER BY t.priority
-", $p);
-
-// ============================================================
-// 8. DESEMPENHO POR TÉCNICO
+// 4. DESEMPENHO POR TÉCNICO
 // ============================================================
 $tecnicos = query($pdo, "
     SELECT
@@ -235,7 +162,29 @@ $tecnicos = query($pdo, "
 ", $p);
 
 // ============================================================
-// 9. SATISFAÇÃO (glpi_ticketsatisfactions)
+// CHAMADOS CRÍTICOS (abertos agora — sem filtro de data)
+// ============================================================
+$chamados_criticos = query($pdo, "
+    SELECT
+        t.id,
+        t.name                                                              AS titulo,
+        ic.name                                                             AS categoria,
+        DATE_FORMAT(t.date, '%d/%m/%Y %H:%i')                              AS abertura,
+        t.time_to_resolve                                                   AS prazo_sla,
+        CASE WHEN t.time_to_resolve IS NOT NULL
+              AND NOW() > t.time_to_resolve THEN 1 ELSE 0 END              AS sla_violado,
+        TIMESTAMPDIFF(HOUR, t.date, NOW())                                  AS horas_aberto
+    FROM glpi_tickets t
+    LEFT JOIN glpi_itilcategories ic ON ic.id = t.itilcategories_id
+    WHERE t.is_deleted = 0
+      AND t.status NOT IN (5, 6)
+      $gf
+    ORDER BY sla_violado DESC, t.date ASC
+    LIMIT 10
+", []);
+
+// ============================================================
+// 5. SATISFAÇÃO (glpi_ticketsatisfactions)
 // ============================================================
 $satisfacao = query($pdo, "
     SELECT
@@ -257,7 +206,7 @@ $satisfacao = query($pdo, "
 ", $p);
 
 // ============================================================
-// 10. COMENTÁRIOS RECENTES DE SATISFAÇÃO
+// 6. COMENTÁRIOS RECENTES DE SATISFAÇÃO
 // ============================================================
 $comentarios = query($pdo, "
     SELECT
@@ -275,40 +224,19 @@ $comentarios = query($pdo, "
 ", $p);
 
 // ============================================================
-// 11. CATEGORIAS PRINCIPAIS (nível 1 ou 2 com tickets no período)
-// ============================================================
-$categorias = query($pdo, "
-    SELECT ic.id, ic.name, ic.completename, ic.level
-    FROM glpi_itilcategories ic
-    WHERE ic.level = 1
-      AND ic.id IN (
-          SELECT DISTINCT t.itilcategories_id
-          FROM glpi_tickets t
-          WHERE t.is_deleted = 0
-            AND t.date >= :data_inicio AND t.date <= :data_fim
-            AND t.itilcategories_id > 0
-      )
-    ORDER BY ic.level, ic.name
-", $p);
-
-// ============================================================
 // RESPOSTA JSON
 // ============================================================
 echo json_encode([
-    'gerado_em'      => date('d/m/Y H:i:s'),
-    'periodo_meses'  => $meses,
-    'categoria_id'   => $categoria_id,
-    'data_inicio'    => $data_inicio,
-    'data_fim'       => $data_fim,
-    'kpis'           => $kpis[0] ?? [],
-    'volume_mensal'  => $volume_mensal,
-    'por_status'     => $por_status,
-    'por_prioridade' => $por_prioridade,
-    'por_tipo'       => $por_tipo,
-    'top_categorias' => $top_categorias,
-    'tmr_prioridade' => $tmr_prioridade,
-    'tecnicos'       => $tecnicos,
-    'satisfacao'     => $satisfacao[0] ?? [],
-    'comentarios'    => $comentarios,
-    'categorias'     => $categorias,
+    'gerado_em'         => date('d/m/Y H:i:s'),
+    'periodo_meses'     => $meses,
+    'categoria_id'      => $categoria_id,
+    'data_inicio'       => $data_inicio,
+    'data_fim'          => $data_fim,
+    'kpis'              => $kpis[0] ?? [],
+    'volume_mensal'     => $volume_mensal,
+    'top_categorias'    => $top_categorias,
+    'tecnicos'          => $tecnicos,
+    'satisfacao'        => $satisfacao[0] ?? [],
+    'comentarios'       => $comentarios,
+    'chamados_criticos' => $chamados_criticos,
 ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
