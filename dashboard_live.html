@@ -427,6 +427,7 @@ function fmt(n) {
 function fmtH(h) {
   if (h == null || h === '') return '—';
   const hh = parseFloat(h);
+  if (isNaN(hh) || hh < 0) return '—';
   if (hh < 24) return hh.toFixed(1) + 'h';
   const d = Math.floor(hh / 24), r = Math.round(hh % 24);
   return r > 0 ? `${d}d ${r}h` : `${d}d`;
@@ -454,7 +455,12 @@ function slaClass(pct) {
 }
 
 // ── UTILITÁRIOS DE DATA ───────────────────────────────────────
-function toYMD(d) { return d.toISOString().split('T')[0]; }
+function toYMD(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
 
 function firstDayOfMonth(d)     { return toYMD(new Date(d.getFullYear(), d.getMonth(), 1)); }
 function lastDayOfPrevMonth(d)  { return toYMD(new Date(d.getFullYear(), d.getMonth(), 0)); }
@@ -481,16 +487,16 @@ async function fetchAll() {
 
   try {
     const [mes, anterior, ano] = await Promise.all([
-      fetch(buildUrl(firstDayOfMonth(hoje), toYMD(hoje))).then(r => r.json()),
-      fetch(buildUrl(firstDayOfPrevMonth(hoje), lastDayOfPrevMonth(hoje))).then(r => r.json()),
-      fetch(buildUrl(firstDayOfYear(hoje), toYMD(hoje))).then(r => r.json()),
+      fetch(buildUrl(firstDayOfMonth(hoje), toYMD(hoje))).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
+      fetch(buildUrl(firstDayOfPrevMonth(hoje), lastDayOfPrevMonth(hoje))).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
+      fetch(buildUrl(firstDayOfYear(hoje), toYMD(hoje))).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
     ]);
 
     if (mes.erro || anterior.erro || ano.erro) throw new Error(mes.erro || 'Erro na API');
 
     cache = { mes, anterior, ano };
     renderAll();
-    setStatus('ok', 'Atualizado às ' + mes.gerado_em.split(' ')[1]);
+    setStatus('ok', 'Atualizado às ' + ((mes.gerado_em ?? '').split(' ')[1] ?? ''));
     document.getElementById('overlay').classList.add('hidden');
   } catch (e) {
     setStatus('err', 'Erro na conexão');
