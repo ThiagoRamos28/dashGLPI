@@ -567,6 +567,46 @@ function renderTela1() {
         </div>`).join('')
     : '<div class="empty-state">Sem dados de técnicos</div>';
 }
+
+// ── RENDER TELA 2 — RADAR OPERACIONAL ────────────────────────
+function renderTela2() {
+  // Chamados críticos
+  const criticos = cache.mes.chamados_criticos || [];
+  document.getElementById('s2-criticos').innerHTML = criticos.length
+    ? criticos.map(c => {
+        const cls   = c.sla_violado == 1 ? 'sla-viol' : '';
+        const tempo = fmtH(c.horas_aberto);
+        const titulo = esc(c.titulo || 'Sem título').substring(0, 60);
+        return `
+          <div class="alert-row ${cls}">
+            <span class="alert-id">#${esc(String(c.id))}</span>
+            <span class="alert-titulo">${titulo}</span>
+            <span class="alert-tempo">${esc(tempo)}</span>
+          </div>`;
+      }).join('')
+    : '<div class="empty-state">Nenhum chamado crítico no momento</div>';
+
+  // Top categorias (mês atual, máx 6)
+  const cats = (cache.mes.top_categorias || []).slice(0, 6);
+  const max  = cats[0]?.total || 1;
+  document.getElementById('s2-cats').innerHTML = cats.length
+    ? cats.map(c => `
+        <div class="cat-row">
+          <span class="cat-name">${esc(c.cat || 'Sem categoria')}</span>
+          <div class="cat-bar-wrap">
+            <div class="cat-bar-fill" style="width:0%" data-w="${(c.total / max * 100).toFixed(1)}%"></div>
+          </div>
+          <span class="cat-num">${fmt(c.total)}</span>
+        </div>`).join('')
+    : '<div class="empty-state">Sem categorias no período</div>';
+
+  // Animar barras após render
+  requestAnimationFrame(() => {
+    document.querySelectorAll('#s2-cats .cat-bar-fill').forEach(el => {
+      el.style.width = el.dataset.w || '0%';
+    });
+  });
+}
 </script>
 </body>
 </html>
