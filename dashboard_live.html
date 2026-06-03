@@ -490,16 +490,25 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
 
     </div>
 
-    <!-- Coluna direita: Técnicos -->
-    <div class="card" style="display:flex;flex-direction:column;">
-      <div class="sec-label">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-        Destaques da Equipe
+    <!-- Coluna direita: Técnicos + Categorias -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <div class="card" style="display:flex;flex-direction:column;flex:1;">
+        <div class="sec-label">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          Destaques da Equipe
+        </div>
+        <div class="tec-list" id="k1-tec-list" style="flex:1;"></div>
       </div>
-      <p style="font-size:17px;color:var(--muted);margin-bottom:16px;font-weight:300;line-height:1.5;">
-        Os profissionais que mais entregaram este mês, ordenados por volume de chamados resolvidos.
-      </p>
-      <div class="tec-list" id="k1-tec-list" style="flex:1;"></div>
+
+      <div class="card" style="display:flex;flex-direction:column;flex:1;">
+        <div class="sec-label">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20h4V4h-4v16zm-6 0h4v-8H4v8zM16 9v11h4V9h-4z"/></svg>
+          Onde a Equipe Está Concentrada
+        </div>
+        <div class="cat-list" id="s1-cats" style="flex:1;"></div>
+      </div>
+
     </div>
 
   </div>
@@ -522,24 +531,17 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
         Chamados que Precisam de Atenção
       </div>
-      <div id="s2-aguardando" style="display:none;margin-bottom:14px;padding:11px 16px;border-radius:9px;background:rgba(245,166,35,0.07);border:1px solid rgba(245,166,35,0.28);align-items:center;gap:13px;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--amber)" style="flex-shrink:0"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z"/></svg>
-        <span id="s2-aguardando-num" style="font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--amber);line-height:1;flex-shrink:0;">0</span>
-        <span style="font-size:16px;color:rgba(221,228,240,0.72);line-height:1.3;">resolvidos aguardando aprovação do usuário</span>
-      </div>
       <p style="font-size:17px;color:var(--muted);margin-bottom:14px;font-weight:300;line-height:1.5;" id="s2-crit-story"></p>
       <div class="crit-list" id="s2-criticos" style="flex:1;overflow:hidden;"></div>
     </div>
 
     <div class="card" style="display:flex;flex-direction:column;">
-      <div class="sec-label">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20h4V4h-4v16zm-6 0h4v-8H4v8zM16 9v11h4V9h-4z"/></svg>
-        Onde a Equipe Está Concentrada
+      <div class="sec-label" style="color:var(--amber);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--amber)"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z"/></svg>
+        Resolvidos — Aguardando Aprovação
       </div>
-      <p style="font-size:17px;color:var(--muted);margin-bottom:16px;font-weight:300;line-height:1.5;">
-        Categorias com maior volume de chamados abertos no mês. Use esse dado para antecipar demandas.
-      </p>
-      <div class="cat-list" id="s2-cats" style="flex:1;"></div>
+      <p style="font-size:17px;color:var(--muted);margin-bottom:14px;font-weight:300;line-height:1.5;" id="s2-aprov-story"></p>
+      <div class="crit-list" id="s2-aprovacao" style="flex:1;overflow:hidden;"></div>
     </div>
 
   </div>
@@ -948,22 +950,37 @@ function renderTela1() {
       el.style.width = el.dataset.w || '0%';
     });
   }));
+
+  // ─ Categorias ─
+  const cats1   = (cache.mes.top_categorias || []).slice(0, 5);
+  const maxCat1 = cats1[0]?.total || 1;
+  document.getElementById('s1-cats').innerHTML = cats1.length
+    ? cats1.map((c, i) => `
+        <div class="cat-row anim">
+          <span class="cat-rank">${i + 1}</span>
+          <div class="cat-info">
+            <div class="cat-name">${esc(c.cat || 'Sem categoria')}</div>
+            <div class="cat-bar-wrap">
+              <div class="cat-bar-fill" data-w="${(c.total / maxCat1 * 100).toFixed(1)}%" style="width:0%"></div>
+            </div>
+          </div>
+          <span class="cat-count">${fmt(c.total)}</span>
+        </div>`).join('')
+    : '<div class="empty-state">Sem dados de categorias para o período.</div>';
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll('#s1-cats .cat-bar-fill').forEach(el => {
+      el.style.width = el.dataset.w || '0%';
+    });
+  }));
 }
 
 // ════════════════════════════════════════════════════════════
 // RENDER — TELA 2: RADAR OPERACIONAL
 // ════════════════════════════════════════════════════════════
 function renderTela2() {
-  const criticos   = cache.mes.chamados_criticos || [];
-  const violados   = criticos.filter(c => +c.sla_violado === 1).length;
-  const aguardando = parseInt(cache.mes.kpis?.aguardando_aprovacao) || 0;
-
-  // Banner: aguardando aprovação
-  const bannerEl = document.getElementById('s2-aguardando');
-  if (bannerEl) {
-    bannerEl.style.display = aguardando > 0 ? 'flex' : 'none';
-    setText('s2-aguardando-num', fmt(aguardando));
-  }
+  const criticos = cache.mes.chamados_criticos || [];
+  const violados = criticos.filter(c => +c.sla_violado === 1).length;
 
   // Headline
   const hlEl = document.getElementById('s2-headline');
@@ -1017,28 +1034,39 @@ function renderTela2() {
         Nenhum chamado crítico no momento
        </div>`;
 
-  // Categorias
-  const cats = (cache.mes.top_categorias || []).slice(0, 7);
-  const max  = cats[0]?.total || 1;
-  document.getElementById('s2-cats').innerHTML = cats.length
-    ? cats.map((c, i) => `
-        <div class="cat-row anim">
-          <span class="cat-rank">${i + 1}</span>
-          <div class="cat-info">
-            <div class="cat-name">${esc(c.cat || 'Sem categoria')}</div>
-            <div class="cat-bar-wrap">
-              <div class="cat-bar-fill" data-w="${(c.total / max * 100).toFixed(1)}%" style="width:0%"></div>
+  // Aguardando aprovação — lista
+  const aprovList = cache.mes.aguardando_aprovacao_list || [];
+  const aprovCount = aprovList.length;
+
+  setText('s2-aprov-story', aprovCount === 0
+    ? 'Todos os chamados resolvidos já foram aprovados ou fechados pelos usuários.'
+    : `${aprovCount} chamado${aprovCount > 1 ? 's' : ''} ${aprovCount > 1 ? 'foram' : 'foi'} resolvido${aprovCount > 1 ? 's' : ''} pela equipe e aguardam confirmação do usuário.`);
+
+  document.getElementById('s2-aprovacao').innerHTML = aprovList.length
+    ? aprovList.map(c => {
+        const horas = parseInt(c.horas_aguardando) || 0;
+        const tec   = c.tecnico
+          ? `<span class="crit-tec">→ ${esc(c.tecnico)}</span>`
+          : `<span class="crit-tec" style="color:var(--dim);font-size:13px;">Sem técnico</span>`;
+        const prio  = c.priority || 3;
+        return `<div class="crit-row warn anim">
+          <div class="crit-badge"></div>
+          <div class="crit-body">
+            <div class="crit-titulo">${esc((c.titulo || 'Sem título').substring(0, 68))}</div>
+            <div class="crit-meta">
+              <span class="crit-id">#${esc(String(c.id))}</span>
+              ${c.categoria ? `<span class="crit-cat">${esc(c.categoria)}</span>` : ''}
+              ${tec}
             </div>
           </div>
-          <span class="cat-count">${fmt(c.total)}</span>
-        </div>`).join('')
-    : '<div class="empty-state">Sem dados de categorias para o período.</div>';
-
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    document.querySelectorAll('#s2-cats .cat-bar-fill').forEach(el => {
-      el.style.width = el.dataset.w || '0%';
-    });
-  }));
+          <span class="crit-prio prio-${prio}">${PRIO_SHORT[prio] || 'Média'}</span>
+          <span class="crit-time">${fmtH(horas)}</span>
+        </div>`;
+      }).join('')
+    : `<div class="empty-state">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="opacity:.35"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        Nenhum chamado aguardando aprovação
+       </div>`;
 }
 
 // ════════════════════════════════════════════════════════════

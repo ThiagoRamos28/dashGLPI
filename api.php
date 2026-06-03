@@ -191,7 +191,31 @@ $chamados_criticos = query($pdo, "
 ", []);
 
 // ============================================================
-// 5. SATISFAÇÃO (glpi_ticketsatisfactions)
+// 5. AGUARDANDO APROVAÇÃO (status = 5 — resolvido, aguarda cliente)
+// ============================================================
+$aguardando_aprovacao_list = query($pdo, "
+    SELECT
+        t.id,
+        t.name                                                              AS titulo,
+        t.priority,
+        ic.name                                                             AS categoria,
+        CONCAT(u.firstname, ' ', u.realname)                               AS tecnico,
+        DATE_FORMAT(t.solvedate, '%d/%m/%Y')                               AS solucao,
+        TIMESTAMPDIFF(HOUR, t.solvedate, NOW())                            AS horas_aguardando
+    FROM glpi_tickets t
+    LEFT JOIN glpi_itilcategories ic ON ic.id = t.itilcategories_id
+    LEFT JOIN glpi_tickets_users tu ON tu.tickets_id = t.id AND tu.type = 2
+    LEFT JOIN glpi_users u ON u.id = tu.users_id AND u.is_deleted = 0
+    WHERE t.is_deleted = 0
+      AND t.status = 5
+      $gf
+    GROUP BY t.id, t.name, t.priority, ic.name, u.firstname, u.realname, t.solvedate
+    ORDER BY t.solvedate ASC
+    LIMIT 7
+", []);
+
+// ============================================================
+// 6. SATISFAÇÃO (glpi_ticketsatisfactions)
 // ============================================================
 $satisfacao = query($pdo, "
     SELECT
@@ -234,16 +258,17 @@ $comentarios = query($pdo, "
 // RESPOSTA JSON
 // ============================================================
 echo json_encode([
-    'gerado_em'         => date('d/m/Y H:i:s'),
-    'periodo_meses'     => $meses,
-    'categoria_id'      => $categoria_id,
-    'data_inicio'       => $data_inicio,
-    'data_fim'          => $data_fim,
-    'kpis'              => $kpis[0] ?? [],
-    'volume_mensal'     => $volume_mensal,
-    'top_categorias'    => $top_categorias,
-    'tecnicos'          => $tecnicos,
-    'satisfacao'        => $satisfacao[0] ?? [],
-    'comentarios'       => $comentarios,
-    'chamados_criticos' => $chamados_criticos,
+    'gerado_em'                  => date('d/m/Y H:i:s'),
+    'periodo_meses'              => $meses,
+    'categoria_id'               => $categoria_id,
+    'data_inicio'                => $data_inicio,
+    'data_fim'                   => $data_fim,
+    'kpis'                       => $kpis[0] ?? [],
+    'volume_mensal'              => $volume_mensal,
+    'top_categorias'             => $top_categorias,
+    'tecnicos'                   => $tecnicos,
+    'satisfacao'                 => $satisfacao[0] ?? [],
+    'comentarios'                => $comentarios,
+    'chamados_criticos'          => $chamados_criticos,
+    'aguardando_aprovacao_list'  => $aguardando_aprovacao_list,
 ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
