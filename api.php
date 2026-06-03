@@ -158,7 +158,7 @@ $tecnicos = query($pdo, "
     WHERE t.is_deleted = 0 AND t.date >= :data_inicio AND t.date <= :data_fim AND u.is_deleted = 0 $gf
     GROUP BY u.id, u.firstname, u.realname
     HAVING total >= 3
-    ORDER BY total DESC
+    ORDER BY resolvidos DESC
     LIMIT 15
 ", $p);
 
