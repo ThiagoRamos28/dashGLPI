@@ -21,7 +21,7 @@ html, body { height: 100%; overflow: hidden; }
   --border:   rgba(255,255,255,0.07);
   --border2:  rgba(255,255,255,0.13);
   --text:     #dde4f0;
-  --muted:    rgba(221,228,240,0.42);
+  --muted:    rgba(221,228,240,0.62);
   --dim:      rgba(221,228,240,0.18);
   --blue:     #4f8ef7;
   --green:    #2dd97e;
@@ -36,7 +36,7 @@ body {
   color: var(--text);
   display: flex;
   flex-direction: column;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 /* ─ Dot-grid background ─ */
@@ -65,15 +65,15 @@ body::before {
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
-#overlay .load-label { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+#overlay .load-label { font-size: 15px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ═══ HEADER ══════════════════════════════════════════════════ */
 header {
   flex-shrink: 0;
-  border-top: 2px solid var(--blue);
-  padding: 0 24px;
-  height: 54px;
+  border-top: 3px solid var(--blue);
+  padding: 0 32px;
+  height: 74px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -83,43 +83,43 @@ header {
   z-index: 10;
   position: relative;
 }
-.h-brand { display: flex; align-items: center; gap: 11px; }
+.h-brand { display: flex; align-items: center; gap: 14px; }
 .h-logo {
-  width: 30px; height: 30px;
+  width: 46px; height: 46px;
   background: var(--blue);
-  border-radius: 7px;
+  border-radius: 10px;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-.h-dept  { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+.h-dept  { font-size: 13px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
 .h-title {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 21px; color: var(--text); line-height: 1; letter-spacing: 1px;
+  font-size: 30px; color: var(--text); line-height: 1; letter-spacing: 1px;
 }
-.h-right { display: flex; align-items: center; gap: 20px; }
+.h-right { display: flex; align-items: center; gap: 24px; }
 .h-indicator {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; color: var(--dim);
+  font-size: 14px; color: var(--dim);
   background: var(--surface2);
-  padding: 3px 9px; border-radius: 4px;
+  padding: 5px 13px; border-radius: 6px;
   border: 1px solid var(--border);
 }
-.status { display: flex; align-items: center; gap: 7px; }
-.status-dot { width: 7px; height: 7px; border-radius: 50%; }
-.status-dot.ok      { background: var(--green); box-shadow: 0 0 7px var(--green); }
+.status { display: flex; align-items: center; gap: 9px; }
+.status-dot { width: 11px; height: 11px; border-radius: 50%; }
+.status-dot.ok      { background: var(--green); box-shadow: 0 0 10px var(--green); }
 .status-dot.loading { background: var(--amber); }
 .status-dot.err     { background: var(--red); }
-.status-txt { font-size: 11px; color: var(--muted); }
+.status-txt { font-size: 15px; color: var(--muted); }
 
 /* ═══ PROGRESS BAR ════════════════════════════════════════════ */
-.prog-wrap { height: 2px; background: rgba(255,255,255,0.04); flex-shrink: 0; }
-#prog-fill { height: 100%; background: var(--blue); opacity: 0.55; width: 0%; }
+.prog-wrap { height: 4px; background: rgba(255,255,255,0.06); flex-shrink: 0; }
+#prog-fill { height: 100%; background: var(--blue); opacity: 0.7; width: 0%; }
 
 /* ═══ MAIN ════════════════════════════════════════════════════ */
 main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
 .screen {
   position: absolute; inset: 0;
-  padding: 14px 22px;
+  padding: 18px 28px;
   opacity: 0; pointer-events: none;
   transition: opacity 0.7s ease-in-out;
 }
@@ -129,7 +129,7 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
 .card {
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 16px 18px;
+  padding: 20px 24px;
   background: var(--surface);
   position: relative;
   overflow: hidden;
@@ -143,207 +143,211 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
 
 /* ─ Section label ─ */
 .sec-label {
-  font-size: 10px; font-weight: 600;
-  letter-spacing: 2.5px; text-transform: uppercase;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
   color: var(--muted);
-  display: flex; align-items: center; gap: 6px;
-  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 9px;
+  margin-bottom: 14px;
 }
 
 /* ─ Screen headline (phrase at top of each screen) ─ */
 .screen-headline {
-  font-size: 13px; color: var(--muted); font-weight: 400;
-  padding: 0 2px 10px;
-  display: flex; align-items: center; gap: 9px;
-  line-height: 1.4;
+  font-size: 26px; color: var(--text); font-weight: 500;
+  padding: 0 2px 14px;
+  display: flex; align-items: center; gap: 13px;
+  line-height: 1.3;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .hl-pip {
-  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
   background: var(--blue);
 }
-.screen-headline.ok   .hl-pip { background: var(--green); box-shadow: 0 0 5px var(--green); }
-.screen-headline.warn .hl-pip { background: var(--amber); }
-.screen-headline.bad  .hl-pip { background: var(--red); box-shadow: 0 0 5px var(--red); }
+.screen-headline.ok   { color: var(--green); }
+.screen-headline.ok   .hl-pip { background: var(--green); box-shadow: 0 0 10px var(--green); }
+.screen-headline.warn { color: var(--amber); }
+.screen-headline.warn .hl-pip { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+.screen-headline.bad  { color: var(--red); }
+.screen-headline.bad  .hl-pip { background: var(--red); box-shadow: 0 0 10px var(--red); }
 
 /* ═══ HERO KPI (SLA grande) ═══════════════════════════════════ */
 .hero-card { display: flex; flex-direction: column; }
 .hero-eyebrow {
-  font-size: 10px; font-weight: 600; letter-spacing: 2.5px;
+  font-size: 14px; font-weight: 700; letter-spacing: 2.5px;
   text-transform: uppercase; color: var(--muted);
-  display: flex; align-items: center; gap: 6px;
-  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 9px;
+  margin-bottom: 8px;
 }
 .hero-num {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 96px; line-height: 0.9;
+  font-size: 118px; line-height: 0.9;
   letter-spacing: -1px; color: var(--text);
   transition: color 0.5s ease;
 }
-.hero-num.green { color: var(--green); text-shadow: 0 0 40px rgba(45,217,126,0.2); }
-.hero-num.amber { color: var(--amber); text-shadow: 0 0 40px rgba(245,166,35,0.2); }
-.hero-num.red   { color: var(--red);   text-shadow: 0 0 40px rgba(240,82,82,0.2); }
+.hero-num.green { color: var(--green); text-shadow: 0 0 60px rgba(45,217,126,0.3); }
+.hero-num.amber { color: var(--amber); text-shadow: 0 0 60px rgba(245,166,35,0.3); }
+.hero-num.red   { color: var(--red);   text-shadow: 0 0 60px rgba(240,82,82,0.3); }
 
 .hero-story {
-  font-size: 14px; color: rgba(221,228,240,0.55);
-  margin-top: 10px; line-height: 1.5; font-weight: 300;
-  max-width: 360px;
+  font-size: 20px; color: rgba(221,228,240,0.7);
+  margin-top: 14px; line-height: 1.5; font-weight: 300;
+  max-width: 420px;
 }
 .hero-delta {
-  margin-top: 8px; font-size: 12px; font-weight: 600;
-  display: flex; align-items: center; gap: 5px; min-height: 18px;
+  margin-top: 10px; font-size: 17px; font-weight: 600;
+  display: flex; align-items: center; gap: 6px; min-height: 22px;
 }
 .hero-bar {
-  height: 3px; background: rgba(255,255,255,0.06);
-  border-radius: 2px; margin-top: 14px;
+  height: 8px; background: rgba(255,255,255,0.07);
+  border-radius: 4px; margin-top: 18px;
 }
 .hero-bar-fill {
-  height: 100%; border-radius: 2px;
+  height: 100%; border-radius: 4px;
   background: var(--green); width: 0%;
   transition: width 1.2s cubic-bezier(.25,.46,.45,.94);
 }
 
 /* ═══ MINI KPIs ═══════════════════════════════════════════════ */
-.mini-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.mini-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .mini-kpi {
-  border: 1px solid var(--border); border-radius: 8px;
-  padding: 12px 14px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 18px 20px; background: var(--surface);
 }
 .mini-eyebrow {
-  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--muted); font-weight: 600;
-  display: flex; align-items: center; gap: 5px; margin-bottom: 4px;
+  font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); font-weight: 700;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
 }
 .mini-val {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 38px; line-height: 1; color: var(--text);
+  font-size: 56px; line-height: 1; color: var(--text);
 }
-.mini-story { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.35; }
-.mini-delta { font-size: 11px; font-weight: 600; margin-top: 3px; min-height: 16px; }
+.mini-story { font-size: 15px; color: var(--muted); margin-top: 5px; line-height: 1.4; }
+.mini-delta { font-size: 15px; font-weight: 600; margin-top: 5px; min-height: 20px; }
 
 /* ═══ TÉCNICOS ════════════════════════════════════════════════ */
-.tec-list { display: flex; flex-direction: column; gap: 9px; }
-.tec-row { display: flex; align-items: center; gap: 10px; }
+.tec-list { display: flex; flex-direction: column; gap: 14px; }
+.tec-row { display: flex; align-items: center; gap: 14px; }
 .tec-rank {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 24px; color: var(--dim);
-  width: 22px; flex-shrink: 0; line-height: 1; text-align: center;
+  font-size: 36px; color: var(--dim);
+  width: 30px; flex-shrink: 0; line-height: 1; text-align: center;
 }
-.tec-rank.gold   { color: var(--amber); }
-.tec-rank.silver { color: rgba(221,228,240,0.45); }
+.tec-rank.gold   { color: var(--amber); text-shadow: 0 0 12px rgba(245,166,35,0.4); }
+.tec-rank.silver { color: rgba(221,228,240,0.5); }
 .tec-info { flex: 1; min-width: 0; }
 .tec-nome {
-  font-size: 13px; color: rgba(221,228,240,0.8); font-weight: 500;
+  font-size: 19px; color: rgba(221,228,240,0.9); font-weight: 500;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.tec-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.tec-sub { font-size: 14px; color: var(--muted); margin-top: 3px; }
 .tec-bar-wrap {
-  width: 70px; height: 3px;
-  background: rgba(255,255,255,0.06); border-radius: 2px; flex-shrink: 0;
+  width: 100px; height: 7px;
+  background: rgba(255,255,255,0.07); border-radius: 4px; flex-shrink: 0;
 }
-.tec-bar-fill { height: 100%; border-radius: 2px; width: 0%; transition: width 0.9s ease; }
+.tec-bar-fill { height: 100%; border-radius: 4px; width: 0%; transition: width 0.9s ease; }
 .tec-sla {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px; font-weight: 500;
-  width: 44px; text-align: right; flex-shrink: 0;
+  font-size: 19px; font-weight: 600;
+  width: 58px; text-align: right; flex-shrink: 0;
 }
 .sla-good { color: var(--green); }
 .sla-warn { color: var(--amber); }
 .sla-bad  { color: var(--red);   }
 
 /* ═══ CHAMADOS CRÍTICOS ═══════════════════════════════════════ */
-.crit-list { display: flex; flex-direction: column; gap: 7px; overflow: hidden; }
+.crit-list { display: flex; flex-direction: column; gap: 11px; overflow: hidden; }
 .crit-row {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 9px 12px; border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 16px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.07);
   background: rgba(255,255,255,0.02);
 }
 .crit-row.viol {
-  border-color: rgba(240,82,82,0.22);
-  background: rgba(240,82,82,0.04);
+  border-color: rgba(240,82,82,0.28);
+  background: rgba(240,82,82,0.05);
 }
 .crit-row.warn {
-  border-color: rgba(245,166,35,0.2);
-  background: rgba(245,166,35,0.03);
+  border-color: rgba(245,166,35,0.25);
+  background: rgba(245,166,35,0.04);
 }
 .crit-badge {
-  width: 3px; border-radius: 2px; align-self: stretch; flex-shrink: 0;
+  width: 5px; border-radius: 3px; align-self: stretch; flex-shrink: 0;
   background: rgba(255,255,255,0.1);
 }
 .crit-row.viol .crit-badge { background: var(--red); }
 .crit-row.warn .crit-badge { background: var(--amber); }
 .crit-body { flex: 1; min-width: 0; }
 .crit-titulo {
-  font-size: 13px; color: rgba(221,228,240,0.78); font-weight: 500;
+  font-size: 17px; color: rgba(221,228,240,0.88); font-weight: 500;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  margin-bottom: 3px;
+  margin-bottom: 5px;
 }
-.crit-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.crit-meta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 .crit-id {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px; color: var(--dim);
+  font-size: 13px; color: var(--dim);
 }
-.crit-cat { font-size: 11px; color: var(--muted); }
-.crit-tec { font-size: 11px; color: var(--muted); }
+.crit-cat { font-size: 14px; color: var(--muted); }
+.crit-tec { font-size: 14px; color: var(--muted); }
 .crit-prio {
-  font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
-  padding: 2px 7px; border-radius: 4px; font-weight: 600; flex-shrink: 0;
+  font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 5px; font-weight: 700; flex-shrink: 0;
 }
-.prio-1, .prio-2 { background: rgba(45,217,126,0.1);  color: var(--green); }
-.prio-3           { background: rgba(255,255,255,0.06); color: var(--muted); }
-.prio-4           { background: rgba(245,166,35,0.12);  color: var(--amber); }
-.prio-5, .prio-6  { background: rgba(240,82,82,0.12);   color: var(--red);   }
+.prio-1, .prio-2 { background: rgba(45,217,126,0.12);  color: var(--green); }
+.prio-3           { background: rgba(255,255,255,0.07); color: var(--muted); }
+.prio-4           { background: rgba(245,166,35,0.14);  color: var(--amber); }
+.prio-5, .prio-6  { background: rgba(240,82,82,0.14);   color: var(--red);   }
 .crit-time {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 13px; font-weight: 500; flex-shrink: 0; color: var(--muted);
+  font-size: 18px; font-weight: 600; flex-shrink: 0; color: var(--muted);
 }
 .crit-row.viol .crit-time { color: var(--red); }
 .crit-row.warn .crit-time { color: var(--amber); }
 
 /* ═══ CATEGORIAS ══════════════════════════════════════════════ */
-.cat-list { display: flex; flex-direction: column; gap: 11px; }
-.cat-row { display: flex; align-items: center; gap: 10px; }
+.cat-list { display: flex; flex-direction: column; gap: 15px; }
+.cat-row { display: flex; align-items: center; gap: 14px; }
 .cat-rank {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 18px; color: var(--dim);
-  width: 18px; flex-shrink: 0; text-align: right; line-height: 1;
+  font-size: 28px; color: var(--dim);
+  width: 26px; flex-shrink: 0; text-align: right; line-height: 1;
 }
 .cat-info { flex: 1; min-width: 0; }
 .cat-name {
-  font-size: 13px; color: rgba(221,228,240,0.72); font-weight: 500;
+  font-size: 18px; color: rgba(221,228,240,0.82); font-weight: 500;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
-.cat-bar-wrap { height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; }
+.cat-bar-wrap { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; }
 .cat-bar-fill {
-  height: 100%; background: var(--blue); opacity: 0.65;
-  border-radius: 2px; width: 0%; transition: width 0.9s ease;
+  height: 100%; background: var(--blue); opacity: 0.7;
+  border-radius: 3px; width: 0%; transition: width 0.9s ease;
 }
 .cat-count {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 13px; color: var(--muted); width: 36px; text-align: right; flex-shrink: 0;
+  font-size: 19px; color: var(--muted); width: 46px; text-align: right; flex-shrink: 0;
 }
 
 /* ═══ TELA 3 — ANO ════════════════════════════════════════════ */
-.year-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.year-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .year-kpi {
   border: 1px solid var(--border); border-radius: var(--r);
-  padding: 14px 16px; background: var(--surface);
+  padding: 18px 22px; background: var(--surface);
 }
 .year-eyebrow {
-  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--muted); font-weight: 600; margin-bottom: 4px;
+  font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); font-weight: 700; margin-bottom: 6px;
 }
 .year-val {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 44px; line-height: 1; color: var(--text);
+  font-size: 64px; line-height: 1; color: var(--text);
 }
-.year-story { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.35; }
+.year-story { font-size: 16px; color: var(--muted); margin-top: 5px; line-height: 1.4; }
 
 /* ═══ EMPTY / ANIMATIONS ══════════════════════════════════════ */
 .empty-state {
-  font-size: 12px; color: var(--muted); padding: 10px 0;
-  display: flex; align-items: center; gap: 8px;
+  font-size: 16px; color: var(--muted); padding: 14px 0;
+  display: flex; align-items: center; gap: 10px;
 }
 
 @keyframes fadeUp {
@@ -377,7 +381,7 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
 <header>
   <div class="h-brand">
     <div class="h-logo">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M20 3H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h7v2H8v2h8v-2h-3v-2h7a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zm-1 12H5V5h14v10z"/></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M20 3H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h7v2H8v2h8v-2h-3v-2h7a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zm-1 12H5V5h14v10z"/></svg>
     </div>
     <div>
       <div class="h-dept">Departamento de TI · Tecnologia</div>
@@ -407,14 +411,14 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
     <span id="s1-hl-text">Carregando dados...</span>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;height:calc(100% - 34px)">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;height:calc(100% - 62px)">
 
     <!-- Coluna esquerda: Hero SLA + Mini KPIs -->
-    <div style="display:flex;flex-direction:column;gap:12px;">
+    <div style="display:flex;flex-direction:column;gap:16px;">
 
       <div class="card hero-card" style="flex:1">
         <div class="hero-eyebrow">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" opacity="0.55"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" opacity="0.7"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
           SLA Cumprido — Mês Atual
         </div>
         <div class="hero-num" id="k1-sla-num">—</div>
@@ -426,7 +430,7 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
       <div class="mini-kpis">
         <div class="mini-kpi">
           <div class="mini-eyebrow">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
             Resolvidos
           </div>
           <div class="mini-val" id="k1-res-val">—</div>
@@ -435,7 +439,7 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
         </div>
         <div class="mini-kpi">
           <div class="mini-eyebrow">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z"/></svg>
             TMR Médio
           </div>
           <div class="mini-val" id="k1-tmr-val">—</div>
@@ -444,7 +448,7 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
         </div>
         <div class="mini-kpi">
           <div class="mini-eyebrow">
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-7v2h2v-2h-2zm0-8v6h2V7h-2z"/></svg>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-7v2h2v-2h-2zm0-8v6h2V7h-2z"/></svg>
             Em Aberto
           </div>
           <div class="mini-val" id="k1-open-val">—</div>
@@ -457,10 +461,10 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
     <!-- Coluna direita: Técnicos -->
     <div class="card" style="display:flex;flex-direction:column;">
       <div class="sec-label">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
         Destaques da Equipe
       </div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:300;line-height:1.5;">
+      <p style="font-size:17px;color:var(--muted);margin-bottom:16px;font-weight:300;line-height:1.5;">
         Os profissionais que mais entregaram este mês, ordenados por volume de chamados resolvidos.
       </p>
       <div class="tec-list" id="k1-tec-list" style="flex:1;"></div>
@@ -479,23 +483,23 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
     <span id="s2-hl-text">Monitoramento em tempo real</span>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;height:calc(100% - 34px)">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;height:calc(100% - 62px)">
 
     <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
       <div class="sec-label">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
         Chamados que Precisam de Atenção
       </div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;font-weight:300;line-height:1.5;" id="s2-crit-story"></p>
+      <p style="font-size:17px;color:var(--muted);margin-bottom:14px;font-weight:300;line-height:1.5;" id="s2-crit-story"></p>
       <div class="crit-list" id="s2-criticos" style="flex:1;overflow:hidden;"></div>
     </div>
 
     <div class="card" style="display:flex;flex-direction:column;">
       <div class="sec-label">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20h4V4h-4v16zm-6 0h4v-8H4v8zM16 9v11h4V9h-4z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20h4V4h-4v16zm-6 0h4v-8H4v8zM16 9v11h4V9h-4z"/></svg>
         Onde a Equipe Está Concentrada
       </div>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:300;line-height:1.5;">
+      <p style="font-size:17px;color:var(--muted);margin-bottom:16px;font-weight:300;line-height:1.5;">
         Categorias com maior volume de chamados abertos no mês. Use esse dado para antecipar demandas.
       </p>
       <div class="cat-list" id="s2-cats" style="flex:1;"></div>
@@ -514,7 +518,7 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
     <span id="s3-hl-text">Desempenho acumulado do ano</span>
   </div>
 
-  <div style="display:flex;flex-direction:column;gap:12px;height:calc(100% - 34px);">
+  <div style="display:flex;flex-direction:column;gap:16px;height:calc(100% - 62px);">
 
     <div class="year-kpis">
       <div class="year-kpi">
@@ -534,11 +538,11 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
       </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;flex:1;min-height:0;">
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px;flex:1;min-height:0;">
 
       <div class="card" style="display:flex;flex-direction:column;">
         <div class="sec-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
           Volume Mensal — Chamados Abertos × Fechados
         </div>
         <div style="flex:1;min-height:0;position:relative;">
@@ -548,10 +552,10 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
 
       <div class="card" style="display:flex;flex-direction:column;">
         <div class="sec-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
           Ranking Anual da Equipe
         </div>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:300;line-height:1.5;">
+        <p style="font-size:17px;color:var(--muted);margin-bottom:16px;font-weight:300;line-height:1.5;">
           Técnicos com mais chamados resolvidos no ano, com respectivo SLA%.
         </p>
         <div class="tec-list" id="k3-ranking" style="flex:1;"></div>
@@ -979,12 +983,12 @@ function buildVolumeChart(meses) {
       plugins: {
         legend: {
           position: 'top', align: 'end',
-          labels: { boxWidth: 10, boxHeight: 10, padding: 18, font: { size: 11 } },
+          labels: { boxWidth: 14, boxHeight: 14, padding: 22, font: { size: 14 } },
         },
         tooltip: {
           backgroundColor: 'rgba(6,9,17,0.95)',
           borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
-          padding: 10, titleFont: { size: 12 }, bodyFont: { size: 12 },
+          padding: 14, titleFont: { size: 15 }, bodyFont: { size: 15 },
           callbacks: {
             label: ctx => {
               if (ctx.dataset.label === 'SLA %')
@@ -997,18 +1001,18 @@ function buildVolumeChart(meses) {
       scales: {
         x: {
           grid: { color: 'rgba(255,255,255,0.04)' },
-          ticks: { font: { size: 11 } },
+          ticks: { font: { size: 13 } },
         },
         y: {
           grid: { color: 'rgba(255,255,255,0.04)' },
-          ticks: { font: { size: 11 } }, position: 'left',
-          title: { display: true, text: 'Chamados', font: { size: 10 }, color: 'rgba(221,228,240,0.3)' },
+          ticks: { font: { size: 13 } }, position: 'left',
+          title: { display: true, text: 'Chamados', font: { size: 12 }, color: 'rgba(221,228,240,0.3)' },
         },
         y2: {
           grid: { display: false },
-          ticks: { font: { size: 11 }, callback: v => v + '%' },
+          ticks: { font: { size: 13 }, callback: v => v + '%' },
           position: 'right', min: 0, max: 100,
-          title: { display: true, text: 'SLA %', font: { size: 10 }, color: 'rgba(245,166,35,0.4)' },
+          title: { display: true, text: 'SLA %', font: { size: 12 }, color: 'rgba(245,166,35,0.4)' },
         },
       },
     },
@@ -1027,7 +1031,7 @@ function buildVolumeChart(meses) {
         c.moveTo(left, y); c.lineTo(right, y);
         c.stroke();
         c.setLineDash([]);
-        c.font = '10px Outfit, sans-serif';
+        c.font = '13px Outfit, sans-serif';
         c.fillStyle = 'rgba(245,166,35,0.45)';
         c.fillText('meta 90%', right - 55, y - 4);
         c.restore();
