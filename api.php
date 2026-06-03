@@ -88,6 +88,7 @@ $kpis = query($pdo, "
         SUM(CASE WHEN DATE(t.date) = CURDATE() THEN 1 ELSE 0 END)                   AS abertos_hoje,
         ROUND(AVG(CASE WHEN t.status IN (5,6) AND t.solvedate IS NOT NULL
                   THEN TIMESTAMPDIFF(MINUTE, t.date, t.solvedate) END) / 60.0, 1)   AS tmr_horas,
+        SUM(CASE WHEN t.status = 5 THEN 1 ELSE 0 END)                               AS aguardando_aprovacao,
         SUM(CASE WHEN t.time_to_resolve IS NOT NULL AND t.solvedate IS NOT NULL
                   AND t.solvedate > t.time_to_resolve THEN 1 ELSE 0 END)            AS sla_violado,
         SUM(CASE WHEN t.time_to_resolve IS NOT NULL AND t.solvedate IS NOT NULL
