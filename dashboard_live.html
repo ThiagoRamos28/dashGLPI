@@ -367,6 +367,23 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
   .spinner, .anim { animation: none; }
   #prog-fill { transition: none !important; }
 }
+
+/* ═══ SATISFAÇÃO ══════════════════════════════════════════════ */
+.sat-stars { display: flex; gap: 4px; margin-top: 12px; }
+.sat-comment {
+  padding: 14px 16px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.025);
+}
+.sat-comment-text {
+  font-size: 16px; color: rgba(221,228,240,0.82);
+  font-style: italic; line-height: 1.5; margin-bottom: 8px;
+}
+.sat-comment-meta { display: flex; align-items: center; gap: 10px; }
+.sat-date { font-size: 13px; color: var(--muted); }
+.sat-nota-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.sat-nota-bar-wrap { flex: 1; height: 7px; background: rgba(255,255,255,0.06); border-radius: 4px; }
+.sat-nota-bar-fill { height: 100%; border-radius: 4px; width: 0%; transition: width 0.9s ease; }
 </style>
 </head>
 <body>
@@ -565,6 +582,79 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
   </div>
 </div>
 
+<!-- ════════════════════════════════════════════════════════════
+     TELA 4 — VOZ DO CLIENTE
+════════════════════════════════════════════════════════════ -->
+<div id="s4" class="screen">
+
+  <div id="s4-headline" class="screen-headline">
+    <div class="hl-pip"></div>
+    <span id="s4-hl-text">Aguardando avaliações dos usuários...</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;height:calc(100% - 62px)">
+
+    <!-- Coluna esquerda: Hero nota + mini KPIs -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <div class="card hero-card" style="flex:1">
+        <div class="hero-eyebrow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" opacity="0.7"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Satisfação dos Usuários — Mês Atual
+        </div>
+        <div style="display:flex;align-items:baseline;gap:10px;">
+          <div class="hero-num" id="k4-score-num">—</div>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--muted);line-height:1">/5</span>
+        </div>
+        <div class="sat-stars" id="k4-stars"></div>
+        <div class="hero-story" id="k4-score-story"></div>
+        <div class="hero-bar" style="margin-top:16px;"><div class="hero-bar-fill" id="k4-score-bar"></div></div>
+      </div>
+
+      <div class="mini-kpis" style="grid-template-columns:repeat(2,1fr)">
+        <div class="mini-kpi">
+          <div class="mini-eyebrow">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+            Avaliações
+          </div>
+          <div class="mini-val" id="k4-respondidas">—</div>
+          <div class="mini-story" id="k4-respondidas-story"></div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-eyebrow">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            Taxa Resposta
+          </div>
+          <div class="mini-val" id="k4-taxa">—</div>
+          <div class="mini-story">dos usuários avaliaram</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Coluna direita: Distribuição + Comentários -->
+    <div style="display:flex;flex-direction:column;gap:16px;">
+
+      <div class="card" style="display:flex;flex-direction:column;">
+        <div class="sec-label">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/></svg>
+          Distribuição das Notas
+        </div>
+        <div id="k4-notas" style="flex:1;display:flex;flex-direction:column;justify-content:center;"></div>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+        <div class="sec-label">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+          O que os Usuários Disseram
+        </div>
+        <div id="k4-comentarios" style="flex:1;overflow:hidden;display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </main>
 
 <script>
@@ -672,6 +762,44 @@ function yearSlaStory(pct) {
   if (isNaN(n)) return '';
   if (n >= 90) return `Acima da meta anual de 90%`;
   return `${(90 - n).toFixed(1)}pp abaixo da meta de 90%`;
+}
+
+function satisfacaoHeadline(media, respondidas) {
+  const n = parseFloat(media);
+  const r = parseInt(respondidas) || 0;
+  if (isNaN(n) || r === 0) return 'Nenhuma avaliação respondida no período.';
+  if (n >= 4.5) return `Excelência confirmada — nota média ${media}/5 em ${fmt(r)} avaliações recebidas.`;
+  if (n >= 4.0) return `Bom desempenho — usuários avaliaram o suporte com ${media}/5 no período.`;
+  if (n >= 3.0) return `Satisfação moderada em ${media}/5 — oportunidade de melhoria identificada.`;
+  return `Atenção: usuários insatisfeitos — nota média ${media}/5. Revisão necessária.`;
+}
+
+function satisfacaoHeadlineClass(media) {
+  const n = parseFloat(media);
+  if (n >= 4.0) return 'ok';
+  if (n >= 3.0) return 'warn';
+  return 'bad';
+}
+
+function satisfacaoStory(media, respondidas, total) {
+  const n = parseFloat(media);
+  const r = parseInt(respondidas) || 0;
+  const t = parseInt(total) || 0;
+  if (isNaN(n) || r === 0) return 'Aguardando avaliações dos usuários para o período.';
+  const pct = t > 0 ? Math.round(r / t * 100) : 0;
+  if (n >= 4.5) return `${pct}% dos usuários responderam — e aprovaram o atendimento da equipe.`;
+  if (n >= 4.0) return `${fmt(r)} respostas recebidas. Há espaço para alcançar a excelência.`;
+  if (n >= 3.0) return `${fmt(r)} avaliações respondidas. Investigate os pontos de insatisfação.`;
+  return `Resultado preocupante — ${fmt(r)} usuários avaliaram negativamente o atendimento.`;
+}
+
+function renderStars(nota, size = 22) {
+  const n = Math.round(parseFloat(nota) || 0);
+  return Array.from({length: 5}, (_, i) =>
+    `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${i < n ? 'var(--amber)' : 'rgba(255,255,255,0.12)'}">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+    </svg>`
+  ).join('');
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1041,12 +1169,100 @@ function buildVolumeChart(meses) {
 }
 
 // ════════════════════════════════════════════════════════════
+// RENDER — TELA 4: VOZ DO CLIENTE
+// ════════════════════════════════════════════════════════════
+function renderTela4() {
+  const s  = cache.mes.satisfacao  || {};
+  const cs = cache.mes.comentarios || [];
+
+  const media       = s.media       ?? null;
+  const respondidas = s.respondidas ?? 0;
+  const total       = s.total_enviadas ?? 0;
+  const taxa        = s.taxa_resposta  ?? null;
+
+  // Headline
+  const hlEl = document.getElementById('s4-headline');
+  hlEl.className = 'screen-headline ' + (media != null ? satisfacaoHeadlineClass(media) : '');
+  setText('s4-hl-text', satisfacaoHeadline(media, respondidas));
+
+  // Hero score
+  const scoreNum = document.getElementById('k4-score-num');
+  const scorePct = media != null ? (parseFloat(media) / 5 * 100) : 0;
+  const scoreColor = media == null ? '' : parseFloat(media) >= 4 ? 'green' : parseFloat(media) >= 3 ? 'amber' : 'red';
+  setText('k4-score-num', media != null ? String(media) : '—');
+  if (scoreNum) scoreNum.className = 'hero-num' + (scoreColor ? ' ' + scoreColor : '');
+
+  // Stars
+  setHtml('k4-stars', media != null ? renderStars(media, 28) : '');
+
+  // Story
+  setText('k4-score-story', satisfacaoStory(media, respondidas, total));
+
+  // Bar
+  const barEl = document.getElementById('k4-score-bar');
+  if (barEl) {
+    const color = scoreColor === 'green' ? 'var(--green)' : scoreColor === 'amber' ? 'var(--amber)' : 'var(--red)';
+    barEl.style.background = color;
+    barEl.style.width = '0%';
+    requestAnimationFrame(() => { barEl.style.width = Math.min(scorePct, 100) + '%'; });
+  }
+
+  // Mini KPIs
+  setText('k4-respondidas', fmt(respondidas));
+  setText('k4-respondidas-story', total > 0
+    ? `de ${fmt(total)} pesquisas enviadas`
+    : 'avaliações recebidas');
+  setText('k4-taxa', taxa != null ? taxa + '%' : '—');
+
+  // Distribuição de notas
+  const maxNota = Math.max(
+    parseInt(s.nota_1)||0, parseInt(s.nota_2)||0, parseInt(s.nota_3)||0,
+    parseInt(s.nota_4)||0, parseInt(s.nota_5)||0, 1
+  );
+  document.getElementById('k4-notas').innerHTML = [5,4,3,2,1].map(n => {
+    const count = parseInt(s[`nota_${n}`]) || 0;
+    const pct   = (count / maxNota * 100).toFixed(0);
+    const color = n >= 4 ? 'var(--green)' : n === 3 ? 'var(--amber)' : 'var(--red)';
+    return `<div class="sat-nota-row anim">
+      <span style="font-size:16px;color:var(--muted);width:16px;text-align:right;font-weight:600;">${n}</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="${color}"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <div class="sat-nota-bar-wrap">
+        <div class="sat-nota-bar-fill" data-w="${pct}%" style="background:${color};width:0%"></div>
+      </div>
+      <span style="font-size:16px;color:var(--muted);width:34px;text-align:right;">${count}</span>
+    </div>`;
+  }).join('');
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll('#k4-notas .sat-nota-bar-fill').forEach(el => {
+      el.style.width = el.dataset.w || '0%';
+    });
+  }));
+
+  // Comentários
+  document.getElementById('k4-comentarios').innerHTML = cs.length
+    ? cs.slice(0, 3).map(c => `
+        <div class="sat-comment anim">
+          <div class="sat-comment-text">"${esc(c.comment)}"</div>
+          <div class="sat-comment-meta">
+            <div style="display:flex;gap:3px;">${renderStars(c.nota, 16)}</div>
+            <span class="sat-date">${esc(c.data)}</span>
+          </div>
+        </div>`).join('')
+    : `<div class="empty-state">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="opacity:.35"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        Nenhum comentário no período
+       </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
 // RENDER ALL
 // ════════════════════════════════════════════════════════════
 function renderAll() {
   renderTela1();
   renderTela2();
   renderTela3();
+  renderTela4();
 }
 
 // ════════════════════════════════════════════════════════════
@@ -1054,7 +1270,7 @@ function renderAll() {
 // ════════════════════════════════════════════════════════════
 let currentScreen = 0;
 let rotTimer = null;
-const SCREENS = ['s1', 's2', 's3'];
+const SCREENS = ['s1', 's2', 's3', 's4'];
 
 function screenTitle(idx) {
   const hoje = new Date();
@@ -1064,6 +1280,7 @@ function screenTitle(idx) {
     `${mes} ${ano} — Visão do Mês`,
     `Radar Operacional — ${mes} ${ano}`,
     `${ano} — Desempenho Acumulado`,
+    `Voz do Cliente — Satisfação`,
   ][idx] || '';
 }
 
