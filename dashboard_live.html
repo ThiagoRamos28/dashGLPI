@@ -119,7 +119,7 @@ header {
 main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
 .screen {
   position: absolute; inset: 0;
-  padding: 18px 28px;
+  padding: 28px 28px 18px;
   opacity: 0; pointer-events: none;
   transition: opacity 0.7s ease-in-out;
 }
@@ -170,7 +170,7 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
 .screen-headline.bad  .hl-pip { background: var(--red); box-shadow: 0 0 10px var(--red); }
 
 /* ═══ HERO KPI (SLA grande) ═══════════════════════════════════ */
-.hero-card { display: flex; flex-direction: column; }
+.hero-card { display: flex; flex-direction: column; justify-content: space-between; }
 .hero-eyebrow {
   font-size: 14px; font-weight: 700; letter-spacing: 2.5px;
   text-transform: uppercase; color: var(--muted);
@@ -210,19 +210,20 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
 .mini-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .mini-kpi {
   border: 1px solid var(--border); border-radius: 10px;
-  padding: 18px 20px; background: var(--surface);
+  padding: 20px 22px; background: var(--surface);
+  display: flex; flex-direction: column; justify-content: space-between;
 }
 .mini-eyebrow {
   font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
   color: var(--muted); font-weight: 700;
-  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
 }
 .mini-val {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 56px; line-height: 1; color: var(--text);
+  font-size: 80px; line-height: 1; color: var(--text);
 }
-.mini-story { font-size: 15px; color: var(--muted); margin-top: 5px; line-height: 1.4; }
-.mini-delta { font-size: 15px; font-weight: 600; margin-top: 5px; min-height: 20px; }
+.mini-story { font-size: 16px; color: var(--muted); line-height: 1.4; }
+.mini-delta { font-size: 16px; font-weight: 600; min-height: 22px; }
 
 /* ═══ TÉCNICOS ════════════════════════════════════════════════ */
 .tec-list { display: flex; flex-direction: column; gap: 14px; }
@@ -459,7 +460,7 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
         <div class="hero-bar"><div class="hero-bar-fill" id="k1-sla-bar"></div></div>
       </div>
 
-      <div class="mini-kpis">
+      <div class="mini-kpis" style="flex:1;">
         <div class="mini-kpi">
           <div class="mini-eyebrow">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
