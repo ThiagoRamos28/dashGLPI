@@ -226,7 +226,7 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
 .mini-delta { font-size: 16px; font-weight: 600; min-height: 22px; }
 
 /* ═══ TÉCNICOS ════════════════════════════════════════════════ */
-.tec-list { display: flex; flex-direction: column; gap: 14px; }
+.tec-list { display: flex; flex-direction: column; justify-content: space-between; }
 .tec-row { display: flex; align-items: center; gap: 14px; }
 .tec-rank {
   font-family: 'Bebas Neue', sans-serif;
@@ -321,7 +321,7 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
 .crit-row.warn .crit-time { color: var(--amber); }
 
 /* ═══ CATEGORIAS ══════════════════════════════════════════════ */
-.cat-list { display: flex; flex-direction: column; gap: 15px; }
+.cat-list { display: flex; flex-direction: column; justify-content: space-between; }
 .cat-row { display: flex; align-items: center; gap: 14px; }
 .cat-rank {
   font-family: 'Bebas Neue', sans-serif;
@@ -486,6 +486,7 @@ main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
           </div>
           <div class="mini-val" id="k1-open-val">—</div>
           <div class="mini-story" id="k1-open-story"></div>
+          <div class="mini-delta" id="k1-open-delta"></div>
         </div>
       </div>
 
@@ -787,6 +788,21 @@ function yearSlaStory(pct) {
   return `${(90 - n).toFixed(1)}pp abaixo da meta de 90%`;
 }
 
+function emAbertoStory(abertos, hoje, prevAbertos) {
+  const n    = parseInt(abertos)     || 0;
+  const h    = parseInt(hoje)        || 0;
+  const prev = parseInt(prevAbertos);
+  if (n === 0)  return 'nenhum chamado em aberto no momento';
+  if (h > 0)    return `${h} ${h === 1 ? 'novo chegou' : 'novos chegaram'} hoje`;
+  if (!isNaN(prev) && prev > 0) {
+    const diff = n - prev;
+    if (diff < -2) return `${Math.abs(diff)} a menos que no mês anterior`;
+    if (diff > 2)  return `${diff} a mais que no mês anterior`;
+    return 'volume estável vs mês anterior';
+  }
+  return 'chamados aguardando atendimento';
+}
+
 function satisfacaoHeadline(media, respondidas) {
   const n = parseFloat(media);
   const r = parseInt(respondidas) || 0;
@@ -921,9 +937,8 @@ function renderTela1() {
   const abertos = parseInt(k.em_aberto) || 0;
   const hoje    = parseInt(k.abertos_hoje) || 0;
   setText('k1-open-val', fmt(k.em_aberto));
-  setText('k1-open-story', hoje > 0
-    ? `${hoje} ${hoje === 1 ? 'chegou' : 'chegaram'} hoje`
-    : 'aguardando a equipe');
+  setText('k1-open-story', emAbertoStory(k.em_aberto, k.abertos_hoje, kp.em_aberto));
+  setHtml('k1-open-delta', fmtDelta(calcDelta(k.em_aberto, kp.em_aberto), true));
 
   // ─ Técnicos ─
   const tecs   = (cache.mes.tecnicos || []).slice(0, 5);
