@@ -1,294 +1,388 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard TI — GLPI</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-  <style>
-    /* ── RESET ── */
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { height: 100%; overflow: hidden; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard TI — GLPI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+/* ═══ RESET ═══════════════════════════════════════════════════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
 
-    /* ── TOKENS ── */
-    :root {
-      --bg:      #0a0c10;
-      --card:    rgba(255,255,255,0.02);
-      --border:  rgba(255,255,255,0.07);
-      --text:    #f0f2f5;
-      --muted:   rgba(255,255,255,0.28);
-      --dim:     rgba(255,255,255,0.12);
-      --green:   #6bcb85;
-      --red:     #f87171;
-      --amber:   #fbbf24;
-      --r:       8px;
-    }
+/* ═══ TOKENS ══════════════════════════════════════════════════ */
+:root {
+  --bg:       #060911;
+  --surface:  rgba(255,255,255,0.025);
+  --surface2: rgba(255,255,255,0.05);
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.13);
+  --text:     #dde4f0;
+  --muted:    rgba(221,228,240,0.42);
+  --dim:      rgba(221,228,240,0.18);
+  --blue:     #4f8ef7;
+  --green:    #2dd97e;
+  --amber:    #f5a623;
+  --red:      #f05252;
+  --r:        10px;
+}
 
-    body {
-      font-family: 'DM Sans', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      font-size: 14px;
-    }
+body {
+  font-family: 'Outfit', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
 
-    /* ── LOADING OVERLAY ── */
-    #overlay {
-      position: fixed; inset: 0;
-      background: rgba(10,12,16,0.96);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 14px; z-index: 999;
-    }
-    #overlay.hidden { display: none; }
-    .spinner {
-      width: 32px; height: 32px;
-      border: 2px solid rgba(255,255,255,0.08);
-      border-top-color: rgba(255,255,255,0.4);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    #overlay p { font-size: 12px; color: var(--muted); letter-spacing: 0.5px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+/* ─ Dot-grid background ─ */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.022) 1px, transparent 1px);
+  background-size: 30px 30px;
+  pointer-events: none;
+  z-index: 0;
+}
 
-    /* ── HEADER ── */
-    header {
-      flex-shrink: 0;
-      padding: 10px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      background: rgba(10,12,16,0.95);
-      backdrop-filter: blur(20px);
-      z-index: 10;
-    }
-    .h-dept  { font-size: 11px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
-    .h-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 22px; font-weight: 700;
-      color: var(--text); line-height: 1.1;
-    }
-    .h-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
-    .h-indicator { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
-    .status { display: flex; align-items: center; gap: 6px; }
-    .status-dot { width: 6px; height: 6px; border-radius: 50%; }
-    .status-dot.ok      { background: var(--green); }
-    .status-dot.loading { background: var(--amber); }
-    .status-dot.err     { background: var(--red); }
-    .status-txt { font-size: 11px; color: var(--muted); }
+/* ═══ LOADING ═════════════════════════════════════════════════ */
+#overlay {
+  position: fixed; inset: 0;
+  background: rgba(6,9,17,0.97);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px; z-index: 999;
+}
+#overlay.hidden { display: none; }
+.spinner {
+  width: 36px; height: 36px;
+  border: 2px solid rgba(79,142,247,0.12);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+#overlay .load-label { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── PROGRESS BAR ── */
-    .prog-bar { height: 2px; background: rgba(255,255,255,0.04); flex-shrink: 0; }
-    #prog-fill { height: 100%; background: rgba(255,255,255,0.28); width: 0%; }
+/* ═══ HEADER ══════════════════════════════════════════════════ */
+header {
+  flex-shrink: 0;
+  border-top: 2px solid var(--blue);
+  padding: 0 24px;
+  height: 54px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(6,9,17,0.93);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+  position: relative;
+}
+.h-brand { display: flex; align-items: center; gap: 11px; }
+.h-logo {
+  width: 30px; height: 30px;
+  background: var(--blue);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.h-dept  { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+.h-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 21px; color: var(--text); line-height: 1; letter-spacing: 1px;
+}
+.h-right { display: flex; align-items: center; gap: 20px; }
+.h-indicator {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--dim);
+  background: var(--surface2);
+  padding: 3px 9px; border-radius: 4px;
+  border: 1px solid var(--border);
+}
+.status { display: flex; align-items: center; gap: 7px; }
+.status-dot { width: 7px; height: 7px; border-radius: 50%; }
+.status-dot.ok      { background: var(--green); box-shadow: 0 0 7px var(--green); }
+.status-dot.loading { background: var(--amber); }
+.status-dot.err     { background: var(--red); }
+.status-txt { font-size: 11px; color: var(--muted); }
 
-    /* ── MAIN / SCREENS ── */
-    main { flex: 1; position: relative; overflow: hidden; }
-    .screen {
-      position: absolute; inset: 0;
-      padding: 16px 24px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.6s ease-in-out;
-    }
-    .screen.active { opacity: 1; pointer-events: auto; }
+/* ═══ PROGRESS BAR ════════════════════════════════════════════ */
+.prog-wrap { height: 2px; background: rgba(255,255,255,0.04); flex-shrink: 0; }
+#prog-fill { height: 100%; background: var(--blue); opacity: 0.55; width: 0%; }
 
-    /* ── LAYOUT HELPERS ── */
-    .s-grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      height: 100%;
-    }
-    .s-col { display: flex; flex-direction: column; gap: 12px; }
+/* ═══ MAIN ════════════════════════════════════════════════════ */
+main { flex: 1; position: relative; overflow: hidden; z-index: 1; }
+.screen {
+  position: absolute; inset: 0;
+  padding: 14px 22px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.7s ease-in-out;
+}
+.screen.active { opacity: 1; pointer-events: auto; }
 
-    /* ── CARD BASE ── */
-    .card {
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 14px 16px;
-      background: var(--card);
-    }
-    .sec-title {
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 2px; text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
+/* ═══ CARD ════════════════════════════════════════════════════ */
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute; inset: 0; border-radius: var(--r);
+  background: linear-gradient(135deg, rgba(255,255,255,0.014) 0%, transparent 55%);
+  pointer-events: none;
+}
 
-    /* ── KPI CARDS ── */
-    .kpi-grid { display: flex; flex-direction: column; gap: 10px; flex: 1; }
-    .kpi-card {
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 12px 14px;
-    }
-    .kpi-lbl {
-      font-size: 11px; font-weight: 500;
-      letter-spacing: 1.5px; text-transform: uppercase;
-      color: var(--muted); margin-bottom: 4px;
-    }
-    .kpi-val {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 42px; font-weight: 700;
-      color: var(--text); line-height: 1;
-      letter-spacing: -1px;
-    }
-    .kpi-val-sm { font-size: 26px; letter-spacing: -0.5px; }
-    .kpi-delta { font-size: 11px; font-weight: 600; margin-top: 4px; min-height: 16px; }
-    .delta-good { color: var(--green); }
-    .delta-bad  { color: var(--red); }
-    .kpi-bar { height: 2px; background: rgba(255,255,255,0.05); border-radius: 1px; margin-top: 8px; }
-    .kpi-bar-fill { height: 100%; background: rgba(255,255,255,0.25); border-radius: 1px; transition: width 0.5s ease; }
-    .kpi-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; }
-    .kpi-sub { font-size: 10px; color: var(--muted); margin-top: 3px; }
+/* ─ Section label ─ */
+.sec-label {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--muted);
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 10px;
+}
 
-    /* ── CSAT ── */
-    .csat-val {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 30px; font-weight: 700;
-      color: var(--amber); margin: 4px 0 2px;
-    }
-    .csat-sub { font-size: 10px; color: var(--muted); }
+/* ─ Screen headline (phrase at top of each screen) ─ */
+.screen-headline {
+  font-size: 13px; color: var(--muted); font-weight: 400;
+  padding: 0 2px 10px;
+  display: flex; align-items: center; gap: 9px;
+  line-height: 1.4;
+}
+.hl-pip {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  background: var(--blue);
+}
+.screen-headline.ok   .hl-pip { background: var(--green); box-shadow: 0 0 5px var(--green); }
+.screen-headline.warn .hl-pip { background: var(--amber); }
+.screen-headline.bad  .hl-pip { background: var(--red); box-shadow: 0 0 5px var(--red); }
 
-    /* ── TÉCNICOS ── */
-    .tec-list { display: flex; flex-direction: column; gap: 6px; }
-    .tec-row {
-      display: flex; align-items: center; gap: 8px;
-      padding: 5px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
-    .tec-row:last-child { border-bottom: none; }
-    .tec-rank {
-      font-size: 10px; color: var(--dim); width: 16px; flex-shrink: 0;
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .tec-nome { font-size: 13px; color: rgba(255,255,255,0.6); flex: 1; }
-    .tec-stats {
-      font-size: 11px; color: var(--muted);
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .sla-good { color: var(--green); font-weight: 600; }
-    .sla-warn { color: var(--amber); font-weight: 600; }
-    .sla-bad  { color: var(--red);   font-weight: 600; }
+/* ═══ HERO KPI (SLA grande) ═══════════════════════════════════ */
+.hero-card { display: flex; flex-direction: column; }
+.hero-eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--muted);
+  display: flex; align-items: center; gap: 6px;
+  margin-bottom: 6px;
+}
+.hero-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 96px; line-height: 0.9;
+  letter-spacing: -1px; color: var(--text);
+  transition: color 0.5s ease;
+}
+.hero-num.green { color: var(--green); text-shadow: 0 0 40px rgba(45,217,126,0.2); }
+.hero-num.amber { color: var(--amber); text-shadow: 0 0 40px rgba(245,166,35,0.2); }
+.hero-num.red   { color: var(--red);   text-shadow: 0 0 40px rgba(240,82,82,0.2); }
 
-    /* ── ALERT LIST (chamados críticos) ── */
-    .alert-list { display: flex; flex-direction: column; gap: 5px; }
-    .alert-row {
-      display: flex; align-items: center; gap: 8px;
-      padding: 6px 10px; border-radius: 6px;
-      border: 1px solid rgba(251,191,36,0.2);
-      background: rgba(251,191,36,0.04);
-    }
-    .alert-row.sla-viol {
-      border-color: rgba(248,113,113,0.25);
-      background: rgba(248,113,113,0.05);
-    }
-    .alert-id {
-      font-size: 11px; color: var(--muted);
-      font-family: 'JetBrains Mono', monospace; flex-shrink: 0;
-    }
-    .alert-titulo {
-      font-size: 12px; color: rgba(255,255,255,0.65);
-      flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .alert-tempo {
-      font-size: 11px; font-weight: 600;
-      font-family: 'JetBrains Mono', monospace; flex-shrink: 0;
-      color: var(--amber);
-    }
-    .alert-row.sla-viol .alert-tempo { color: var(--red); }
-    .empty-state { font-size: 12px; color: var(--muted); padding: 8px 0; }
+.hero-story {
+  font-size: 14px; color: rgba(221,228,240,0.55);
+  margin-top: 10px; line-height: 1.5; font-weight: 300;
+  max-width: 360px;
+}
+.hero-delta {
+  margin-top: 8px; font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; gap: 5px; min-height: 18px;
+}
+.hero-bar {
+  height: 3px; background: rgba(255,255,255,0.06);
+  border-radius: 2px; margin-top: 14px;
+}
+.hero-bar-fill {
+  height: 100%; border-radius: 2px;
+  background: var(--green); width: 0%;
+  transition: width 1.2s cubic-bezier(.25,.46,.45,.94);
+}
 
-    /* ── CATEGORY BARS ── */
-    .cat-list { display: flex; flex-direction: column; gap: 9px; }
-    .cat-row { display: flex; align-items: center; gap: 8px; }
-    .cat-name {
-      font-size: 12px; color: rgba(255,255,255,0.55);
-      width: 120px; flex-shrink: 0;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .cat-bar-wrap { flex: 1; height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; }
-    .cat-bar-fill {
-      height: 100%; background: rgba(255,255,255,0.3);
-      border-radius: 2px; width: 0%;
-      transition: width 0.8s ease;
-    }
-    .cat-num {
-      font-size: 11px; color: var(--muted);
-      width: 32px; text-align: right;
-      font-family: 'JetBrains Mono', monospace;
-    }
+/* ═══ MINI KPIs ═══════════════════════════════════════════════ */
+.mini-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.mini-kpi {
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px 14px; background: var(--surface);
+}
+.mini-eyebrow {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); font-weight: 600;
+  display: flex; align-items: center; gap: 5px; margin-bottom: 4px;
+}
+.mini-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px; line-height: 1; color: var(--text);
+}
+.mini-story { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.35; }
+.mini-delta { font-size: 11px; font-weight: 600; margin-top: 3px; min-height: 16px; }
 
-    /* ── TELA 3: YEAR LAYOUT ── */
-    .s-body-year { display: flex; flex-direction: column; gap: 10px; height: 100%; }
-    .year-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+/* ═══ TÉCNICOS ════════════════════════════════════════════════ */
+.tec-list { display: flex; flex-direction: column; gap: 9px; }
+.tec-row { display: flex; align-items: center; gap: 10px; }
+.tec-rank {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px; color: var(--dim);
+  width: 22px; flex-shrink: 0; line-height: 1; text-align: center;
+}
+.tec-rank.gold   { color: var(--amber); }
+.tec-rank.silver { color: rgba(221,228,240,0.45); }
+.tec-info { flex: 1; min-width: 0; }
+.tec-nome {
+  font-size: 13px; color: rgba(221,228,240,0.8); font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.tec-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.tec-bar-wrap {
+  width: 70px; height: 3px;
+  background: rgba(255,255,255,0.06); border-radius: 2px; flex-shrink: 0;
+}
+.tec-bar-fill { height: 100%; border-radius: 2px; width: 0%; transition: width 0.9s ease; }
+.tec-sla {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 500;
+  width: 44px; text-align: right; flex-shrink: 0;
+}
+.sla-good { color: var(--green); }
+.sla-warn { color: var(--amber); }
+.sla-bad  { color: var(--red);   }
 
-    .melhor-mes {
-      display: flex; align-items: center; gap: 10px;
-      background: rgba(107,203,133,0.04);
-      border-color: rgba(107,203,133,0.18);
-    }
-    .melhor-label { font-size: 8px; letter-spacing: 2px; color: var(--green); text-transform: uppercase; margin-bottom: 2px; }
-    .melhor-val { font-size: 13px; font-weight: 500; color: var(--text); }
+/* ═══ CHAMADOS CRÍTICOS ═══════════════════════════════════════ */
+.crit-list { display: flex; flex-direction: column; gap: 7px; overflow: hidden; }
+.crit-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 12px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+}
+.crit-row.viol {
+  border-color: rgba(240,82,82,0.22);
+  background: rgba(240,82,82,0.04);
+}
+.crit-row.warn {
+  border-color: rgba(245,166,35,0.2);
+  background: rgba(245,166,35,0.03);
+}
+.crit-badge {
+  width: 3px; border-radius: 2px; align-self: stretch; flex-shrink: 0;
+  background: rgba(255,255,255,0.1);
+}
+.crit-row.viol .crit-badge { background: var(--red); }
+.crit-row.warn .crit-badge { background: var(--amber); }
+.crit-body { flex: 1; min-width: 0; }
+.crit-titulo {
+  font-size: 13px; color: rgba(221,228,240,0.78); font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.crit-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.crit-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--dim);
+}
+.crit-cat { font-size: 11px; color: var(--muted); }
+.crit-tec { font-size: 11px; color: var(--muted); }
+.crit-prio {
+  font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 4px; font-weight: 600; flex-shrink: 0;
+}
+.prio-1, .prio-2 { background: rgba(45,217,126,0.1);  color: var(--green); }
+.prio-3           { background: rgba(255,255,255,0.06); color: var(--muted); }
+.prio-4           { background: rgba(245,166,35,0.12);  color: var(--amber); }
+.prio-5, .prio-6  { background: rgba(240,82,82,0.12);   color: var(--red);   }
+.crit-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 500; flex-shrink: 0; color: var(--muted);
+}
+.crit-row.viol .crit-time { color: var(--red); }
+.crit-row.warn .crit-time { color: var(--amber); }
 
-    /* ── CHART BARS (CSS puro) ── */
-    .chart-bars {
-      display: flex; align-items: flex-end; gap: 6px;
-      height: 80px; padding-top: 8px;
-    }
-    .bar-wrap {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; gap: 3px; height: 100%; justify-content: flex-end;
-    }
-    .bar-col {
-      width: 100%; background: rgba(255,255,255,0.14);
-      border-radius: 2px 2px 0 0; min-height: 2px;
-      transition: height 0.6s ease;
-    }
-    .bar-col.best { background: var(--green); }
-    .bar-lbl { font-size: 10px; color: var(--muted); }
-    .bar-pct { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
-    .bar-pct.best { color: var(--green); font-weight: 600; }
+/* ═══ CATEGORIAS ══════════════════════════════════════════════ */
+.cat-list { display: flex; flex-direction: column; gap: 11px; }
+.cat-row { display: flex; align-items: center; gap: 10px; }
+.cat-rank {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; color: var(--dim);
+  width: 18px; flex-shrink: 0; text-align: right; line-height: 1;
+}
+.cat-info { flex: 1; min-width: 0; }
+.cat-name {
+  font-size: 13px; color: rgba(221,228,240,0.72); font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+.cat-bar-wrap { height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; }
+.cat-bar-fill {
+  height: 100%; background: var(--blue); opacity: 0.65;
+  border-radius: 2px; width: 0%; transition: width 0.9s ease;
+}
+.cat-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; color: var(--muted); width: 36px; text-align: right; flex-shrink: 0;
+}
 
-    /* ── TELA 3 BOTTOM GRID ── */
-    .year-bottom { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+/* ═══ TELA 3 — ANO ════════════════════════════════════════════ */
+.year-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.year-kpi {
+  border: 1px solid var(--border); border-radius: var(--r);
+  padding: 14px 16px; background: var(--surface);
+}
+.year-eyebrow {
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--muted); font-weight: 600; margin-bottom: 4px;
+}
+.year-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 44px; line-height: 1; color: var(--text);
+}
+.year-story { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.35; }
 
-    /* ── ANIMATIONS ── */
-    @keyframes kpi-in {
-      from { opacity: 0; transform: translateY(5px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .kpi-card:nth-child(1) { animation: kpi-in 0.4s ease 0ms   both; }
-    .kpi-card:nth-child(2) { animation: kpi-in 0.4s ease 60ms  both; }
-    .kpi-card:nth-child(3) { animation: kpi-in 0.4s ease 120ms both; }
+/* ═══ EMPTY / ANIMATIONS ══════════════════════════════════════ */
+.empty-state {
+  font-size: 12px; color: var(--muted); padding: 10px 0;
+  display: flex; align-items: center; gap: 8px;
+}
 
-    @media (prefers-reduced-motion: reduce) {
-      .screen     { transition: none; }
-      .cat-bar-fill { transition: none; }
-      .bar-col    { transition: none; }
-      .kpi-card   { animation: none; }
-      .spinner    { animation: none; }
-      #prog-fill  { transition: none !important; }
-    }
-  </style>
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim { animation: fadeUp 0.45s ease both; }
+.anim:nth-child(1) { animation-delay: 0ms; }
+.anim:nth-child(2) { animation-delay: 70ms; }
+.anim:nth-child(3) { animation-delay: 140ms; }
+.anim:nth-child(4) { animation-delay: 210ms; }
+.anim:nth-child(5) { animation-delay: 280ms; }
+.anim:nth-child(6) { animation-delay: 350ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .screen, .tec-bar-fill, .cat-bar-fill, .hero-bar-fill { transition: none; }
+  .spinner, .anim { animation: none; }
+  #prog-fill { transition: none !important; }
+}
+</style>
 </head>
 <body>
 
-<!-- Overlay de loading -->
+<!-- ─── LOADING ─────────────────────────────────────────────── -->
 <div id="overlay">
   <div class="spinner"></div>
-  <p>Conectando ao GLPI...</p>
+  <p class="load-label">Conectando ao GLPI...</p>
 </div>
 
-<!-- Header -->
+<!-- ─── HEADER ──────────────────────────────────────────────── -->
 <header>
-  <div>
-    <div class="h-dept">Departamento de TI · Tecnologia</div>
-    <div class="h-title" id="h-title">Carregando...</div>
+  <div class="h-brand">
+    <div class="h-logo">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="white"><path d="M20 3H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h7v2H8v2h8v-2h-3v-2h7a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zm-1 12H5V5h14v10z"/></svg>
+    </div>
+    <div>
+      <div class="h-dept">Departamento de TI · Tecnologia</div>
+      <div class="h-title" id="h-title">Carregando...</div>
+    </div>
   </div>
   <div class="h-right">
     <div class="h-indicator" id="h-indicator">1 / 3</div>
@@ -299,130 +393,194 @@
   </div>
 </header>
 
-<div class="prog-bar"></div>
+<div class="prog-wrap"><div id="prog-fill"></div></div>
 
 <main>
 
-  <!-- ════ TELA 1 — MÊS ATUAL ════ -->
-  <div id="s1" class="screen active">
-    <div class="s-grid-2">
+<!-- ════════════════════════════════════════════════════════════
+     TELA 1 — VISÃO DO MÊS
+════════════════════════════════════════════════════════════ -->
+<div id="s1" class="screen active">
 
-      <!-- Coluna esquerda: KPIs -->
-      <div class="s-col">
-        <div class="kpi-grid">
-          <div class="kpi-card" id="k1-sla-card">
-            <div class="kpi-lbl">SLA Cumprido</div>
-            <div class="kpi-val" id="k1-sla-val">—</div>
-            <div class="kpi-delta" id="k1-sla-delta"></div>
-            <div class="kpi-bar"><div class="kpi-bar-fill" id="k1-sla-bar"></div></div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-lbl">Resolvidos no Mês</div>
-            <div class="kpi-val" id="k1-res-val">—</div>
-            <div class="kpi-delta" id="k1-res-delta"></div>
-          </div>
-          <div class="kpi-card kpi-2col">
-            <div>
-              <div class="kpi-lbl">TMR Médio</div>
-              <div class="kpi-val kpi-val-sm" id="k1-tmr-val">—</div>
-              <div class="kpi-delta" id="k1-tmr-delta"></div>
-            </div>
-            <div>
-              <div class="kpi-lbl">Em Aberto</div>
-              <div class="kpi-val kpi-val-sm" id="k1-aberto-val">—</div>
-              <div class="kpi-sub" id="k1-aberto-sub"></div>
-            </div>
-          </div>
+  <div id="s1-headline" class="screen-headline">
+    <div class="hl-pip"></div>
+    <span id="s1-hl-text">Carregando dados...</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;height:calc(100% - 34px)">
+
+    <!-- Coluna esquerda: Hero SLA + Mini KPIs -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+
+      <div class="card hero-card" style="flex:1">
+        <div class="hero-eyebrow">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" opacity="0.55"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          SLA Cumprido — Mês Atual
         </div>
+        <div class="hero-num" id="k1-sla-num">—</div>
+        <div class="hero-story" id="k1-sla-story"></div>
+        <div class="hero-delta" id="k1-sla-delta"></div>
+        <div class="hero-bar"><div class="hero-bar-fill" id="k1-sla-bar"></div></div>
       </div>
 
-      <!-- Coluna direita: CSAT + técnicos -->
-      <div class="s-col">
-        <div class="card">
-          <div class="sec-title">Satisfação dos Usuários</div>
-          <div class="csat-val" id="k1-csat-val">—</div>
-          <div class="csat-sub" id="k1-csat-sub"></div>
+      <div class="mini-kpis">
+        <div class="mini-kpi">
+          <div class="mini-eyebrow">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            Resolvidos
+          </div>
+          <div class="mini-val" id="k1-res-val">—</div>
+          <div class="mini-story" id="k1-res-story"></div>
+          <div class="mini-delta" id="k1-res-delta"></div>
         </div>
-        <div class="card" style="flex:1">
-          <div class="sec-title">Destaques do Mês</div>
-          <div class="tec-list" id="k1-tec-list"></div>
+        <div class="mini-kpi">
+          <div class="mini-eyebrow">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z"/></svg>
+            TMR Médio
+          </div>
+          <div class="mini-val" id="k1-tmr-val">—</div>
+          <div class="mini-story" id="k1-tmr-story"></div>
+          <div class="mini-delta" id="k1-tmr-delta"></div>
+        </div>
+        <div class="mini-kpi">
+          <div class="mini-eyebrow">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-7v2h2v-2h-2zm0-8v6h2V7h-2z"/></svg>
+            Em Aberto
+          </div>
+          <div class="mini-val" id="k1-open-val">—</div>
+          <div class="mini-story" id="k1-open-story"></div>
         </div>
       </div>
 
     </div>
+
+    <!-- Coluna direita: Técnicos -->
+    <div class="card" style="display:flex;flex-direction:column;">
+      <div class="sec-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        Destaques da Equipe
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:300;line-height:1.5;">
+        Os profissionais que mais entregaram este mês, ordenados por volume de chamados resolvidos.
+      </p>
+      <div class="tec-list" id="k1-tec-list" style="flex:1;"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     TELA 2 — RADAR OPERACIONAL
+════════════════════════════════════════════════════════════ -->
+<div id="s2" class="screen">
+
+  <div id="s2-headline" class="screen-headline warn">
+    <div class="hl-pip"></div>
+    <span id="s2-hl-text">Monitoramento em tempo real</span>
   </div>
 
-  <!-- ════ TELA 2 — RADAR OPERACIONAL ════ -->
-  <div id="s2" class="screen">
-    <div class="s-grid-2">
-      <div class="card" style="overflow:auto">
-        <div class="sec-title">⚠ Aguardando / SLA Extrapolado</div>
-        <div class="alert-list" id="s2-criticos"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;height:calc(100% - 34px)">
+
+    <div class="card" style="display:flex;flex-direction:column;overflow:hidden;">
+      <div class="sec-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+        Chamados que Precisam de Atenção
       </div>
-      <div class="card">
-        <div class="sec-title">Top Categorias — Mês Atual</div>
-        <div class="cat-list" id="s2-cats"></div>
-      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;font-weight:300;line-height:1.5;" id="s2-crit-story"></p>
+      <div class="crit-list" id="s2-criticos" style="flex:1;overflow:hidden;"></div>
     </div>
+
+    <div class="card" style="display:flex;flex-direction:column;">
+      <div class="sec-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20h4V4h-4v16zm-6 0h4v-8H4v8zM16 9v11h4V9h-4z"/></svg>
+        Onde a Equipe Está Concentrada
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:300;line-height:1.5;">
+        Categorias com maior volume de chamados abertos no mês. Use esse dado para antecipar demandas.
+      </p>
+      <div class="cat-list" id="s2-cats" style="flex:1;"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     TELA 3 — DESEMPENHO DO ANO
+════════════════════════════════════════════════════════════ -->
+<div id="s3" class="screen">
+
+  <div id="s3-headline" class="screen-headline">
+    <div class="hl-pip"></div>
+    <span id="s3-hl-text">Desempenho acumulado do ano</span>
   </div>
 
-  <!-- ════ TELA 3 — DESEMPENHO DO ANO ════ -->
-  <div id="s3" class="screen">
-    <div class="s-body-year">
-      <div class="year-kpis">
-        <div class="kpi-card">
-          <div class="kpi-lbl">Total no Ano</div>
-          <div class="kpi-val kpi-val-sm" id="k3-total">—</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">SLA Médio</div>
-          <div class="kpi-val kpi-val-sm" id="k3-sla">—</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-lbl">Satisfação Média</div>
-          <div class="kpi-val kpi-val-sm" id="k3-csat">—</div>
-        </div>
+  <div style="display:flex;flex-direction:column;gap:12px;height:calc(100% - 34px);">
+
+    <div class="year-kpis">
+      <div class="year-kpi">
+        <div class="year-eyebrow">Total no Ano</div>
+        <div class="year-val" id="k3-total">—</div>
+        <div class="year-story" id="k3-total-story"></div>
       </div>
-      <div class="card melhor-mes" id="k3-melhor">
-        <div>
-          <div class="melhor-label">Melhor mês</div>
-          <div class="melhor-val" id="k3-melhor-val">Carregando...</div>
-        </div>
+      <div class="year-kpi">
+        <div class="year-eyebrow">SLA Médio Anual</div>
+        <div class="year-val" id="k3-sla">—</div>
+        <div class="year-story" id="k3-sla-story"></div>
       </div>
-      <div class="year-bottom">
-        <div class="card">
-          <div class="sec-title">SLA % por Mês</div>
-          <div class="chart-bars" id="k3-chart"></div>
-        </div>
-        <div class="card">
-          <div class="sec-title">Ranking do Ano</div>
-          <div class="tec-list" id="k3-ranking"></div>
-        </div>
+      <div class="year-kpi">
+        <div class="year-eyebrow">TMR Médio Anual</div>
+        <div class="year-val" id="k3-tmr">—</div>
+        <div class="year-story" id="k3-tmr-story"></div>
       </div>
     </div>
+
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;flex:1;min-height:0;">
+
+      <div class="card" style="display:flex;flex-direction:column;">
+        <div class="sec-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+          Volume Mensal — Chamados Abertos × Fechados
+        </div>
+        <div style="flex:1;min-height:0;position:relative;">
+          <canvas id="chart-volume"></canvas>
+        </div>
+      </div>
+
+      <div class="card" style="display:flex;flex-direction:column;">
+        <div class="sec-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Ranking Anual da Equipe
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:14px;font-weight:300;line-height:1.5;">
+          Técnicos com mais chamados resolvidos no ano, com respectivo SLA%.
+        </p>
+        <div class="tec-list" id="k3-ranking" style="flex:1;"></div>
+      </div>
+
+    </div>
   </div>
+</div>
 
 </main>
 
-<div class="prog-bar">
-  <div id="prog-fill"></div>
-</div>
-
 <script>
-// ── CONFIGURAÇÃO ──────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════════
 const API_URL      = '/dashboard/api.php';
-const CATEGORIA_ID = 73;       // Preencher com ID da categoria Tecnologia no GLPI
-const SCREEN_TIME  = 45000;   // 45s por tela
-const REFRESH_TIME = 300000;  // 5min entre re-fetches
+const CATEGORIA_ID = 73;       // ID da categoria no GLPI
+const SCREEN_TIME  = 45000;    // 45s por tela
+const REFRESH_TIME = 300000;   // 5min
 
-const MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
-                  'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MESES_PT    = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho',
+                     'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const MESES_SHORT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const PRIO_SHORT  = { 1:'M.Baixa', 2:'Baixa', 3:'Média', 4:'Alta', 5:'M.Alta', 6:'Maior' };
 
-// ── HELPERS ───────────────────────────────────────────────────
-function fmt(n) {
-  return n == null ? '—' : Number(n).toLocaleString('pt-BR');
-}
+// ════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════
+function fmt(n) { return n == null ? '—' : Number(n).toLocaleString('pt-BR'); }
 
 function fmtH(h) {
   if (h == null || h === '') return '—';
@@ -440,11 +598,12 @@ function calcDelta(curr, prev) {
 
 function fmtDelta(delta, inverse = false) {
   if (delta == null) return '';
-  const pct   = Math.abs(delta).toFixed(1);
-  const good  = inverse ? delta < 0 : delta > 0;
-  const arrow = delta > 0 ? '▲ +' : '▼ −';
-  const cls   = good ? 'delta-good' : 'delta-bad';
-  return `<span class="${cls}">${arrow}${pct}%</span>`;
+  const pct  = Math.abs(delta).toFixed(1);
+  const good = inverse ? delta < 0 : delta > 0;
+  const arr  = delta > 0 ? '▲' : '▼';
+  const sign = delta > 0 ? '+' : '−';
+  const cls  = good ? 'sla-good' : 'sla-bad';
+  return `<span class="${cls}">${arr} ${sign}${pct}%</span>&nbsp;<span style="color:var(--muted);font-weight:400">vs mês anterior</span>`;
 }
 
 function slaClass(pct) {
@@ -454,153 +613,267 @@ function slaClass(pct) {
   return 'sla-bad';
 }
 
-// ── UTILITÁRIOS DE DATA ───────────────────────────────────────
-function toYMD(d) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
+function esc(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ════════════════════════════════════════════════════════════
+// STORYTELLING — Transforma números em frases
+// ════════════════════════════════════════════════════════════
+function slaStory(pct) {
+  const n = parseFloat(pct);
+  if (isNaN(n)) return 'Dados de SLA indisponíveis para o período.';
+  const em10 = Math.round(n / 10);
+  const fora  = (100 - n).toFixed(1);
+  if (n >= 95) return `Desempenho excepcional — ${em10} em cada 10 chamados resolvidos dentro do prazo.`;
+  if (n >= 90) return `Meta cumprida — ${em10} em cada 10 chamados foram resolvidos no prazo acordado.`;
+  if (n >= 80) return `Atenção: ${fora}% dos chamados ficaram fora do prazo — meta é 90%.`;
+  if (n >= 70) return `SLA comprometido — mais de ${Math.round(100 - n)}% dos chamados violaram o prazo de resolução.`;
+  return `Situação crítica — a maioria dos chamados está fora do prazo acordado com os usuários.`;
+}
+
+function headlineStory(sla, total, abertos) {
+  const n = parseFloat(sla);
+  if (isNaN(n)) return 'Aguardando dados do servidor...';
+  if (n >= 90) return `A equipe está entregando — SLA de ${sla}% e ${fmt(total)} chamados tratados no período.`;
+  if (n >= 75) return `Atenção: SLA em ${sla}%, abaixo da meta de 90%. ${fmt(abertos)} chamados aguardam resolução.`;
+  return `Situação crítica — SLA em ${sla}% com ${fmt(abertos)} chamados em aberto. Ação imediata necessária.`;
+}
+
+function headlineClass(pct) {
+  const n = parseFloat(pct);
+  if (n >= 90) return 'ok';
+  if (n >= 75) return 'warn';
+  return 'bad';
+}
+
+function tmrStory(h, prevH) {
+  const n = parseFloat(h);
+  if (isNaN(n)) return '';
+  const prev = parseFloat(prevH);
+  if (!isNaN(prev) && prev > 0) {
+    const diff = +(n - prev).toFixed(1);
+    if (diff <= -1) return `${Math.abs(diff)}h mais rápido que o mês anterior`;
+    if (diff >= 1)  return `${diff}h mais lento que o mês anterior`;
+  }
+  if (n < 4)  return 'Resolução ágil — menos de meio dia';
+  if (n < 8)  return 'Resolução dentro do mesmo dia útil';
+  if (n < 24) return 'Resolução em menos de 24 horas';
+  if (n < 48) return 'Resolução em até 2 dias úteis';
+  return 'Chamados com resolução acima de 2 dias';
+}
+
+function yearSlaStory(pct) {
+  const n = parseFloat(pct);
+  if (isNaN(n)) return '';
+  if (n >= 90) return `Acima da meta anual de 90%`;
+  return `${(90 - n).toFixed(1)}pp abaixo da meta de 90%`;
+}
+
+// ════════════════════════════════════════════════════════════
+// DATE UTILS
+// ════════════════════════════════════════════════════════════
+function toYMD(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+const hoje0 = new Date();
 function firstDayOfMonth(d)     { return toYMD(new Date(d.getFullYear(), d.getMonth(), 1)); }
 function lastDayOfPrevMonth(d)  { return toYMD(new Date(d.getFullYear(), d.getMonth(), 0)); }
-function firstDayOfPrevMonth(d) { return toYMD(new Date(d.getFullYear(), d.getMonth() - 1, 1)); }
+function firstDayOfPrevMonth(d) { return toYMD(new Date(d.getFullYear(), d.getMonth()-1, 1)); }
 function firstDayOfYear(d)      { return toYMD(new Date(d.getFullYear(), 0, 1)); }
 
-// ── CACHE DE DADOS ────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// CACHE + FETCH
+// ════════════════════════════════════════════════════════════
 let cache = { mes: null, anterior: null, ano: null };
+let chartInst = null;
 
-// ── FETCH ─────────────────────────────────────────────────────
 async function fetchAll() {
   setStatus('loading', 'Atualizando...');
   const hoje = new Date();
   const cat  = CATEGORIA_ID;
 
-  function buildUrl(inicio, fim) {
-    return `${API_URL}?${new URLSearchParams({
-      data_inicio: inicio,
-      data_fim: fim,
-      categoria: cat,
-      _: Date.now(),
-    })}`;
-  }
+  const url = (ini, fim) => `${API_URL}?${new URLSearchParams({
+    data_inicio: ini, data_fim: fim, categoria: cat, _: Date.now()
+  })}`;
 
   try {
     const [mes, anterior, ano] = await Promise.all([
-      fetch(buildUrl(firstDayOfMonth(hoje), toYMD(hoje))).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
-      fetch(buildUrl(firstDayOfPrevMonth(hoje), lastDayOfPrevMonth(hoje))).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
-      fetch(buildUrl(firstDayOfYear(hoje), toYMD(hoje))).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }),
+      fetch(url(firstDayOfMonth(hoje), toYMD(hoje))).then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(url(firstDayOfPrevMonth(hoje), lastDayOfPrevMonth(hoje))).then(r => { if (!r.ok) throw new Error(); return r.json(); }),
+      fetch(url(firstDayOfYear(hoje), toYMD(hoje))).then(r => { if (!r.ok) throw new Error(); return r.json(); }),
     ]);
-
-    if (mes.erro || anterior.erro || ano.erro) throw new Error(mes.erro || 'Erro na API');
-
+    if (mes.erro) throw new Error(mes.erro);
     cache = { mes, anterior, ano };
     renderAll();
-    setStatus('ok', 'Atualizado às ' + ((mes.gerado_em ?? '').split(' ')[1] ?? ''));
+    const ts = (mes.gerado_em ?? '').split(' ')[1] ?? '';
+    setStatus('ok', ts ? `Atualizado às ${ts}` : 'Online');
     document.getElementById('overlay').classList.add('hidden');
-  } catch (e) {
-    setStatus('err', 'Erro na conexão');
+  } catch {
+    setStatus('err', 'Erro na conexão com a API');
     document.getElementById('overlay').classList.add('hidden');
   }
 }
 
-function setStatus(type, txt = '') {
+function setStatus(type, txt) {
   document.getElementById('status-dot').className = 'status-dot ' + type;
   if (txt) document.getElementById('status-txt').textContent = txt;
 }
 
-function setText(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = val ?? '—';
-}
+function setText(id, v) { const el=document.getElementById(id); if(el) el.textContent = v ?? '—'; }
+function setHtml(id, v) { const el=document.getElementById(id); if(el) el.innerHTML   = v ?? ''; }
 
-function setHtml(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.innerHTML = val ?? '';
-}
-
-function esc(s) {
-  return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ── RENDER TELA 1 — MÊS ATUAL ────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// RENDER — TELA 1: VISÃO DO MÊS
+// ════════════════════════════════════════════════════════════
 function renderTela1() {
-  const k  = cache.mes.kpis     || {};
+  const k  = cache.mes.kpis      || {};
   const kp = cache.anterior.kpis || {};
 
-  // SLA
-  const sla = parseFloat(k.pct_sla);
-  setText('k1-sla-val', (k.pct_sla ?? '—') + '%');
-  setHtml('k1-sla-delta', fmtDelta(calcDelta(k.pct_sla, kp.pct_sla)));
-  const slaEl = document.getElementById('k1-sla-val');
-  if (slaEl && !isNaN(sla)) slaEl.style.color = sla >= 90 ? 'var(--green)' : sla >= 75 ? 'var(--amber)' : 'var(--red)';
-  const barEl = document.getElementById('k1-sla-bar');
-  if (barEl) { barEl.style.width = '0%'; requestAnimationFrame(() => { barEl.style.width = (sla || 0) + '%'; }); }
+  // Headline da tela
+  const hlEl = document.getElementById('s1-headline');
+  const cls  = headlineClass(k.pct_sla);
+  hlEl.className = 'screen-headline ' + cls;
+  setText('s1-hl-text', headlineStory(k.pct_sla, k.total_chamados, k.em_aberto));
 
-  // Resolvidos
+  // ─ Hero SLA ─
+  const sla = parseFloat(k.pct_sla);
+  setText('k1-sla-num', (k.pct_sla ?? '—') + '%');
+  const numEl = document.getElementById('k1-sla-num');
+  if (numEl && !isNaN(sla))
+    numEl.className = 'hero-num ' + (sla >= 90 ? 'green' : sla >= 75 ? 'amber' : 'red');
+  setText('k1-sla-story', slaStory(k.pct_sla));
+  setHtml('k1-sla-delta', fmtDelta(calcDelta(k.pct_sla, kp.pct_sla)));
+  const barEl = document.getElementById('k1-sla-bar');
+  if (barEl) {
+    const color = sla >= 90 ? 'var(--green)' : sla >= 75 ? 'var(--amber)' : 'var(--red)';
+    barEl.style.background = color;
+    barEl.style.width = '0%';
+    requestAnimationFrame(() => { barEl.style.width = Math.min(sla || 0, 100) + '%'; });
+  }
+
+  // ─ Resolvidos ─
   setText('k1-res-val', fmt(k.fechados));
+  setText('k1-res-story', 'chamados encerrados no período');
   setHtml('k1-res-delta', fmtDelta(calcDelta(k.fechados, kp.fechados)));
 
-  // TMR (menor = melhor → inverse: true)
+  // ─ TMR ─
   setText('k1-tmr-val', fmtH(k.tmr_horas));
+  setText('k1-tmr-story', tmrStory(k.tmr_horas, kp.tmr_horas));
   setHtml('k1-tmr-delta', fmtDelta(calcDelta(k.tmr_horas, kp.tmr_horas), true));
 
-  // Em aberto
-  setText('k1-aberto-val', fmt(k.em_aberto));
-  setText('k1-aberto-sub', (k.abertos_hoje ?? 0) + ' abertos hoje');
+  // ─ Em aberto ─
+  const abertos = parseInt(k.em_aberto) || 0;
+  const hoje    = parseInt(k.abertos_hoje) || 0;
+  setText('k1-open-val', fmt(k.em_aberto));
+  setText('k1-open-story', hoje > 0
+    ? `${hoje} ${hoje === 1 ? 'chegou' : 'chegaram'} hoje`
+    : 'aguardando a equipe');
 
-  // CSAT
-  const csat  = cache.mes.satisfacao || {};
-  const nota  = parseFloat(csat.media || 0);
-  const stars = '★'.repeat(Math.max(0, Math.min(5, Math.round(nota)))) +
-                '☆'.repeat(5 - Math.max(0, Math.min(5, Math.round(nota))));
-  setText('k1-csat-val', (csat.media ?? '—') + ' ' + stars);
-  setText('k1-csat-sub', fmt(csat.respondidas) + ' avaliações no mês');
-
-  // Top técnicos
-  const tecs = (cache.mes.tecnicos || []).slice(0, 3);
+  // ─ Técnicos ─
+  const tecs   = (cache.mes.tecnicos || []).slice(0, 5);
+  const maxRes = tecs[0]?.resolvidos || 1;
   document.getElementById('k1-tec-list').innerHTML = tecs.length
-    ? tecs.map(t => `
-        <div class="tec-row">
-          <span class="tec-nome">${esc(t.nome)}</span>
-          <span class="tec-stats">${fmt(t.resolvidos)} · <span class="${slaClass(t.sla)}">${esc(t.sla ?? '—')}%</span></span>
-        </div>`).join('')
-    : '<div class="empty-state">Sem dados de técnicos</div>';
+    ? tecs.map((t, i) => {
+        const rankCls = i === 0 ? 'gold' : i === 1 ? 'silver' : '';
+        const barColor = parseFloat(t.sla) >= 90 ? 'var(--green)' : parseFloat(t.sla) >= 75 ? 'var(--amber)' : 'var(--red)';
+        return `<div class="tec-row anim">
+          <span class="tec-rank ${rankCls}">${i + 1}</span>
+          <div class="tec-info">
+            <div class="tec-nome">${esc(t.nome)}</div>
+            <div class="tec-sub">${fmt(t.resolvidos)} resolvidos · TMR ${fmtH(t.tmr)}</div>
+          </div>
+          <div class="tec-bar-wrap">
+            <div class="tec-bar-fill" style="background:${barColor}" data-w="${(t.resolvidos/maxRes*100).toFixed(0)}%"></div>
+          </div>
+          <span class="tec-sla ${slaClass(t.sla)}">${t.sla ?? '—'}%</span>
+        </div>`;
+      }).join('')
+    : '<div class="empty-state">Sem dados de técnicos disponíveis para o período.</div>';
+
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll('#k1-tec-list .tec-bar-fill').forEach(el => {
+      el.style.width = el.dataset.w || '0%';
+    });
+  }));
 }
 
-// ── RENDER TELA 2 — RADAR OPERACIONAL ────────────────────────
+// ════════════════════════════════════════════════════════════
+// RENDER — TELA 2: RADAR OPERACIONAL
+// ════════════════════════════════════════════════════════════
 function renderTela2() {
-  // Chamados críticos
   const criticos = cache.mes.chamados_criticos || [];
-  document.getElementById('s2-criticos').innerHTML = criticos.length
-    ? criticos.map(c => {
-        const cls   = c.sla_violado == 1 ? 'sla-viol' : '';
-        const tempo = fmtH(c.horas_aberto);
-        const titulo = esc((c.titulo || 'Sem título').substring(0, 60));
-        return `
-          <div class="alert-row ${cls}">
-            <span class="alert-id">#${esc(String(c.id))}</span>
-            <span class="alert-titulo">${titulo}</span>
-            <span class="alert-tempo">${esc(tempo)}</span>
-          </div>`;
-      }).join('')
-    : '<div class="empty-state">Nenhum chamado crítico no momento</div>';
+  const violados = criticos.filter(c => +c.sla_violado === 1).length;
 
-  // Top categorias (mês atual, máx 6)
-  const cats = (cache.mes.top_categorias || []).slice(0, 6);
+  // Headline
+  const hlEl = document.getElementById('s2-headline');
+  if (criticos.length === 0) {
+    hlEl.className = 'screen-headline ok';
+    setText('s2-hl-text', 'Tudo sob controle — nenhum chamado crítico no momento.');
+  } else if (violados > 0) {
+    hlEl.className = 'screen-headline bad';
+    setText('s2-hl-text',
+      `${violados} chamado${violados > 1 ? 's' : ''} ${violados > 1 ? 'estão' : 'está'} com SLA violado agora — ação necessária.`);
+  } else {
+    hlEl.className = 'screen-headline warn';
+    setText('s2-hl-text',
+      `${criticos.length} chamados em aberto monitorados — nenhum com SLA violado até o momento.`);
+  }
+
+  // Story phrase
+  setText('s2-crit-story', criticos.length === 0
+    ? 'Todos os chamados ativos estão dentro do prazo acordado.'
+    : violados > 0
+      ? `${violados} chamado${violados > 1 ? 's' : ''} já ultrapassou${violados > 1 ? 'aram' : ''} o tempo de resolução acordado com os usuários.`
+      : 'Acompanhe os chamados abaixo e priorize os de maior espera ou prioridade.');
+
+  // Lista de chamados críticos
+  document.getElementById('s2-criticos').innerHTML = criticos.length
+    ? criticos.slice(0, 7).map(c => {
+        const viol  = +c.sla_violado === 1;
+        const h     = parseInt(c.horas_aberto) || 0;
+        const warn  = !viol && h > 8;
+        const cls   = viol ? 'viol' : warn ? 'warn' : '';
+        const prio  = c.priority || 3;
+        const tec   = c.tecnico
+          ? `<span class="crit-tec">→ ${esc(c.tecnico)}</span>`
+          : `<span class="crit-tec" style="color:var(--red);font-size:10px;">Sem técnico atribuído</span>`;
+        return `<div class="crit-row ${cls} anim">
+          <div class="crit-badge"></div>
+          <div class="crit-body">
+            <div class="crit-titulo">${esc((c.titulo || 'Sem título').substring(0, 68))}</div>
+            <div class="crit-meta">
+              <span class="crit-id">#${esc(String(c.id))}</span>
+              ${c.categoria ? `<span class="crit-cat">${esc(c.categoria)}</span>` : ''}
+              ${tec}
+            </div>
+          </div>
+          <span class="crit-prio prio-${prio}">${PRIO_SHORT[prio] || 'Média'}</span>
+          <span class="crit-time">${fmtH(c.horas_aberto)}</span>
+        </div>`;
+      }).join('')
+    : `<div class="empty-state">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="opacity:.35"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        Nenhum chamado crítico no momento
+       </div>`;
+
+  // Categorias
+  const cats = (cache.mes.top_categorias || []).slice(0, 7);
   const max  = cats[0]?.total || 1;
   document.getElementById('s2-cats').innerHTML = cats.length
-    ? cats.map(c => `
-        <div class="cat-row">
-          <span class="cat-name">${esc(c.cat || 'Sem categoria')}</span>
-          <div class="cat-bar-wrap">
-            <div class="cat-bar-fill" style="width:0%" data-w="${(c.total / max * 100).toFixed(1)}%"></div>
+    ? cats.map((c, i) => `
+        <div class="cat-row anim">
+          <span class="cat-rank">${i + 1}</span>
+          <div class="cat-info">
+            <div class="cat-name">${esc(c.cat || 'Sem categoria')}</div>
+            <div class="cat-bar-wrap">
+              <div class="cat-bar-fill" data-w="${(c.total / max * 100).toFixed(1)}%" style="width:0%"></div>
+            </div>
           </div>
-          <span class="cat-num">${fmt(c.total)}</span>
+          <span class="cat-count">${fmt(c.total)}</span>
         </div>`).join('')
-    : '<div class="empty-state">Sem categorias no período</div>';
+    : '<div class="empty-state">Sem dados de categorias para o período.</div>';
 
-  // Animar barras após render
   requestAnimationFrame(() => requestAnimationFrame(() => {
     document.querySelectorAll('#s2-cats .cat-bar-fill').forEach(el => {
       el.style.width = el.dataset.w || '0%';
@@ -608,84 +881,186 @@ function renderTela2() {
   }));
 }
 
-// ── RENDER TELA 3 — DESEMPENHO DO ANO ────────────────────────
+// ════════════════════════════════════════════════════════════
+// RENDER — TELA 3: DESEMPENHO DO ANO
+// ════════════════════════════════════════════════════════════
 function renderTela3() {
-  const k     = cache.ano.kpis           || {};
-  const meses = cache.ano.volume_mensal  || [];
-  const csat  = cache.ano.satisfacao     || {};
+  const k     = cache.ano.kpis          || {};
+  const meses = cache.ano.volume_mensal || [];
+  const hoje  = new Date();
+
+  // Headline
+  setText('s3-hl-text',
+    `De janeiro até ${MESES_PT[hoje.getMonth()]}, a equipe tratou ${fmt(k.total_chamados)} chamados — veja o histórico completo abaixo.`);
 
   // KPIs anuais
   setText('k3-total', fmt(k.total_chamados));
+  setText('k3-total-story', `chamados registrados em ${hoje.getFullYear()}`);
 
   const slaAno = parseFloat(k.pct_sla);
   setText('k3-sla', (k.pct_sla ?? '—') + '%');
-  const slaAnoEl = document.getElementById('k3-sla');
-  if (slaAnoEl && !isNaN(slaAno)) {
-    slaAnoEl.style.color = slaAno >= 90 ? 'var(--green)' : slaAno >= 75 ? 'var(--amber)' : 'var(--red)';
-  }
+  setText('k3-sla-story', yearSlaStory(k.pct_sla));
+  const slaEl = document.getElementById('k3-sla');
+  if (slaEl && !isNaN(slaAno))
+    slaEl.style.color = slaAno >= 90 ? 'var(--green)' : slaAno >= 75 ? 'var(--amber)' : 'var(--red)';
 
-  setText('k3-csat', (csat.media ?? '—') + '★');
+  setText('k3-tmr', fmtH(k.tmr_horas));
+  setText('k3-tmr-story', tmrStory(k.tmr_horas, null));
 
-  // Melhor mês (maior pct SLA nos dados mensais)
-  const melhor = meses.reduce((best, m) => {
-    const pct = m.sla_total > 0 ? (m.sla_ok / m.sla_total * 100) : 0;
-    return pct > (best.pct || 0) ? { ...m, pct } : best;
-  }, { pct: 0 });
-  setText('k3-melhor-val', melhor.mes
-    ? `${melhor.mes} — ${melhor.pct.toFixed(0)}% SLA · ${fmt(melhor.abertos)} chamados`
-    : 'Dados insuficientes');
+  // Chart.js
+  buildVolumeChart(meses);
 
-  // Gráfico SLA por mês (últimos 6 meses)
-  const last6 = meses.slice(-6);
-  document.getElementById('k3-chart').innerHTML = last6.length
-    ? last6.map(m => {
-    const pct    = m.sla_total > 0 ? (m.sla_ok / m.sla_total * 100) : 0;
-    const isBest = m.mes === melhor.mes;
-    const lbl    = esc((m.mes || '').split('/')[0]);
-    return `
-      <div class="bar-wrap">
-        <div class="bar-col ${isBest ? 'best' : ''}" style="height:${pct.toFixed(1)}%"></div>
-        <div class="bar-lbl">${lbl}</div>
-        <div class="bar-pct ${isBest ? 'best' : ''}">${pct.toFixed(0)}</div>
-      </div>`;
-    }).join('')
-    : '<div class="empty-state">Sem dados de SLA no período</div>';
-
-  // Ranking anual (top 5 por resolvidos)
+  // Ranking anual
   const tecs = (cache.ano.tecnicos || []).slice(0, 5);
   document.getElementById('k3-ranking').innerHTML = tecs.length
-    ? tecs.map((t, i) => `
-        <div class="tec-row">
-          <span class="tec-rank">${i + 1}</span>
-          <span class="tec-nome">${esc(t.nome)}</span>
-          <span class="tec-stats">${fmt(t.resolvidos)} · <span class="${slaClass(t.sla)}">${esc(t.sla ?? '—')}%</span></span>
-        </div>`).join('')
-    : '<div class="empty-state">Sem dados de técnicos</div>';
+    ? tecs.map((t, i) => {
+        const rankCls = i === 0 ? 'gold' : i === 1 ? 'silver' : '';
+        return `<div class="tec-row anim">
+          <span class="tec-rank ${rankCls}">${i + 1}</span>
+          <div class="tec-info">
+            <div class="tec-nome">${esc(t.nome)}</div>
+            <div class="tec-sub">${fmt(t.resolvidos)} resolvidos · TMR ${fmtH(t.tmr)}</div>
+          </div>
+          <span class="tec-sla ${slaClass(t.sla)}">${t.sla ?? '—'}%</span>
+        </div>`;
+      }).join('')
+    : '<div class="empty-state">Sem dados de técnicos para o ano.</div>';
 }
 
-// ── RENDER ALL ────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// CHART.JS — Volume Mensal
+// ════════════════════════════════════════════════════════════
+function buildVolumeChart(meses) {
+  const ctx = document.getElementById('chart-volume');
+  if (!ctx) return;
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+
+  const labels   = meses.map(m => (m.mes || '').split('/')[0]);
+  const abertos  = meses.map(m => m.abertos  || 0);
+  const fechados = meses.map(m => m.fechados || 0);
+  const slaPct   = meses.map(m =>
+    m.sla_total > 0 ? +(m.sla_ok / m.sla_total * 100).toFixed(1) : null);
+
+  Chart.defaults.font.family = "'Outfit', sans-serif";
+  Chart.defaults.color       = 'rgba(221,228,240,0.35)';
+
+  chartInst = new Chart(ctx, {
+    data: {
+      labels,
+      datasets: [
+        {
+          type: 'bar', label: 'Abertos',
+          data: abertos,
+          backgroundColor: 'rgba(79,142,247,0.22)',
+          borderColor:     'rgba(79,142,247,0.55)',
+          borderWidth: 1, borderRadius: 3, order: 2,
+        },
+        {
+          type: 'bar', label: 'Fechados',
+          data: fechados,
+          backgroundColor: 'rgba(45,217,126,0.18)',
+          borderColor:     'rgba(45,217,126,0.45)',
+          borderWidth: 1, borderRadius: 3, order: 2,
+        },
+        {
+          type: 'line', label: 'SLA %',
+          data: slaPct,
+          borderColor:     'rgba(245,166,35,0.85)',
+          backgroundColor: 'rgba(245,166,35,0.05)',
+          borderWidth: 2, pointRadius: 3,
+          pointBackgroundColor: 'rgba(245,166,35,0.9)',
+          tension: 0.35, yAxisID: 'y2', order: 1, fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'top', align: 'end',
+          labels: { boxWidth: 10, boxHeight: 10, padding: 18, font: { size: 11 } },
+        },
+        tooltip: {
+          backgroundColor: 'rgba(6,9,17,0.95)',
+          borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1,
+          padding: 10, titleFont: { size: 12 }, bodyFont: { size: 12 },
+          callbacks: {
+            label: ctx => {
+              if (ctx.dataset.label === 'SLA %')
+                return ` SLA: ${ctx.parsed.y != null ? ctx.parsed.y + '%' : '—'}`;
+              return ` ${ctx.dataset.label}: ${ctx.parsed.y}`;
+            }
+          }
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { font: { size: 11 } },
+        },
+        y: {
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { font: { size: 11 } }, position: 'left',
+          title: { display: true, text: 'Chamados', font: { size: 10 }, color: 'rgba(221,228,240,0.3)' },
+        },
+        y2: {
+          grid: { display: false },
+          ticks: { font: { size: 11 }, callback: v => v + '%' },
+          position: 'right', min: 0, max: 100,
+          title: { display: true, text: 'SLA %', font: { size: 10 }, color: 'rgba(245,166,35,0.4)' },
+        },
+      },
+    },
+    plugins: [{
+      id: 'sla-target',
+      afterDraw(chart) {
+        const y2 = chart.scales['y2'];
+        if (!y2) return;
+        const { ctx: c, chartArea: { left, right } } = chart;
+        const y = y2.getPixelForValue(90);
+        c.save();
+        c.beginPath();
+        c.setLineDash([4, 4]);
+        c.strokeStyle = 'rgba(245,166,35,0.3)';
+        c.lineWidth = 1;
+        c.moveTo(left, y); c.lineTo(right, y);
+        c.stroke();
+        c.setLineDash([]);
+        c.font = '10px Outfit, sans-serif';
+        c.fillStyle = 'rgba(245,166,35,0.45)';
+        c.fillText('meta 90%', right - 55, y - 4);
+        c.restore();
+      }
+    }],
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+// RENDER ALL
+// ════════════════════════════════════════════════════════════
 function renderAll() {
   renderTela1();
   renderTela2();
   renderTela3();
 }
 
-// ── ROTAÇÃO + PROGRESS BAR ───────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// ROTAÇÃO DE TELAS
+// ════════════════════════════════════════════════════════════
 let currentScreen = 0;
-let rotTimer      = null;
-const SCREENS     = ['s1', 's2', 's3'];
+let rotTimer = null;
+const SCREENS = ['s1', 's2', 's3'];
 
 function screenTitle(idx) {
   const hoje = new Date();
   const mes  = MESES_PT[hoje.getMonth()];
   const ano  = hoje.getFullYear();
-  const mesAbrev = MESES_SHORT[hoje.getMonth()];
-  const titles = [
-    `${mes} ${ano} — Mês Atual`,
+  return [
+    `${mes} ${ano} — Visão do Mês`,
     `Radar Operacional — ${mes} ${ano}`,
-    `${ano} — Acumulado até ${mesAbrev}`,
-  ];
-  return titles[idx] || '';
+    `${ano} — Desempenho Acumulado`,
+  ][idx] || '';
 }
 
 function showScreen(idx) {
@@ -693,9 +1068,9 @@ function showScreen(idx) {
     const el = document.getElementById(id);
     if (el) el.classList.toggle('active', i === idx);
   });
-  document.getElementById('h-title').textContent    = screenTitle(idx);
-  document.getElementById('h-indicator').textContent = `${idx + 1} / ${SCREENS.length}`;
-  startProgress();
+  setText('h-title', screenTitle(idx));
+  setText('h-indicator', `${idx + 1} / ${SCREENS.length}`);
+  animateProgress();
 }
 
 function nextScreen() {
@@ -703,7 +1078,7 @@ function nextScreen() {
   showScreen(currentScreen);
 }
 
-function startProgress() {
+function animateProgress() {
   const fill = document.getElementById('prog-fill');
   fill.style.transition = 'none';
   fill.style.width = '0%';
@@ -720,13 +1095,14 @@ function startRotation() {
   rotTimer = setInterval(nextScreen, SCREEN_TIME);
 }
 
-// ── INIT ─────────────────────────────────────────────────────
+// ════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════
 async function init() {
   await fetchAll();
   startRotation();
   setInterval(fetchAll, REFRESH_TIME);
 }
-
 init();
 </script>
 </body>

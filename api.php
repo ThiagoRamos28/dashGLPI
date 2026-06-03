@@ -168,7 +168,9 @@ $chamados_criticos = query($pdo, "
     SELECT
         t.id,
         t.name                                                              AS titulo,
+        t.priority,
         ic.name                                                             AS categoria,
+        CONCAT(u.firstname, ' ', u.realname)                               AS tecnico,
         DATE_FORMAT(t.date, '%d/%m/%Y %H:%i')                              AS abertura,
         t.time_to_resolve                                                   AS prazo_sla,
         CASE WHEN t.time_to_resolve IS NOT NULL
@@ -176,10 +178,14 @@ $chamados_criticos = query($pdo, "
         TIMESTAMPDIFF(HOUR, t.date, NOW())                                  AS horas_aberto
     FROM glpi_tickets t
     LEFT JOIN glpi_itilcategories ic ON ic.id = t.itilcategories_id
+    LEFT JOIN glpi_tickets_users tu ON tu.tickets_id = t.id AND tu.type = 2
+    LEFT JOIN glpi_users u ON u.id = tu.users_id AND u.is_deleted = 0
     WHERE t.is_deleted = 0
       AND t.status NOT IN (5, 6)
       $gf
-    ORDER BY sla_violado DESC, t.date ASC
+    GROUP BY t.id, t.name, t.priority, ic.name, u.firstname, u.realname,
+             t.date, t.time_to_resolve
+    ORDER BY sla_violado DESC, t.priority DESC, t.date ASC
     LIMIT 10
 ", []);
 
