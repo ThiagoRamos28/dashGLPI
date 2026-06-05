@@ -131,3 +131,8 @@ const API_URL = '/dashboard/api.php';
 - O timeout de conexão com o banco está configurado para 5 segundos
 - Técnicos com menos de 3 chamados são excluídos da tabela de desempenho
 - SLA é calculado apenas quando `time_to_resolve` e `solvedate` estão preenchidos
+
+## Instruções para o Claude
+
+- **Nunca salvar ou memorizar endereços de servidor** (IPs, hostnames, URLs internas). Sempre que precisar referenciar um endereço em exemplos, documentação ou código gerado, usar placeholders genéricos como `[IP_SERVIDOR]`, `192.168.x.x`, `servidor.local` ou `[HOST]`.
+- Credenciais, senhas e tokens também nunca devem ser memorizados — usar `[SENHA]`, `SUA_SENHA_AQUI` etc.

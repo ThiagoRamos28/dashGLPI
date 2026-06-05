@@ -8,10 +8,10 @@ header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *'); // Restrinja ao seu domínio em produção
 
 // ── Configuração do banco ────────────────────────────────────
-define('DB_HOST', '[IP_SERVIDOR]');
-define('DB_PORT', '3306');
-define('DB_NAME', 'glpi');
-define('DB_USER', '[USUARIO_DB]');
+define('DB_HOST', 'ip_do_servidor_mysql');
+define('DB_PORT', 'porta_mysql'); // Ex: 3306
+define('DB_NAME', 'nome_do_banco'); // Ex: glpi
+define('DB_USER', 'usuario_mysql'); // ← substitua pelo usuário real
 define('DB_PASS', 'SUA_SENHA_AQUI'); // ← substitua pela senha real
 
 // ── Período (padrão: 12 meses) ──────────────────────────────
